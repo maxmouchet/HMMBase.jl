@@ -1,6 +1,6 @@
 module HMMBase
 
-import Distributions: Distribution, Univariate, Multivariate, VariateForm
+using Distributions
 import StatsFuns: logsumexp
 
 export
