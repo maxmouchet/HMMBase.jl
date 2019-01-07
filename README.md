@@ -1,7 +1,7 @@
 # HMMBase.jl
 
-[![Julia 1.0+](https://img.shields.io/badge/Julia-1.0+-blue.svg?style=flat)](https://julialang.org/downloads/)
-
+[![Build Status](https://travis-ci.org/maxmouchet/HMMBase.jl.svg?branch=master)](https://travis-ci.org/maxmouchet/HMMBase.jl)
+[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg?style=flat)](https://maxmouchet.github.io/HMMBase.jl/stable)
 
 ## Development
 
