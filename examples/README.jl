@@ -4,6 +4,8 @@
 
 # ## Usage
 
+# You can run the following example by executing `julia examples/README.jl`.
+
 using Distributions
 using HMMBase
 
