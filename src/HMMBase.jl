@@ -1,6 +1,7 @@
 module HMMBase
 
-import Distributions: Distributions, Univariate, Multivariate, VariateForm
+import Distributions: Distribution, Univariate, Multivariate, VariateForm
+import StatsFuns: logsumexp
 
 export
     # hmm.jl
@@ -15,5 +16,9 @@ export
     messages_backward_log,
     messages_forward,
     messages_forward_log
+
+include("hmm.jl")
+include("decoding.jl")
+include("filtering.jl")
 
 end
