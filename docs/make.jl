@@ -9,7 +9,7 @@ makedocs(
     sitename="HMMBase.jl",
     pages = [
         "index.md",
-        # "Manual" => ["distributions.md", "samplers.md", "hmm.md"],
+        "Manual" => ["hmm.md"],
         "_index.md"
     ]
 )
