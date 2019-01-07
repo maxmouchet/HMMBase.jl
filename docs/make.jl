@@ -13,3 +13,7 @@ makedocs(
         "_index.md"
     ]
 )
+
+deploydocs(
+    repo = "github.com/maxmouchet/HMMBase.jl.git",
+)
