@@ -1,0 +1,13 @@
+name = "HMMBase"
+uuid = "b672548c-1273-11e9-2681-8f1510712e6a"
+authors = ["Maxime Mouchet <maxime.mouchet@imt-atlantique.fr>"]
+version = "0.1.0"
+
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
