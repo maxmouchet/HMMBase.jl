@@ -3,7 +3,7 @@
 # [![Build Status][travis-img]][travis-url] [![Documentation][docs-latest-img]][docs-latest-url]
 
 # HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to provide a lightweight and efficient abstraction for hidden Markov models in Julia.  
-# It implements the forward and backward filters, the Viterbi algorithm, and the MLE estimator.  
+# It implements the forward and backward recursions, the Viterbi algorithm, and the MLE estimator.  
 # More advanced models, such as Bayesian HMMs can be built upon HMMBase.
 
 # ## Usage
