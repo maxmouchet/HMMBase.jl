@@ -49,7 +49,7 @@ z, y = sample_hmm(hmm, 2500)
 
 # ## Questions and Contributions
 
-# Contributions are very welcome, as are feature requests and suggestions. Please open an [issue][issues-url] if you encounter any problems. In particular additions to documentation are encouraged!
+# Contributions are very welcome, as are feature requests and suggestions. Please open an [issue][issues-url] if you encounter any problems.
 
 # [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg?style=flat
 # [docs-stable-url]: https://maxmouchet.github.io/HMMBase.jl/stable
