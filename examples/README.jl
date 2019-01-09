@@ -16,6 +16,12 @@ using HMMBase
 hmm = HMM([0.99 0.005 0.005; 0.005 0.99 0.005; 0.05 0.05 0.9], [Normal(5,1), Normal(10,3), Normal(15,1)])
 z, y = sample_hmm(hmm, 2500)
 
+α = messages_forward(hmm, y)
+β = messages_backward(hmm, y)
+γ = forward_backward(hmm, y)
+
+# TODO: MLE
+
 # ## Development
 
 # ### Build docs
