@@ -26,11 +26,11 @@ res1 = messages_backward_log(trans_matrix, log_likelihoods)
 
 @test sum(abs.(ref-res1)) < 1e-8
 
-res1a, res1b = messages_forward(init_dist, trans_matrix, log_likelihoods)
+res1a = messages_forward(init_dist, trans_matrix, log_likelihoods)
 res2a, res2b = pyhsmm.internals[:hmm_states][:HMMStatesPython][:_messages_forwards_normalized](trans_matrix, init_dist, log_likelihoods)
 
 @test sum(abs.(res1a-res2a)) < 1e-11
-@test abs.(res1b-res2b) < 1e-11
+# @test abs.(res1b-res2b) < 1e-11
 
 res1 = messages_forward_log(init_dist, trans_matrix, log_likelihoods)
 res2 = pyhsmm.internals[:hmm_states][:HMMStatesPython][:_messages_forwards_log](trans_matrix, init_dist, log_likelihoods)
