@@ -31,6 +31,18 @@ using Literate
 Literate.markdown("examples/README.jl", "."; documenter=false)
 ```
 
+## Maintainers
+
+[@maxmouchet](https://github.com/maxmouchet)
+
+## Contribute
+
+PRs accepted.
+
+## License
+
+MIT © 2018 Maxime Mouchet
+
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg?style=flat
 [docs-stable-url]: https://maxmouchet.github.io/HMMBase.jl/stable
 
