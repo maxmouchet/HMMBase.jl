@@ -4,7 +4,7 @@
 
 # | **Documentation**                       | **Build Status**              |
 # |:---------------------------------------:|:-----------------------------:|
-# | [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url]| [![][travis-img]][travis-url] |
+# | [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url]| [![][travis-img]][travis-url] [![][codecov-img]][codecov-url] |
 
 # ## Introduction
 
@@ -29,13 +29,16 @@
 
 # ## Example
 
-# You can run the following example by executing `julia examples/README.jl`.
+# You can run the following example by executing `julia -i examples/README.jl`.
 
 using Distributions
 using HMMBase
+using Plots
 
 hmm = HMM([0.99 0.005 0.005; 0.005 0.99 0.005; 0.05 0.05 0.9], [Normal(5,1), Normal(10,3), Normal(15,1)])
 z, y = sample_hmm(hmm, 2500)
+
+display(plot(y))
 
 α = messages_forward(hmm, y)
 β = messages_backward(hmm, y)
@@ -64,5 +67,8 @@ z, y = sample_hmm(hmm, 2500)
 #
 # [travis-img]: https://travis-ci.org/maxmouchet/HMMBase.jl.svg?branch=master
 # [travis-url]: https://travis-ci.org/maxmouchet/HMMBase.jl
-
+#
+# [codecov-img]: https://codecov.io/github/maxmouchet/HMMBase.jl/coverage.svg?branch=master
+# [codecov-url]: https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master
+#
 # [issues-url]: https://github.com/maxmouchet/BaseHMM.jl/issues
