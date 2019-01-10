@@ -8,8 +8,8 @@
 
 ## Introduction
 
-HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to provide a lightweight and efficient abstraction for hidden Markov models in Julia.
-It implements the forward and backward recursions, the Viterbi algorithm, and the MLE estimator.
+HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to provide a lightweight and efficient abstraction for hidden Markov models in Julia.  
+It implements the forward and backward recursions, the Viterbi algorithm, and the MLE estimator.  
 More advanced models, such as Bayesian HMMs can be built upon HMMBase.
 
 ## Installation
@@ -26,27 +26,6 @@ Or, equivalently, via the `Pkg` API:
 ```julia
 julia> import Pkg; Pkg.add(Pkg.PackageSpec(url="https://github.com/maxmouchet/HMMBase.jl.git"))
 ```
-
-## Example
-
-You can run the following example by executing `julia -i examples/README.jl`.
-
-```julia
-using Distributions
-using HMMBase
-using Plots
-
-hmm = HMM([0.99 0.005 0.005; 0.005 0.99 0.005; 0.05 0.05 0.9], [Normal(5,1), Normal(10,3), Normal(15,1)])
-z, y = sample_hmm(hmm, 2500)
-
-display(plot(y))
-
-α = messages_forward(hmm, y)
-β = messages_backward(hmm, y)
-γ = forward_backward(hmm, y)
-```
-
-TODO: MLE
 
 ## Documentation
 
@@ -73,6 +52,4 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 [codecov-img]: https://codecov.io/github/maxmouchet/HMMBase.jl/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master
 
-[issues-url]: https://github.com/maxmouchet/BaseHMM.jl/issues#-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
+[issues-url]: https://github.com/maxmouchet/BaseHMM.jl/issues
