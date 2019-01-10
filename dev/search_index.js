@@ -57,6 +57,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "examples/discrete_obs/#",
+    "page": "HMM with discrete observations",
+    "title": "HMM with discrete observations",
+    "category": "page",
+    "text": "EditURL = \"https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/discrete_obs.jl\""
+},
+
+{
+    "location": "examples/discrete_obs/#HMM-with-discrete-observations-1",
+    "page": "HMM with discrete observations",
+    "title": "HMM with discrete observations",
+    "category": "section",
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ = [0.9 0.1; 0.2 0.8]\nD = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]\nhmm = HMM(π, D)\n\nz, y = sample_hmm(hmm, 250)\nplot(y)#-This page was generated using Literate.jl."
+},
+
+{
     "location": "_index/#",
     "page": "Index",
     "title": "Index",
