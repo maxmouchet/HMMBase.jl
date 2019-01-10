@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMMBase.jl",
     "title": "HMMBase.jl",
     "category": "section",
-    "text": "A lightweight and efficient hidden Markov model abstraction for Julia.Logo: Blockchain by Pablo Rozenberg from the Noun Project."
+    "text": "(View project on GitHub)A lightweight and efficient hidden Markov model abstraction for Julia.Logo: Blockchain by Pablo Rozenberg from the Noun Project."
 },
 
 {
