@@ -2,3 +2,4 @@
 build.log
 *.so
 docs/build/
+docs/src/examples/
