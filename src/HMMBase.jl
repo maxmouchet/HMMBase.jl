@@ -15,7 +15,8 @@ export
     messages_backward,
     messages_backward_log,
     messages_forward,
-    messages_forward_log
+    messages_forward_log,
+    forward_backward
 
 include("hmm.jl")
 include("decoding.jl")

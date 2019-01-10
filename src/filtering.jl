@@ -35,6 +35,13 @@ function messages_backward(trans_matrix::Matrix{Float64}, log_likelihoods::Matri
     betas
 end
 
+function forward_backward(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
+    alphas = messages_forward(init_distn, trans_matrix, log_likelihoods)
+    betas = messages_backward(trans_matrix, log_likelihoods)
+    gammas = alphas .* betas
+    gammas ./ sum(gammas, dims=2)
+end
+
 # Log implementations
 
 function messages_forward_log(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
@@ -62,4 +69,21 @@ function messages_backward_log(trans_matrix::Matrix{Float64}, log_likelihoods::M
         end
     end
     log_betas
+end
+
+# Convenience functions
+
+function messages_forward(hmm, observations)
+    likelihoods = hcat(map(d -> pdf.(d, observations), hmm.D)...)
+    messages_forward(hmm.π0, hmm.π, log.(likelihoods))
+end
+
+function messages_backward(hmm, observations)
+    likelihoods = hcat(map(d -> pdf.(d, observations), hmm.D)...)
+    messages_backward(hmm.π, log.(likelihoods))
+end
+
+function forward_backward(hmm, observations)
+    likelihoods = hcat(map(d -> pdf.(d, observations), hmm.D)...)
+    forward_backward(hmm.π0, hmm.π, log.(likelihoods))
 end
