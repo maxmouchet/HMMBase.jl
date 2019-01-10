@@ -6,6 +6,8 @@ julia:
   - 1.0
 notifications:
   email: false
+after_success:
+  - julia -e 'cd(Pkg.dir("HMMBase")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 jobs:
   include:
     - stage: "Documentation"
