@@ -1,5 +1,4 @@
 Base.eval(:(have_color = true))
-push!(LOAD_PATH, "src/")
 
 using Documenter
 using Glob
