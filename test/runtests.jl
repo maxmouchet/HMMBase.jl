@@ -10,10 +10,10 @@ using Distributions
 
     O = [1,1,2,1,1]
 
-    α, _ = messages_forwards(hmm, O)
+    α, logtot_alpha = messages_forwards(hmm, O)
     α = round.(α, digits=4)
 
-    β, _ = messages_backwards(hmm, O)
+    β, logtot_beta = messages_backwards(hmm, O)
     β = round.(β, digits=4)
 
     γ = forward_backward(hmm, O)
@@ -42,4 +42,6 @@ using Distributions
         0.8204 0.1796;
         0.8673 0.1327;
     ]
+
+    @test logtot_alpha ≈ logtot_beta atol=1e-12
 end
