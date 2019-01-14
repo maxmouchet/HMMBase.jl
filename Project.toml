@@ -1,7 +1,7 @@
 name = "HMMBase"
 uuid = "b672548c-1273-11e9-2681-8f1510712e6a"
 authors = ["Maxime Mouchet <maxime.mouchet@imt-atlantique.fr>"]
-version = "0.0.1"
+version = "0.0.2"
 
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
