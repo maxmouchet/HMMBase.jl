@@ -2,4 +2,5 @@
 build.log
 *.so
 docs/build/
-docs/src/examples/
+docs/Manifest.toml
+docs/src/examples
