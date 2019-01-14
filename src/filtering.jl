@@ -3,48 +3,66 @@
 
 # Scaled implementations
 
-function messages_forward(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
+@views function messages_forwards(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
     alphas = zeros(size(log_likelihoods))
+    logtot = 0.0
 
-    ll = view(log_likelihoods, 1, :)
+    ll = log_likelihoods[1,:]
     c = maximum(ll)
+
     alpha = init_distn .* exp.(ll .- c)
-    alphas[1,:] = alpha / sum(alpha)
+    norm = sum(alpha)
+
+    alphas[1,:] = alpha / norm
+    logtot += c + log(norm)
 
     @inbounds for t = 2:size(alphas)[1]
-        ll = view(log_likelihoods, t, :)
+        ll = log_likelihoods[t,:]
         c = maximum(ll)
-        alpha = trans_matrix' * view(alphas, t-1, :) .* exp.(ll .- c)
-        alphas[t,:] = alpha / sum(alpha)
+
+        alpha = trans_matrix' * alphas[t-1,:] .* exp.(ll .- c)
+        norm = sum(alpha)
+    
+        alphas[t,:] = alpha / norm
+        logtot += c + log(norm)
     end
 
-    alphas
+    alphas, logtot
 end
 
-function messages_backward(trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
+@views function messages_backwards(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
     betas = zeros(size(log_likelihoods))
     betas[end,:] .= 1
+    logtot = 0.0
 
     @inbounds for t = size(betas)[1]-1:-1:1
-        ll = view(log_likelihoods, t+1, :)
+        ll = log_likelihoods[t+1,:]
         c = maximum(ll)
-        beta = trans_matrix * (view(betas, t+1, :) .* exp.(ll .- c))
-        betas[t,:] = beta / sum(beta);
+
+        beta = trans_matrix * (betas[t+1,:] .* exp.(ll .- c))
+        norm = sum(beta)
+
+        betas[t,:] = beta / norm
+        logtot += c + log(norm)
     end
 
-    betas
+    ll = log_likelihoods[1,:]
+    c = maximum(ll)
+    logtot += c + log(sum(exp.(ll .- c) .* init_distn .* betas[1,:]))
+
+    betas, logtot
 end
 
 function forward_backward(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
-    alphas = messages_forward(init_distn, trans_matrix, log_likelihoods)
-    betas = messages_backward(trans_matrix, log_likelihoods)
+    alphas, _ = messages_forwards(init_distn, trans_matrix, log_likelihoods)
+    betas, _ = messages_backwards(init_distn, trans_matrix, log_likelihoods)
     gammas = alphas .* betas
     gammas ./ sum(gammas, dims=2)
 end
 
 # Log implementations
 
-function messages_forward_log(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
+function messages_forwards_log(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
     log_alphas = zeros(size(log_likelihoods))
     log_trans_matrix = log.(trans_matrix)
     log_alphas[1,:] = log.(init_distn) .+ log_likelihoods[1,:]
@@ -58,7 +76,7 @@ function messages_forward_log(init_distn::Vector{Float64}, trans_matrix::Matrix{
     log_alphas
 end
 
-function messages_backward_log(trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
+function messages_backwards_log(trans_matrix::Matrix{Float64}, log_likelihoods::Matrix{Float64})
     # OPTIMIZE
     log_betas = zeros(size(log_likelihoods))
     log_trans_matrix = log.(trans_matrix)
@@ -73,14 +91,14 @@ end
 
 # Convenience functions
 
-function messages_forward(hmm, observations)
+function messages_forwards(hmm, observations)
     likelihoods = hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-    messages_forward(hmm.π0, hmm.π, likelihoods)
+    messages_forwards(hmm.π0, hmm.π, likelihoods)
 end
 
-function messages_backward(hmm, observations)
+function messages_backwards(hmm, observations)
     likelihoods = hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-    messages_backward(hmm.π, likelihoods)
+    messages_backwards(hmm.π0, hmm.π, likelihoods)
 end
 
 function forward_backward(hmm, observations)

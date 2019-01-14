@@ -2,8 +2,6 @@ using Test
 using HMMBase
 using Distributions
 
-@test true
-
 @testset "Messages" begin
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
     π = [0.7 0.3; 0.3 0.7]
@@ -12,10 +10,10 @@ using Distributions
 
     O = [1,1,2,1,1]
 
-    α = messages_forward(hmm, O)
+    α, _ = messages_forwards(hmm, O)
     α = round.(α, digits=4)
 
-    β = messages_backward(hmm, O)
+    β, _ = messages_backwards(hmm, O)
     β = round.(β, digits=4)
 
     γ = forward_backward(hmm, O)
@@ -30,7 +28,6 @@ using Distributions
     ]
 
     @test β == [
-        # 0.6469 0.3531; (Should we compute beta[0,:], handle init dist ?)
         0.5923 0.4077;
         0.3763 0.6237;
         0.6533 0.3467;
@@ -39,7 +36,6 @@ using Distributions
     ]
 
     @test γ == [
-        # 0.6469 0.3531;
         0.8673 0.1327;
         0.8204 0.1796;
         0.3075 0.6925;

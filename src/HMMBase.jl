@@ -14,10 +14,10 @@ export
     # decoding.jl
     viterbi,
     # filtering.jl
-    messages_backward,
-    messages_backward_log,
-    messages_forward,
-    messages_forward_log,
+    messages_backwards,
+    messages_backwards_log,
+    messages_forwards,
+    messages_forwards_log,
     forward_backward
 
 include("hmm.jl")
