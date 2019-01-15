@@ -20,7 +20,7 @@ makedocs(
     sitename="HMMBase.jl",
     pages = [
         "index.md",
-        "Manual" => ["hmm.md"],
+        "Manual" => ["hmm.md", "inference.md", "sampling.md"],
         "Examples" => map(example -> "$(example).md", find_examples()),
         "_index.md"
     ]

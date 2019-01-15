@@ -10,6 +10,7 @@ import StatsFuns: logsumexp
 
 export
     # hmm.jl
+    AbstractHMM,
     HMM,
     StaticHMM,
     assert_hmm,

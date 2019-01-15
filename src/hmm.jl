@@ -3,8 +3,8 @@ abstract type AbstractHMM{F<:VariateForm} end
 """
     HMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where F where T
 
-Build an HMM with transition matrix π and observations distributions D.  
-If the initial state distribution π0 is not specified, a uniform distribution is assumed. 
+Build an HMM with transition matrix `π` and observations distributions `D`.  
+If the initial state distribution `π0` is not specified, a uniform distribution is assumed. 
 
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
 However they must be of the same dimension (all scalars or all multivariates).
