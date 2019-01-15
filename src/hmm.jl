@@ -29,15 +29,15 @@ HMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = H
 
 See [`HMM`](@ref).
 """
-struct StaticHMM{F,K,T} <: AbstractHMM{F}
+struct StaticHMM{F,T,K} <: AbstractHMM{F}
     π0::SVector{K,T}
     π::SMatrix{K,K,T}
     D::SVector{K,Distribution{F}}
-    StaticHMM{F,K,T}(π0, π, D) where {F,K,T} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
+    StaticHMM{F,T,K}(π0, π, D) where {F,T,K} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
 end
 
-StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,size(π)[1],T}(π0, π, D)
-StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,size(π)[1],T}(ones(size(π)[1])/size(π)[1], π, D)
+StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(π0, π, D)
+StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(ones(size(π)[1])/size(π)[1], π, D)
 
 """
     assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
