@@ -93,12 +93,4 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-function rand(hmm::AbstractHMM, z::AbstractVector{Int})
-    y = zeros(T, length(hmm.D[1]))
-    y[1] = rand(hmm.D[z[1]])
-    for t = 2:T
-        z[t] = rand(Categorical(hmm.π[z[t-1],:]))
-        y[t] = rand(hmm.D[z[t]])
-    end
-    y
-end
+rand(hmm::AbstractHMM, z::AbstractVector{Int}) = map(x -> rand(hmm.D[x]), z)
