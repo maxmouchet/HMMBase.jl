@@ -18,10 +18,13 @@ export
     messages_backwards_log,
     messages_forwards,
     messages_forwards_log,
-    forward_backward
+    forward_backward,
+    # utils.jl,
+    compute_transition_matrix
 
 include("hmm.jl")
 include("decoding.jl")
 include("filtering.jl")
+include("utils.jl")
 
 end
