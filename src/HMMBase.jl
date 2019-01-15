@@ -3,14 +3,17 @@ __precompile__()
 module HMMBase
 
 using Distributions
+using StaticArrays
+
+import Base: rand
 import StatsFuns: logsumexp
 
 export
     # hmm.jl
     HMM,
+    StaticHMM,
     assert_hmm,
-    sample_hmm,
-    compute_transition_matrix,
+    rand,
     # decoding.jl
     viterbi,
     # filtering.jl

@@ -1,19 +1,7 @@
-struct HMM{F<:VariateForm}
-    # Transition matrix
-    π::Matrix{Float64}
-
-    # Initial state distribution
-    π0::Vector{Float64}
-
-    # Observations distributions
-    # Distributions can be differents but they must be of the same dimension
-    # (all scalar or all multivariate)
-    D::Vector{Distribution{F}}
-end
+abstract type AbstractHMM{F<:VariateForm} end
 
 """
-    HMM(π::Matrix{Float64}, D::Vector{<:Distribution{F}}) where F
-    HMM(π::Matrix{Float64}, π0::Vector{Float64}, D::Vector{<:Distribution{F}}) where F
+    HMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where F where T
 
 Build an HMM with transition matrix π and observations distributions D.  
 If the initial state distribution π0 is not specified, a uniform distribution is assumed. 
@@ -21,79 +9,96 @@ If the initial state distribution π0 is not specified, a uniform distribution i
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
 However they must be of the same dimension (all scalars or all multivariates).
 
-# Examples
+# Example
 ```julia
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 ```
 """
-function HMM(π::Matrix{Float64}, π0::Vector{Float64}, D::Vector{<:Distribution{F}}) where F
-    assert_hmm(π, π0, D)
-    HMM{F}(π, π0, D)
+struct HMM{F,T} <: AbstractHMM{F}
+    π0::Vector{T}
+    π::Matrix{T}
+    D::Vector{Distribution{F}}
+    HMM{F,T}(π0, π, D) where {F,T} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
 end
 
-function HMM(π::Matrix{Float64}, D::Vector{<:Distribution{F}}) where F
-    π0 = ones(size(π)[1]) / size(π)[1]
-    assert_hmm(π, π0, D)
-    HMM{F}(π, π0, D)
-end
+HMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(π0, π, D)
+HMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(ones(size(π)[1])/size(π)[1], π, D)
 
 """
-    assert_hmm(π::Matrix{Float64}, π0::Vector{Float64}, D::Vector{<:Distribution})
+    StaticHMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T}
+
+See [`HMM`](@ref).
+"""
+struct StaticHMM{F,K,T} <: AbstractHMM{F}
+    π0::SVector{K,T}
+    π::SMatrix{K,K,T}
+    D::SVector{K,Distribution{F}}
+    StaticHMM{F,K,T}(π0, π, D) where {F,K,T} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
+end
+
+StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,size(π)[1],T}(π0, π, D)
+StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,size(π)[1],T}(ones(size(π)[1])/size(π)[1], π, D)
+
+"""
+    assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
 
 Throw an `AssertionError` if the initial state distribution and the transition matrix rows does not sum to 1,
 and if the observations distributions does not have the same dimensions.
 """
-function assert_hmm(π::Matrix{Float64}, π0::Vector{Float64}, D::Vector{<:Distribution})
+function assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
     # Initial state distribution and transition matrix rows must sum to 1
     @assert isprobvec(π0)
     @assert unique(mapslices(isprobvec, π, dims=2)) == [true]
     # All distributions must have the same dimensions
     @assert length(unique(map(length, D))) == 1
+    # There must be one distribution per state
+    @assert length(π0) == size(π)[1] == size(π)[2] == length(D)
+    true
 end
 
 """
-    sample_hmm(hmm::HMM{Univariate}, timesteps::Int)
-    sample_hmm(hmm::HMM{Multivariate}, timesteps::Int)
+    rand(hmm::AbstractHMM, T::Int[, initial_state::Int])
 
-Sample a trajectory from `hmm`.  
-Return a vector of observations for univariate HMMs and a matrix for multivariate HMMs.
+Generate a random trajectory of `hmm` for `T` timesteps.
+
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+z, y = rand(hmm, 1000)
+```
 """
-function sample_hmm(hmm::HMM{Univariate}, timesteps::Int)
-    z = zeros(Int, timesteps)
-    y = zeros(timesteps)
+function rand(hmm::AbstractHMM, T::Int; initial_state=nothing)
+    z = zeros(Int, T)
+    y = zeros(T, length(hmm.D[1]))
 
-    z[1] = rand(Categorical(hmm.π0))
+    z[1] = initial_state == nothing ? rand(Categorical(hmm.π0)) : initial_state
     y[1] = rand(hmm.D[z[1]])
-    
-    for t = 2:timesteps
+
+    for t = 2:T
         z[t] = rand(Categorical(hmm.π[z[t-1],:]))
         y[t] = rand(hmm.D[z[t]])
     end
-    
+
     z, y
 end
 
-function sample_hmm(hmm::HMM{Multivariate}, timesteps::Int)
-    z = zeros(Int, timesteps)
-    y = zeros(timesteps, length(hmm.D[1]))
+"""
+    rand(hmm::AbstractHMM, z::AbstractVector{Int})
 
-    z[1] = rand(Categorical(hmm.π0))
-    y[1,:] = rand(hmm.D[z[1]])
+Generate observations from `hmm` according to trajectory `z`.
 
-    for t = 2:timesteps
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, [1, 1, 2, 2, 1])
+```
+"""
+function rand(hmm::AbstractHMM, z::AbstractVector{Int})
+    y = zeros(T, length(hmm.D[1]))
+    y[1] = rand(hmm.D[z[1]])
+    for t = 2:T
         z[t] = rand(Categorical(hmm.π[z[t-1],:]))
-        y[t,:] = rand(hmm.D[z[t]])
+        y[t] = rand(hmm.D[z[t]])
     end
-
-    z, y
-end
-
-function compute_transition_matrix(seq::Vector{Int64})
-    mapping = Dict([(x[2], x[1]) for x in enumerate(unique(seq))])
-    transmat = zeros(length(mapping), length(mapping))
-    for i in 1:length(seq)-1
-        transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
-    end
-    transmat = transmat ./ sum(transmat, dims=2)
-    mapping, transmat
+    y
 end
