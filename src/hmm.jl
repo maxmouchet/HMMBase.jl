@@ -1,3 +1,16 @@
+"""
+    AbstractHMM{F<:VariateForm}
+
+An HMM type must at-least implement the following interface:
+```julia
+struct CustomHMM{F,T} <: AbstractHMM{F}
+    π0::AbstractVector{T}              # Initial state distribution
+    π::AbstractMatrix{T}               # Transition matrix
+    D::AbstractVector{Distribution{F}} # Observations distributions
+    # Custom fields ....
+end
+```
+"""
 abstract type AbstractHMM{F<:VariateForm} end
 
 """
