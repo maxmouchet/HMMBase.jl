@@ -1,6 +1,9 @@
 using Test
 using HMMBase
 using Distributions
+using Random
+
+Random.seed!(2018)
 
 @testset "Messages" begin
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
@@ -44,4 +47,12 @@ using Distributions
     ]
 
     @test logtot_alpha ≈ logtot_beta atol=1e-12
+end
+
+@testset "Viterbi" begin
+    # TODO: Better viterbi tests....
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
+    z, y = rand(hmm, 1000);
+    z_viterbi = viterbi(hmm, y[:])
+    @test z == z_viterbi
 end
