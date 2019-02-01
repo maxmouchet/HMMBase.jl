@@ -13,7 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMMBase.jl",
     "title": "HMMBase.jl",
     "category": "section",
-    "text": "(View project on GitHub)A lightweight and efficient hidden Markov model abstraction for Julia.Logo: Blockchain by Pablo Rozenberg from the Noun Project."
+    "text": "(View project on GitHub)A lightweight and efficient hidden Markov model abstraction for Julia.# HMMs with arbitrary observations distributions\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Gamma(1,1)])\n\n# MLE estimation\n# TODOLogo: Blockchain by Pablo Rozenberg from the Noun Project."
 },
 
 {
