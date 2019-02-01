@@ -25,6 +25,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "hmm/#HMMBase.AbstractHMM",
+    "page": "Types",
+    "title": "HMMBase.AbstractHMM",
+    "category": "type",
+    "text": "AbstractHMM{F<:VariateForm}\n\nAn HMM type must at-least implement the following interface:\n\nstruct CustomHMM{F,T} <: AbstractHMM{F}\n    π0::AbstractVector{T}              # Initial state distribution\n    π::AbstractMatrix{T}               # Transition matrix\n    D::AbstractVector{Distribution{F}} # Observations distributions\n    # Custom fields ....\nend\n\n\n\n\n\n"
+},
+
+{
     "location": "hmm/#HMMBase.HMM",
     "page": "Types",
     "title": "HMMBase.HMM",
@@ -41,10 +49,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "hmm/#HMMBase.assert_hmm-Tuple{AbstractArray{Float64,1},AbstractArray{Float64,2},AbstractArray{#s1,1} where #s1<:Distribution}",
+    "location": "hmm/#HMMBase.assert_hmm",
     "page": "Types",
     "title": "HMMBase.assert_hmm",
-    "category": "method",
+    "category": "function",
     "text": "assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})\n\nThrow an AssertionError if the initial state distribution and the transition matrix rows does not sum to 1, and if the observations distributions does not have the same dimensions.\n\n\n\n\n\n"
 },
 
@@ -53,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Types",
     "title": "Types",
     "category": "section",
-    "text": "HMM\nStaticHMM\nassert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})"
+    "text": "AbstractHMM\nHMM\nStaticHMM\nassert_hmm"
 },
 
 {
@@ -89,11 +97,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "inference/#HMMBase.viterbi",
+    "page": "Inference",
+    "title": "HMMBase.viterbi",
+    "category": "function",
+    "text": "viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)\n\nFind the most likely hidden state sequence, see Viterbi algorithm.\n\n\n\n\n\nviterbi(trans_matrix::Matrix, likelihoods::Matrix)\n\nAssume an uniform initial distribution.\n\n\n\n\n\nviterbi(hmm::HMM, observations::Vector)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);\nz, y = rand(hmm, 1000);\nz_viterbi = viterbi(hmm, y[:])\nz == z_viterbi\n\n\n\n\n\n"
+},
+
+{
     "location": "inference/#Viterbi-1",
     "page": "Inference",
     "title": "Viterbi",
     "category": "section",
-    "text": ""
+    "text": "viterbi"
 },
 
 {
