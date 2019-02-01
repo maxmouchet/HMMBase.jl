@@ -1,5 +1,5 @@
 name = "HMMBase"
-uuid = "b672548c-1273-11e9-2681-8f1510712e6a"
+uuid = "b2b3ca75-8444-5ffa-85e6-af70e2b64fe7"
 authors = ["Maxime Mouchet <maxime.mouchet@imt-atlantique.fr>"]
 version = "0.0.2"
 
