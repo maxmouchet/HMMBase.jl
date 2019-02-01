@@ -5,3 +5,7 @@
 ## Baum–Welch algorithm
 
 ## Viterbi
+
+```@docs
+viterbi
+```

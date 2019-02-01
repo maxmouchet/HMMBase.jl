@@ -1,4 +1,9 @@
-function viterbi(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, likelihoods::Matrix{Float64})
+"""
+    viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)
+
+Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
+"""
+function viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)
     likelihoods = likelihoods' # Swap dims for better mem. perf ?
     K, T = size(likelihoods)
     
@@ -28,12 +33,28 @@ function viterbi(init_distn::Vector{Float64}, trans_matrix::Matrix{Float64}, lik
     z
 end
 
-function viterbi(trans_matrix::Matrix{Float64}, likelihoods::Matrix{Float64})
+"""
+    viterbi(trans_matrix::Matrix, likelihoods::Matrix)
+
+Assume an uniform initial distribution.
+"""
+function viterbi(trans_matrix::Matrix, likelihoods::Matrix)
     init_distn = ones(size(trans_matrix)[1])/size(trans_matrix)[1]
     viterbi(init_distn, trans_matrix, likelihoods)
 end
 
-function viterbi(hmm::HMM, observations::Vector{T}) where T
+"""
+    viterbi(hmm::HMM, observations::Vector)
+
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
+z, y = rand(hmm, 1000);
+z_viterbi = viterbi(hmm, y[:])
+z == z_viterbi
+```
+"""
+function viterbi(hmm::HMM, observations::Vector)
     lls = hcat(map(d -> (pdf.(d, observations)), hmm.D)...)
     viterbi(hmm.π0, hmm.π, lls)
 end

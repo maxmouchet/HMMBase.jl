@@ -15,14 +15,14 @@ export
     StaticHMM,
     assert_hmm,
     rand,
-    # decoding.jl
-    viterbi,
-    # filtering.jl
+    # messages.jl
     messages_backwards,
     messages_backwards_log,
     messages_forwards,
     messages_forwards_log,
     forward_backward,
+    # viterbi.jl
+    viterbi,
     # utils.jl,
     compute_transition_matrix
 
@@ -38,8 +38,8 @@ end
 Distributions.isprobvec(p::AbstractVector{T}) where {T<:Real} = Distributions.allnonneg(p) && isapprox(sum(p), one(T))
 
 include("hmm.jl")
-include("decoding.jl")
-include("filtering.jl")
+include("messages.jl")
+include("viterbi.jl")
 include("utils.jl")
 
 end

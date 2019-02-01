@@ -1,6 +1,8 @@
 # Implementations inspired by pyhsmm
 # https://github.com/mattjj/pyhsmm/blob/master/pyhsmm/internals/hmm_states.py
 
+# TODO: See softmax, implems : https://zenodo.org/record/1284341/files/main_pdf.pdf?download=1
+
 # Scaled implementations
 
 @views function messages_forwards(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
