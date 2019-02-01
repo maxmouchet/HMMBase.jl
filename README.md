@@ -52,4 +52,4 @@ Contributions are very welcome, as are feature requests and suggestions. Please 
 [codecov-img]: https://codecov.io/github/maxmouchet/HMMBase.jl/coverage.svg?branch=master
 [codecov-url]: https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master
 
-[issues-url]: https://github.com/maxmouchet/BaseHMM.jl/issues
+[issues-url]: https://github.com/maxmouchet/HMMBase.jl/issues
