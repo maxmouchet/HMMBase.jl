@@ -3,6 +3,12 @@
 
 # TODO: See softmax, implems : https://zenodo.org/record/1284341/files/main_pdf.pdf?download=1
 
+@inline function normalize!(v::AbstractVector)
+    norm = sum(v)
+    v ./= norm
+    norm
+end
+
 # Scaled implementations
 
 @views function messages_forwards(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
@@ -23,9 +29,9 @@
         c = maximum(ll)
 
         alpha .= trans_matrix' * alphas[t-1,:] .* exp.(ll .- c)
-        norm = sum(alpha)
+        norm = normalize!(alpha)
     
-        alphas[t,:] = alpha / norm
+        alphas[t,:] = alpha
         logtot += c + log(norm)
     end
 
@@ -36,6 +42,7 @@ end
     betas = zeros(size(log_likelihoods))
     betas[end,:] .= 1
     
+    # Allows to reduce memory allocs. by T
     tmp = zeros(size(betas)[2])
     logtot = 0.0
 
@@ -45,9 +52,7 @@ end
 
         tmp .= betas[t+1,:] .* exp.(ll .- c)
         beta = trans_matrix * tmp
-
-        norm = sum(beta)
-        beta ./= norm
+        norm = normalize!(beta)
 
         betas[t,:] = beta
         logtot += c + log(norm)
