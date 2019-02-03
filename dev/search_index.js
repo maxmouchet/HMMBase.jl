@@ -153,6 +153,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "examples/continuous_obs/#",
+    "page": "HMM with continuous observations",
+    "title": "HMM with continuous observations",
+    "category": "page",
+    "text": "EditURL = \"https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/continuous_obs.jl\""
+},
+
+{
+    "location": "examples/continuous_obs/#HMM-with-continuous-observations-1",
+    "page": "HMM with continuous observations",
+    "title": "HMM with continuous observations",
+    "category": "section",
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=[\"Observations (1)\", \"Observations (2)\"], size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))#-This page was generated using Literate.jl."
+},
+
+{
     "location": "examples/discrete_obs/#",
     "page": "HMM with discrete observations",
     "title": "HMM with discrete observations",
