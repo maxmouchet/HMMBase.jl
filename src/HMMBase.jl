@@ -6,6 +6,7 @@ using Distributions
 using StaticArrays
 
 import Base: rand, size
+import LinearAlgebra: transpose
 import StatsFuns: logsumexp
 
 export
@@ -40,6 +41,6 @@ Distributions.isprobvec(p::AbstractVector{T}) where {T<:Real} = Distributions.al
 include("hmm.jl")
 include("messages.jl")
 include("viterbi.jl")
-include("utils.jl")
+include("utilities.jl")
 
 end

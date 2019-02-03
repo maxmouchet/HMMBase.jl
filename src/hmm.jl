@@ -85,11 +85,11 @@ function rand(hmm::AbstractHMM, T::Int; initial_state=nothing)
     y = zeros(T, length(hmm.D[1]))
 
     z[1] = initial_state == nothing ? rand(Categorical(hmm.π0)) : initial_state
-    y[1] = rand(hmm.D[z[1]])
+    y[1,:] = rand(hmm.D[z[1]], 1)
 
     for t = 2:T
         z[t] = rand(Categorical(hmm.π[z[t-1],:]))
-        y[t] = rand(hmm.D[z[t]])
+        y[t,:] = rand(hmm.D[z[t]], 1)
     end
 
     z, y
@@ -106,6 +106,7 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
+rand(hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(hmm.D[x], 1), z))...)
 
 """
     size(hmm::AbstractHMM)
@@ -120,3 +121,22 @@ size(hmm) # (2,1)
 """
 size(hmm::AbstractHMM) = (length(hmm.D), length(hmm.D[1]))
 
+# TODO: Naming ?
+function likelihoods(hmm::AbstractHMM{Univariate}, observations)
+    hcat(map(d -> pdf.(d, observations), hmm.D)...)
+end
+
+function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
+    # OPTIMIZE ?
+    hcat(map(d -> mapslices(x -> pdf(d, x), observations, dims=2), hmm.D)...)
+end
+
+# TODO: Naming ?
+function log_likelihoods(hmm::AbstractHMM{Univariate}, observations)
+    hcat(map(d -> logpdf.(d, observations), hmm.D)...)
+end
+
+function log_likelihoods(hmm::AbstractHMM{Multivariate}, observations)
+    # OPTIMIZE ?
+    hcat(map(d -> mapslices(x -> logpdf(d, x), observations, dims=2), hmm.D)...)
+end

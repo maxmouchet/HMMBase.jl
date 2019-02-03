@@ -53,6 +53,36 @@ end
     # TODO: Better viterbi tests....
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
     z, y = rand(hmm, 1000);
-    z_viterbi = viterbi(hmm, y[:])
+    z_viterbi = viterbi(hmm, y)
     @test z == z_viterbi
+
+    hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]);
+    z, y = rand(hmm, 1000);
+    z_viterbi = viterbi(hmm, y)
+    @test z == z_viterbi
+end
+
+# Test high-level API interfaces (types compatibility, ...)
+# to ensure that there is no exceptions.
+
+@testset "Univariate HMM" begin
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
+    z, y = rand(hmm, 1000)
+    z_viterbi = viterbi(hmm, y)
+    α, _ = messages_forwards(hmm, y)
+    β, _ = messages_forwards(hmm, y)
+    γ = forward_backward(hmm, y)
+    @test size(z) == size(z_viterbi)
+    @test size(α) == size(β) == size(γ)
+end
+
+@testset "Multivariate HMM" begin
+    hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]);
+    z, y = rand(hmm, 1000)
+    z_viterbi = viterbi(hmm, y)
+    α, _ = messages_forwards(hmm, y)
+    β, _ = messages_forwards(hmm, y)
+    γ = forward_backward(hmm, y)
+    @test size(z) == size(z_viterbi)
+    @test size(α) == size(β) == size(γ)
 end

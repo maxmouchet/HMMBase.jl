@@ -50,11 +50,10 @@ end
 ```julia
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
 z, y = rand(hmm, 1000);
-z_viterbi = viterbi(hmm, y[:])
+z_viterbi = viterbi(hmm, y)
 z == z_viterbi
 ```
 """
-function viterbi(hmm::HMM, observations::Vector)
-    lls = hcat(map(d -> (pdf.(d, observations)), hmm.D)...)
-    viterbi(hmm.π0, hmm.π, lls)
+function viterbi(hmm::AbstractHMM, observations)
+    viterbi(hmm.π0, hmm.π, likelihoods(hmm, observations))
 end

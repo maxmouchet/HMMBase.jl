@@ -94,16 +94,13 @@ end
 # Convenience functions
 
 function messages_forwards(hmm, observations)
-    likelihoods = hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-    messages_forwards(hmm.π0, hmm.π, likelihoods)
+    messages_forwards(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
 end
 
 function messages_backwards(hmm, observations)
-    likelihoods = hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-    messages_backwards(hmm.π0, hmm.π, likelihoods)
+    messages_backwards(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
 end
 
 function forward_backward(hmm, observations)
-    likelihoods = hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-    forward_backward(hmm.π0, hmm.π, likelihoods)
+    forward_backward(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
 end
