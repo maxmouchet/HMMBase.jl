@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMM with discrete observations",
     "title": "HMM with discrete observations",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ = [0.9 0.1; 0.2 0.8]\nD = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]\nhmm = HMM(π, D)\n\nz, y = rand(hmm, 250)\nplot(y)#-This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plotshttps://en.wikipedia.org/wiki/Viterbi_algorithm#Exampleπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=\"Observations\", size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))#-This page was generated using Literate.jl."
 },
 
 {
