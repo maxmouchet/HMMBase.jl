@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Types",
     "title": "Base.size",
     "category": "method",
-    "text": "size(hmm::AbstractHMM)\n\nReturns the number of states in the HMM and the dimesion of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
+    "text": "size(hmm::AbstractHMM)\n\nReturns the number of states in the HMM and the dimension of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
 },
 
 {
