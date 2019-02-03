@@ -128,7 +128,11 @@ end
 
 function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
     # OPTIMIZE ?
-    hcat(map(d -> mapslices(x -> pdf(d, x), observations, dims=2), hmm.D)...)
+    ls = zeros(size(observations)[1], size(hmm)[1])
+    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
+        ls[t,i] = pdf(hmm.D[i], view(observations,t,:))
+    end
+    ls
 end
 
 # TODO: Naming ?
@@ -138,5 +142,9 @@ end
 
 function log_likelihoods(hmm::AbstractHMM{Multivariate}, observations)
     # OPTIMIZE ?
-    hcat(map(d -> mapslices(x -> logpdf(d, x), observations, dims=2), hmm.D)...)
+    lls = zeros(size(observations)[1], size(hmm)[1])
+    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
+        lls[t,i] = logpdf(hmm.D[i], view(observations,t,:))
+    end
+    lls
 end
