@@ -109,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Inference",
     "title": "HMMBase.viterbi",
     "category": "function",
-    "text": "viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)\n\nFind the most likely hidden state sequence, see Viterbi algorithm.\n\n\n\n\n\nviterbi(trans_matrix::Matrix, likelihoods::Matrix)\n\nAssume an uniform initial distribution.\n\n\n\n\n\nviterbi(hmm::HMM, observations::Vector)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);\nz, y = rand(hmm, 1000);\nz_viterbi = viterbi(hmm, y[:])\nz == z_viterbi\n\n\n\n\n\n"
+    "text": "viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)\n\nFind the most likely hidden state sequence, see Viterbi algorithm.\n\n\n\n\n\nviterbi(trans_matrix::Matrix, likelihoods::Matrix)\n\nAssume an uniform initial distribution.\n\n\n\n\n\nviterbi(hmm::HMM, observations::Vector)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);\nz, y = rand(hmm, 1000);\nz_viterbi = viterbi(hmm, y)\nz == z_viterbi\n\n\n\n\n\n"
 },
 
 {
@@ -126,6 +126,22 @@ var documenterSearchIndex = {"docs": [
     "title": "Sampling",
     "category": "page",
     "text": ""
+},
+
+{
+    "location": "sampling/#Base.rand-Tuple{AbstractHMM,Int64}",
+    "page": "Sampling",
+    "title": "Base.rand",
+    "category": "method",
+    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\n"
+},
+
+{
+    "location": "sampling/#Base.rand-Tuple{AbstractHMM,AbstractArray{Int64,1}}",
+    "page": "Sampling",
+    "title": "Base.rand",
+    "category": "method",
+    "text": "rand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
 },
 
 {
