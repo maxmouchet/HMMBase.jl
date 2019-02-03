@@ -22,7 +22,7 @@
         ll = log_likelihoods[t,:]
         c = maximum(ll)
 
-        alpha = trans_matrix' * alphas[t-1,:] .* exp.(ll .- c)
+        alpha .= trans_matrix' * alphas[t-1,:] .* exp.(ll .- c)
         norm = sum(alpha)
     
         alphas[t,:] = alpha / norm
