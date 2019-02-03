@@ -106,4 +106,17 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-rand(hmm::AbstractHMM, z::AbstractVector{Int}) = map(x -> rand(hmm.D[x]), z)
+
+"""
+    size(hmm::AbstractHMM)
+
+Returns the number of states in the HMM and the dimesion of the observations.
+
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+size(hmm) # (2,1)
+```
+"""
+size(hmm::AbstractHMM) = (length(hmm.D), length(hmm.D[1]))
+

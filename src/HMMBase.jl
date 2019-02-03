@@ -5,7 +5,7 @@ module HMMBase
 using Distributions
 using StaticArrays
 
-import Base: rand
+import Base: rand, size
 import StatsFuns: logsumexp
 
 export
