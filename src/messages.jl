@@ -69,7 +69,6 @@ function messages_forwards_log(init_distn::AbstractVector{Float64}, trans_matrix
     log_alphas = zeros(size(log_likelihoods))
     log_trans_matrix = log.(trans_matrix)
     log_alphas[1,:] = log.(init_distn) .+ log_likelihoods[1,:]
-    # OPTIMIZE
     @inbounds for t = 2:size(log_alphas)[1]
         for i in 1:size(log_alphas)[2]
             # NOTE: log_trans_matrix[:,i] instead of log_trans_matrix.T[i,:]
