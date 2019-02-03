@@ -1,9 +1,9 @@
 """
-    viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)
+    viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
 
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
-function viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)
+function viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
     likelihoods = likelihoods' # Swap dims for better mem. perf ?
     K, T = size(likelihoods)
     
@@ -34,11 +34,11 @@ function viterbi(init_distn::Vector, trans_matrix::Matrix, likelihoods::Matrix)
 end
 
 """
-    viterbi(trans_matrix::Matrix, likelihoods::Matrix)
+    viterbi(trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
 
 Assume an uniform initial distribution.
 """
-function viterbi(trans_matrix::Matrix, likelihoods::Matrix)
+function viterbi(trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
     init_distn = ones(size(trans_matrix)[1])/size(trans_matrix)[1]
     viterbi(init_distn, trans_matrix, likelihoods)
 end
