@@ -110,7 +110,7 @@ y = rand(hmm, [1, 1, 2, 2, 1])
 """
     size(hmm::AbstractHMM)
 
-Returns the number of states in the HMM and the dimesion of the observations.
+Returns the number of states in the HMM and the dimension of the observations.
 
 # Example
 ```julia
