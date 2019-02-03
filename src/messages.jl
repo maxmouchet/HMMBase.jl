@@ -35,16 +35,21 @@ end
 @views function messages_backwards(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
     betas = zeros(size(log_likelihoods))
     betas[end,:] .= 1
+    
+    tmp = zeros(size(betas)[2])
     logtot = 0.0
 
     @inbounds for t = size(betas)[1]-1:-1:1
         ll = log_likelihoods[t+1,:]
         c = maximum(ll)
 
-        beta = trans_matrix * (betas[t+1,:] .* exp.(ll .- c))
-        norm = sum(beta)
+        tmp .= betas[t+1,:] .* exp.(ll .- c)
+        beta = trans_matrix * tmp
 
-        betas[t,:] = beta / norm
+        norm = sum(beta)
+        beta ./= norm
+
+        betas[t,:] = beta
         logtot += c + log(norm)
     end
 
