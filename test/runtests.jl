@@ -5,6 +5,13 @@ using Random
 
 Random.seed!(2018)
 
+targets = [
+    HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
+    HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]),
+    # StaticHMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
+    # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
+]
+
 @testset "Messages" begin
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
     π = [0.7 0.3; 0.3 0.7]
@@ -49,14 +56,8 @@ Random.seed!(2018)
     @test logtot_alpha ≈ logtot_beta atol=1e-12
 end
 
-@testset "Viterbi" begin
+@testset "Viterbi $(typeof(hmm))" for hmm in targets
     # TODO: Better viterbi tests....
-    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
-    z, y = rand(hmm, 1000);
-    z_viterbi = viterbi(hmm, y)
-    @test z == z_viterbi
-
-    hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]);
     z, y = rand(hmm, 1000);
     z_viterbi = viterbi(hmm, y)
     @test z == z_viterbi
@@ -65,19 +66,8 @@ end
 # Test high-level API interfaces (types compatibility, ...)
 # to ensure that there is no exceptions.
 
-@testset "Univariate HMM" begin
+@testset "Integration $(typeof(hmm))" for hmm in targets
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
-    z, y = rand(hmm, 1000)
-    z_viterbi = viterbi(hmm, y)
-    α, _ = messages_forwards(hmm, y)
-    β, _ = messages_forwards(hmm, y)
-    γ = forward_backward(hmm, y)
-    @test size(z) == size(z_viterbi)
-    @test size(α) == size(β) == size(γ)
-end
-
-@testset "Multivariate HMM" begin
-    hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]);
     z, y = rand(hmm, 1000)
     z_viterbi = viterbi(hmm, y)
     α, _ = messages_forwards(hmm, y)
