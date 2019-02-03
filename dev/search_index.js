@@ -57,11 +57,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "hmm/#Base.size-Tuple{AbstractHMM}",
+    "page": "Types",
+    "title": "Base.size",
+    "category": "method",
+    "text": "size(hmm::AbstractHMM)\n\nReturns the number of states in the HMM and the dimesion of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
+},
+
+{
     "location": "hmm/#Types-1",
     "page": "Types",
     "title": "Types",
     "category": "section",
-    "text": "AbstractHMM\nHMM\nStaticHMM\nassert_hmm"
+    "text": "AbstractHMM\nHMM\nStaticHMM\nassert_hmm\nsize(::AbstractHMM)"
 },
 
 {
@@ -118,22 +126,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Sampling",
     "category": "page",
     "text": ""
-},
-
-{
-    "location": "sampling/#Base.rand-Tuple{AbstractHMM,Int64}",
-    "page": "Sampling",
-    "title": "Base.rand",
-    "category": "method",
-    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\n"
-},
-
-{
-    "location": "sampling/#Base.rand-Tuple{AbstractHMM,AbstractArray{Int64,1}}",
-    "page": "Sampling",
-    "title": "Base.rand",
-    "category": "method",
-    "text": "rand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
 },
 
 {
