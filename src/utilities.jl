@@ -1,7 +1,8 @@
 # Compute transition matrix
 
 function compute_transition_matrix(seq::Vector{Int64})
-    mapping = Dict([(x[2], x[1]) for x in enumerate(unique(seq))])
+    # /!\ Sort is important here, so that we don't relabel already contiguous states.
+    mapping = Dict([(x[2], x[1]) for x in enumerate(sort(unique(seq)))])
     transmat = zeros(length(mapping), length(mapping))
     for i in 1:length(seq)-1
         transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
