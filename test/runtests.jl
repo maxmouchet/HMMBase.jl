@@ -71,7 +71,7 @@ end
     z, y = rand(hmm, 1000)
     z_viterbi = viterbi(hmm, y)
     α, _ = messages_forwards(hmm, y)
-    β, _ = messages_forwards(hmm, y)
+    β, _ = messages_backwards(hmm, y)
     γ = forward_backward(hmm, y)
     @test size(z) == size(z_viterbi)
     @test size(α) == size(β) == size(γ)
