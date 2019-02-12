@@ -1,5 +1,8 @@
 __precompile__()
 
+"""
+Hidden Markov Models for Julia.
+"""
 module HMMBase
 
 using Distributions
@@ -28,6 +31,7 @@ export
     compute_transition_matrix
 
 # TEMP: https://github.com/JuliaStats/Distributions.jl/issues/812
+# TODO: Specify minimum Distributions version in compat
 function Distributions.allnonneg(x::AbstractArray{T}) where T<:Real
     for i = 1 : length(x)
         if !(x[i] >= zero(T))
