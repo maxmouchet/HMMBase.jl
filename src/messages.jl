@@ -18,10 +18,10 @@ end
     ll = log_likelihoods[1,:]
     c = maximum(ll)
 
-    alpha = init_distn .* exp.(ll .- c)
-    norm = sum(alpha)
+    alpha = @. init_distn * exp(ll - c)
+    norm = normalize!(alpha)
 
-    alphas[1,:] = alpha / norm
+    alphas[1,:] = alpha
     logtot += c + log(norm)
 
     @inbounds for t = 2:size(alphas)[1]
