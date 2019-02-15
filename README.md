@@ -18,13 +18,8 @@ The package can be installed with the Julia package manager.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
 ```
-pkg> add https://github.com/maxmouchet/HMMBase.jl.git
-```
-
-Or, equivalently, via the `Pkg` API:
-
-```julia
-julia> import Pkg; Pkg.add(Pkg.PackageSpec(url="https://github.com/maxmouchet/HMMBase.jl.git"))
+pkg> registry add https://github.com/maxmouchet/JuliaRegistry.git
+pkg> add HMMBase
 ```
 
 ## Documentation
