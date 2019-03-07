@@ -89,11 +89,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "inference/#HMMBase.messages_backwards",
+    "page": "Inference",
+    "title": "HMMBase.messages_backwards",
+    "category": "function",
+    "text": "messages_backwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)\n\nCompute backward probabilities, see Forward-backward algorithm.\n\n\n\n\n\nmessages_backwards(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nbetas, logtot = messages_backwards(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.messages_forwards",
+    "page": "Inference",
+    "title": "HMMBase.messages_forwards",
+    "category": "function",
+    "text": "messages_forwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)\n\nCompute forward probabilities, see Forward-backward algorithm.\n\n\n\n\n\nmessages_forwards(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nalphas, logtot = messages_forwards(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.forward_backward",
+    "page": "Inference",
+    "title": "HMMBase.forward_backward",
+    "category": "function",
+    "text": "forward_backward(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)\n\n\n\n\n\nforward_backward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\ngammas = forward_backward(hmm, y)\n\n\n\n\n\n"
+},
+
+{
     "location": "inference/#Forward-backward-1",
     "page": "Inference",
     "title": "Forward-backward",
     "category": "section",
-    "text": ""
+    "text": "messages_backwards\nmessages_forwards\nforward_backward"
 },
 
 {
