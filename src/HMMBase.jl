@@ -21,9 +21,7 @@ export
     rand,
     # messages.jl
     messages_backwards,
-    messages_backwards_log,
     messages_forwards,
-    messages_forwards_log,
     forward_backward,
     # viterbi.jl
     viterbi,
