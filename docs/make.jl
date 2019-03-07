@@ -12,8 +12,10 @@ Random.seed!(2019)
 
 find_examples() = map(x -> joinpath("examples/", split(basename(x), ".")[1]), glob("*.jl", "examples/"))
 
-for example in find_examples()
-    Literate.markdown("$(example).jl", "docs/src/examples", documenter=true)
+if !("SKIP_EXAMPLES" in keys(ENV))
+    for example in find_examples()
+        Literate.markdown("$(example).jl", "docs/src/examples", documenter=true)
+    end
 end
 
 makedocs(
