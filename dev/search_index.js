@@ -2,18 +2,26 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "#",
-    "page": "HMMBase.jl",
-    "title": "HMMBase.jl",
+    "page": "Home",
+    "title": "Home",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "#HMMBase.jl-1",
-    "page": "HMMBase.jl",
-    "title": "HMMBase.jl",
+    "location": "#Home-1",
+    "page": "Home",
+    "title": "Home",
     "category": "section",
-    "text": "(View project on GitHub)A lightweight and efficient hidden Markov model abstraction for Julia.# HMMBase supports any observations distributions implementing\n# the `Distribution` interface from Distributions.jl.\n\n# Univariate continuous observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Gamma(1,1)])\n\n# Multivariate continuous observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.,0.],[1.,1.]), MvNormal([0.,0.],[1.,1.])])\n\n# Univariate discrete observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([0.3, 0.7]), Categorical([0.8, 0.2])])\n\n# Multivariate discrete observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Multinomial(10, [0.3, 0.7]), Multinomial(10, [0.8, 0.2])])\n\n# Read the manual for more information.Logo: Blockchain by Pablo Rozenberg from the Noun Project."
+    "text": "(View project on GitHub)HMMBase provides a lightweight and efficient abstraction for hidden Markov models in Julia. Most HMMs libraries only support discrete (e.g. categorical) or normal distributions. In contrast HMMBase builds upon Distributions.jl to support arbitrary univariate and multivariate distributions.  The goal is to provide well-tested and fast implementations of the basic HMMs algorithms such as the forward-backward algorithm, the Viterbi algorithm, and the MLE estimator. More advanced models, such as Bayesian HMMs, can be built upon HMMBase."
+},
+
+{
+    "location": "#Getting-Started-1",
+    "page": "Home",
+    "title": "Getting Started",
+    "category": "section",
+    "text": "The package can be installed with the Julia package manager. From the Julia REPL, type ] to enter the Pkg REPL mode and run:pkg> registry add https://github.com/maxmouchet/JuliaRegistry.git\npkg> add HMMBaseHMMBase supports any observations distributions implementing the Distribution interface from Distributions.jl.# Univariate continuous observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Gamma(1,1)])\n\n# Multivariate continuous observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.,0.],[1.,1.]), MvNormal([0.,0.],[1.,1.])])\n\n# Univariate discrete observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([0.3, 0.7]), Categorical([0.8, 0.2])])\n\n# Multivariate discrete observations\nhmm = HMM([0.9 0.1; 0.1 0.9], [Multinomial(10, [0.3, 0.7]), Multinomial(10, [0.8, 0.2])])Logo: Blockchain by Pablo Rozenberg from the Noun Project."
 },
 
 {
