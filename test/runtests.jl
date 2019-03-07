@@ -12,6 +12,14 @@ targets = [
     # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
 ]
 
+@testset "Rand" begin
+    # Test random observations generation with a fixed sequence
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
+    z = [1,1,2,2,1,1]
+    y = rand(hmm, z)
+    @test y[:] == z
+end
+
 @testset "Messages" begin
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
     π = [0.7 0.3; 0.3 0.7]
