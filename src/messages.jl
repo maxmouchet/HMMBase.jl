@@ -11,7 +11,7 @@ end
 
 # Scaled implementations
 
-@views function messages_forwards(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
+@views function messages_forwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
     alphas = zeros(size(log_likelihoods))
     logtot = 0.0
 
@@ -38,7 +38,7 @@ end
     alphas, logtot
 end
 
-@views function messages_backwards(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
+@views function messages_backwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
     betas = zeros(size(log_likelihoods))
     betas[end,:] .= 1
     
@@ -65,7 +65,7 @@ end
     betas, logtot
 end
 
-function forward_backward(init_distn::AbstractVector{Float64}, trans_matrix::AbstractMatrix{Float64}, log_likelihoods::AbstractMatrix{Float64})
+function forward_backward(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
     alphas, _ = messages_forwards(init_distn, trans_matrix, log_likelihoods)
     betas, _ = messages_backwards(init_distn, trans_matrix, log_likelihoods)
     gammas = alphas .* betas
