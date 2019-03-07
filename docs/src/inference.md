@@ -3,8 +3,8 @@
 ## Forward-backward
 
 ```@docs
-messages_backwards
 messages_forwards
+messages_backwards
 forward_backward
 ```
 
