@@ -76,3 +76,16 @@ end
     @test size(z) == size(z_viterbi)
     @test size(α) == size(β) == size(γ)
 end
+
+@testset "Utilities" begin
+    # Make sure we do not relabel states if they are in 1...K
+    mapping, _  = compute_transition_matrix([3,3,1,1,2,2])
+    for (k, v) in mapping
+        @test mapping[k] == v
+    end
+
+    mapping, transmat = compute_transition_matrix([3,3,8,8,3,3])
+    @test mapping[3] == 1
+    @test mapping[8] == 2
+    @test transmat == [2/3 1/3; 1/2 1/2]
+end
