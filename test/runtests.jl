@@ -12,7 +12,7 @@ targets = [
     # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
 ]
 
-@testset "Rand" begin
+@testset "Random" begin
     # Test random observations generation with a fixed sequence
     hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
     z = [1,1,2,2,1,1]
@@ -69,6 +69,10 @@ end
     z, y = rand(hmm, 1000);
     z_viterbi = viterbi(hmm, y)
     @test z == z_viterbi
+
+    # Viterbi with a uniform initial distribution
+    #(Only to make sure the code path works)
+    viterbi(hmm.π, HMMBase.likelihoods(hmm, y))
 end
 
 # Test high-level API interfaces (types compatibility, ...)
