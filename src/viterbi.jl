@@ -4,6 +4,7 @@
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
 function viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
+    # TODO: Benchmark/optimize and cleanup code
     likelihoods = likelihoods' # Swap dims for better mem. perf ?
     K, T = size(likelihoods)
     
@@ -15,9 +16,15 @@ function viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likel
 
     @inbounds for t = 2:T
         for j in 1:K
-            # TODO: Naming
-            tmp = map(k -> T1[k,t-1]*trans_matrix[k,j]*likelihoods[j,t], 1:K)
-            vmax, amax = findmax(tmp)
+            amax = 0
+            vmax = -Inf
+            for k in 1:K
+                v = T1[k,t-1]*trans_matrix[k,j]*likelihoods[j,t]
+                if v > vmax
+                    amax = k
+                    vmax = v
+                end
+            end
             T1[j,t] = vmax
             T2[j,t] = amax
         end
