@@ -61,7 +61,7 @@ and if the observations distributions does not have the same dimensions.
 function assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
     # Initial state distribution and transition matrix rows must sum to 1
     @assert isprobvec(π0)
-    @assert unique(mapslices(isprobvec, π, dims=2)) == [true]
+    @assert unique([isprobvec(π[i,:]) for i in 1:size(π)[1]]) == [true]
     # All distributions must have the same dimensions
     @assert length(unique(map(length, D))) == 1
     # There must be one distribution per state
