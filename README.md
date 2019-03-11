@@ -14,6 +14,8 @@ The goal is to provide well-tested and fast implementations of the basic HMMs al
 
 See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](https://discourse.julialang.org/t/ann-hmmbase-jl-a-lightweight-and-efficient-hidden-markov-model-abstraction/21604) for more details on the motivation behind this package.
 
+<img src="https://github.com/maxmouchet/HMMBase.jl/blob/master/benchmark/benchmark_summary.png" width="480">
+
 ## Installation
 
 The package can be installed with the Julia package manager.
