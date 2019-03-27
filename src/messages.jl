@@ -9,6 +9,22 @@
     norm
 end
 
+# ~2x times faster than Base.maximum
+# v = rand(25)
+# @btime maximum(v)
+# @btime vec_maximum(v)
+#   63.909 ns (1 allocation: 16 bytes)
+#   30.307 ns (1 allocation: 16 bytes)
+function vec_maximum(v::AbstractVector)
+    m = v[1]
+    @inbounds for i = Base.OneTo(length(v))
+        if v[i] > m
+            m = v[i]
+        end
+    end
+    m
+end
+
 # Scaled implementations
 
 """
@@ -21,7 +37,7 @@ Compute forward probabilities, see [Forward-backward algorithm](https://en.wikip
     logtot = 0.0
 
     ll = log_likelihoods[1,:]
-    c = maximum(ll)
+    c = vec_maximum(ll)
 
     alpha = @. init_distn * exp(ll - c)
     norm = normalize!(alpha)
@@ -31,9 +47,11 @@ Compute forward probabilities, see [Forward-backward algorithm](https://en.wikip
 
     @inbounds for t = 2:size(alphas)[1]
         ll = log_likelihoods[t,:]
-        c = maximum(ll)
+        c = vec_maximum(ll)
 
-        alpha .= trans_matrix' * alphas[t-1,:] .* exp.(ll .- c)
+        # Cut down allocations by T, instead of *
+        mul!(alpha, transpose(trans_matrix), alphas[t-1,:])
+        alpha .= @. alpha * exp(ll - c)
         norm = normalize!(alpha)
     
         alphas[t,:] = alpha
@@ -53,15 +71,16 @@ Compute backward probabilities, see [Forward-backward algorithm](https://en.wiki
     betas[end,:] .= 1
     
     # Allows to reduce memory allocs. by T
+    beta = zeros(size(betas)[2])
     tmp = zeros(size(betas)[2])
     logtot = 0.0
 
     @inbounds for t = size(betas)[1]-1:-1:1
         ll = log_likelihoods[t+1,:]
-        c = maximum(ll)
+        c = vec_maximum(ll)
 
         tmp .= betas[t+1,:] .* exp.(ll .- c)
-        beta = trans_matrix * tmp
+        mul!(beta, trans_matrix, tmp)
         norm = normalize!(beta)
 
         betas[t,:] = beta
@@ -69,7 +88,7 @@ Compute backward probabilities, see [Forward-backward algorithm](https://en.wiki
     end
 
     ll = log_likelihoods[1,:]
-    c = maximum(ll)
+    c = vec_maximum(ll)
     logtot += c + log(sum(exp.(ll .- c) .* init_distn .* betas[1,:]))
 
     betas, logtot

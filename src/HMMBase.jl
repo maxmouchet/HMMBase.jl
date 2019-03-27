@@ -9,7 +9,7 @@ using Distributions
 using StaticArrays
 
 import Base: rand, size
-import LinearAlgebra: transpose
+import LinearAlgebra: mul!, transpose
 import StatsFuns: logsumexp
 
 export
