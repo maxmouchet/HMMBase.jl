@@ -21,8 +21,14 @@ export
     rand,
     # messages.jl
     messages_backwards,
+    messages_backwards_log,
     messages_forwards,
+    messages_forwards_log,
     forward_backward,
+    # mle.jl
+    mle_step,
+    fit_mle,
+    fit_mle!,
     # viterbi.jl
     viterbi,
     # utils.jl,
@@ -42,6 +48,7 @@ Distributions.isprobvec(p::AbstractVector{T}) where {T<:Real} = Distributions.al
 
 include("hmm.jl")
 include("messages.jl")
+include("mle.jl")
 include("viterbi.jl")
 include("utilities.jl")
 
