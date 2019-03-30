@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Inference",
     "title": "HMMBase.fit_mle!",
     "category": "function",
-    "text": "fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM\n\nPerform EM (Baum-Welch) steps until max_iterations is reached, or the change in the log-likelihood is smaller than eps.\n\nExample\n\nhmm, log_likelihood = fit_mle!(hmm, observations)\n\n\n\n\n\n"
+    "text": "fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)\n\nPerform EM (Baum-Welch) steps until max_iterations is reached, or the change in the log-likelihood is smaller than eps.\n\nExample\n\nhmm, log_likelihood = fit_mle!(hmm, observations)\n\n\n\n\n\n"
 },
 
 {
@@ -141,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Inference",
     "title": "HMMBase.mle_step",
     "category": "function",
-    "text": "mle_step(hmm::U, observations) where U <: AbstractHMM\n\nPerform one step of the EM (Baum-Welch) algorithm.\n\nExample\n\nhmm, log_likelihood = mle_step(hmm, observations)\n\n\n\n\n\n"
+    "text": "mle_step(hmm::AbstractHMM{F}, observations) where F\n\nPerform one step of the EM (Baum-Welch) algorithm.\n\nExample\n\nhmm, log_likelihood = mle_step(hmm, observations)\n\n\n\n\n\n"
 },
 
 {
