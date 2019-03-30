@@ -1,5 +1,5 @@
 """
-    mle_step(hmm::U, observations) where U <: AbstractHMM
+    mle_step(hmm::AbstractHMM{F}, observations) where F
 
 Perform one step of the EM (Baum-Welch) algorithm.
 
@@ -8,7 +8,7 @@ Perform one step of the EM (Baum-Welch) algorithm.
 hmm, log_likelihood = mle_step(hmm, observations)
 ```
 """
-function mle_step(hmm::U, observations) where U <: AbstractHMM
+function mle_step(hmm::AbstractHMM{F}, observations) where F
     # NOTE: This function works but there is room for improvement.
 
     log_likelihoods = HMMBase.log_likelihoods(hmm, observations)
@@ -42,14 +42,14 @@ function mle_step(hmm::U, observations) where U <: AbstractHMM
     # TODO: Cleanup/optimize this part
     γ = exp.((log_α .+ log_β) .- normalizer)
 
-    D = Distribution{eval(typeof(hmm).parameters[1].name.name)}[]
+    D = Distribution{F}[]
     for (i, d) in enumerate(hmm.D)
         # Super hacky...
         # https://github.com/JuliaStats/Distributions.jl/issues/809
         push!(D, fit_mle(eval(typeof(d).name.name), permutedims(observations), γ[:,i]))
     end
 
-    U(new_π0, new_π, D), normalizer
+    typeof(hmm)(new_π0, new_π, D), normalizer
 end
 
 # function fit_mle(::Type{U}, y; initialization=) where U <: AbstractHMM
@@ -57,7 +57,7 @@ end
 # end
 
 """
-    fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM
+    fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)
 
 Perform EM (Baum-Welch) steps until `max_iterations` is reached, or the change in the log-likelihood is smaller than `eps`.
 
@@ -66,7 +66,7 @@ Perform EM (Baum-Welch) steps until `max_iterations` is reached, or the change i
 hmm, log_likelihood = fit_mle!(hmm, observations)
 ```
 """
-function fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM
+function fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)
     new_hmm, last_norm = mle_step(hmm, observations)
     for i = 2:max_iterations
         new_hmm, norm = mle_step(new_hmm, observations)
