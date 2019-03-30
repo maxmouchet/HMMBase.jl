@@ -46,7 +46,7 @@ function mle_step(hmm::U, observations) where U <: AbstractHMM
     for (i, d) in enumerate(hmm.D)
         # Super hacky...
         # https://github.com/JuliaStats/Distributions.jl/issues/809
-        push!(D, fit_mle(eval(typeof(d).name.name), observations, γ[:,i]))
+        push!(D, fit_mle(eval(typeof(d).name.name), permutedims(observations), γ[:,i]))
     end
 
     U(new_π0, new_π, D), normalizer
