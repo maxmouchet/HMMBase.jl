@@ -129,11 +129,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "inference/#HMMBase.fit_mle!",
+    "page": "Inference",
+    "title": "HMMBase.fit_mle!",
+    "category": "function",
+    "text": "fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM\n\nPerform EM (Baum-Welch) steps until max_iterations is reached, or the change in the log-likelihood is smaller than eps.\n\nExample\n\nhmm, log_likelihood = fit_mle!(hmm, observations)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.mle_step",
+    "page": "Inference",
+    "title": "HMMBase.mle_step",
+    "category": "function",
+    "text": "mle_step(hmm::U, observations) where U <: AbstractHMM\n\nPerform one step of the EM (Baum-Welch) algorithm.\n\nExample\n\nhmm, log_likelihood = mle_step(hmm, observations)\n\n\n\n\n\n"
+},
+
+{
     "location": "inference/#Baum–Welch-algorithm-1",
     "page": "Inference",
     "title": "Baum–Welch algorithm",
     "category": "section",
-    "text": ""
+    "text": "fit_mle!\nmle_step"
 },
 
 {
@@ -217,19 +233,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "examples/static_arrays/#",
-    "page": "Static arrays#-",
-    "title": "Static arrays#-",
+    "location": "examples/mle/#",
+    "page": "MLE Estimator",
+    "title": "MLE Estimator",
     "category": "page",
-    "text": "EditURL = \"https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/static_arrays.jl\""
+    "text": "EditURL = \"https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/mle.jl\""
 },
 
 {
-    "location": "examples/static_arrays/#Static-arrays#-1",
-    "page": "Static arrays#-",
-    "title": "Static arrays#-",
+    "location": "examples/mle/#MLE-Estimator-1",
+    "page": "MLE Estimator",
+    "title": "MLE Estimator",
     "category": "section",
-    "text": "This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\ny1 = rand(Normal(0,2), 1000)\ny2 = rand(Normal(10,1), 500)\ny = vcat(y1, y2, y1, y2)\n\nplot(y, linetype=:steppre, size=(600,200))For now HMMBase does not handle the initialization of the parameters. Hence we must instantiate an initial HMM by hand.hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,1), Normal(15,1)])\nhmm, log_likelihood = fit_mle!(hmm, y, verbose=true)z_viterbi = viterbi(hmm, y)\nplot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))We can also perform individual EM steps.hmm, log_likelihood = mle_step(hmm, y)#-This page was generated using Literate.jl."
 },
 
 {
