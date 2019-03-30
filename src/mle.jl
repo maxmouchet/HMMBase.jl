@@ -1,3 +1,13 @@
+"""
+    mle_step(hmm::U, observations) where U <: AbstractHMM
+
+Perform one step of the EM (Baum-Welch) algorithm.
+
+# Example
+```julia
+hmm, log_likelihood = mle_step(hmm, observations)
+```
+"""
 function mle_step(hmm::U, observations) where U <: AbstractHMM
     # NOTE: This function works but there is room for improvement.
 
@@ -36,7 +46,7 @@ function mle_step(hmm::U, observations) where U <: AbstractHMM
     for (i, d) in enumerate(hmm.D)
         # Super hacky...
         # https://github.com/JuliaStats/Distributions.jl/issues/809
-        push!(D, fit_mle(eval(typeof(d).name.name), y, γ[:,i]))
+        push!(D, fit_mle(eval(typeof(d).name.name), observations, γ[:,i]))
     end
 
     U(new_π0, new_π, D), normalizer
@@ -46,6 +56,16 @@ end
 # TODO
 # end
 
+"""
+    fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM
+
+Perform EM (Baum-Welch) steps until `max_iterations` is reached, or the change in the log-likelihood is smaller than `eps`.
+
+# Example
+```julia
+hmm, log_likelihood = fit_mle!(hmm, observations)
+```
+"""
 function fit_mle!(hmm::U, observations; eps=1e-3, max_iterations=100, verbose=false) where U <: AbstractHMM
     new_hmm, last_norm = mle_step(hmm, observations)
     for i = 2:max_iterations
