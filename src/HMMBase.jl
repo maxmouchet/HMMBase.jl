@@ -19,6 +19,7 @@ export
     StaticHMM,
     assert_hmm,
     rand,
+    n_parameters,
     # messages.jl
     messages_backwards,
     messages_backwards_log,

@@ -148,3 +148,18 @@ function log_likelihoods(hmm::AbstractHMM{Multivariate}, observations)
     end
     lls
 end
+
+"""
+    n_parameters(hmm::AbstractHMM)
+
+Returns the number of parameters in `hmm`.  
+
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+n_parameters(hmm) # 6
+```
+"""
+function n_parameters(hmm::AbstractHMM)
+    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
+end
