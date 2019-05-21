@@ -31,7 +31,7 @@ struct HMM{F,T} <: AbstractHMM{F}
     π0::Vector{T}
     π::Matrix{T}
     D::Vector{Distribution{F}}
-    HMM{F,T}(π0, π, D) where {F,T} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
+    HMM{F,T}(π0, π, D) where {F,T} = assert_hmm(π0, π, D) && new(π0, π, D) 
 end
 
 HMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(π0, π, D)
@@ -46,7 +46,7 @@ struct StaticHMM{F,T,K} <: AbstractHMM{F}
     π0::SVector{K,T}
     π::SMatrix{K,K,T}
     D::SVector{K,Distribution{F}}
-    StaticHMM{F,T,K}(π0, π, D) where {F,T,K} = assert_hmm(π0, π, D) ? new(π0, π, D) : error()
+    StaticHMM{F,T,K}(π0, π, D) where {F,T,K} = assert_hmm(π0, π, D) && new(π0, π, D)
 end
 
 StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(π0, π, D)
@@ -58,15 +58,27 @@ StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,
 Throw an `AssertionError` if the initial state distribution and the transition matrix rows does not sum to 1,
 and if the observations distributions does not have the same dimensions.
 """
-function assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
-    # Initial state distribution and transition matrix rows must sum to 1
-    @assert isprobvec(π0)
-    @assert unique([isprobvec(π[i,:]) for i in 1:size(π)[1]]) == [true]
-    # All distributions must have the same dimensions
-    @assert length(unique(map(length, D))) == 1
-    # There must be one distribution per state
-    @assert length(π0) == size(π)[1] == size(π)[2] == length(D)
-    true
+function assert_hmm(π0::AbstractVector{T}, 
+                    π::AbstractMatrix{T}, 
+                    D::AbstractVector{<:Distribution}) where {T}
+    
+    if !isprobvec(π0)
+      error("Initial state distribution must sum to 1")
+    end
+    if any([!isprobvec(π[i,:]) for i in 1:size(π,1)])
+      error("Trasition matrix rows must sum to 1")
+    end
+    if any(length.(D) .!= length(D[1]))
+      error("All distributions must have the same dimensions")
+    end
+    if size(π,1) != size(π,2)
+      error("Transition matrix must be squared")
+    end
+    if !(length(π0) == size(π,1) == length(D))
+      error("length(π0), length(D), size(π,1) = $(length(π0)),$(length(D)),$(size(π,1)) should be matching")
+    end
+    return true
+
 end
 
 """

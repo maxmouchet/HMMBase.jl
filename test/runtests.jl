@@ -12,6 +12,22 @@ targets = [
     # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
 ]
 
+@testset "Constructors" begin
+    # Test error are raised
+    # wrong Tras Matrix
+    @test_throws ErrorException HMM(ones(2,2), [Normal();Normal()])
+    # wrong Tras Matrix dimensions
+    @test_throws ErrorException HMM([0.8 0.1 0.1; 0.1 0.1 0.8], [Normal(0,1), Normal(10,1)])
+    # wrong number of Distributions
+    @test_throws ErrorException HMM([0.8 0.2; 0.1 0.9], [Normal(0,1), Normal(10,1), Normal()])
+    # wrong distribution size
+    @test_throws ErrorException HMM([0.8 0.2; 0.1 0.9], [MvNormal(randn(3)), MvNormal(randn(10))])
+    # wrong initial state 
+    @test_throws ErrorException HMM([0.1;0.1],[0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+    # wrong initial state length
+    @test_throws ErrorException HMM([0.1;0.1;0.8],[0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+end
+
 @testset "Random" begin
     # Test random observations generation with a fixed sequence
     hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
