@@ -1,23 +1,24 @@
 """
-    AbstractHMM{F<:VariateForm}
+    AbstractHMM
 
 An HMM type must at-least implement the following interface:
 ```julia
-struct CustomHMM{F,T} <: AbstractHMM{F}
-    π0::AbstractVector{T}              # Initial state distribution
-    π::AbstractMatrix{T}               # Transition matrix
-    D::AbstractVector{Distribution{F}} # Observations distributions
+struct CustomHMM{S,O} <: AbstractHMM{S,O}
+    a              # Initial state distribution
+    A              # Transition matrix
+    D              # Observations distributions
     # Custom fields ....
 end
 ```
+where `S` is the state type and `O` is the observation type.
 """
-abstract type AbstractHMM{F<:VariateForm} end
+abstract type AbstractHMM{S,O} end
 
 """
-    HMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where F where T
+HMM([a::AbstractVector{T}], A::AbstractMatrix{T}, B::AbstractVector{<:Distribution}) where {T}
 
-Build an HMM with transition matrix `π` and observations distributions `D`.  
-If the initial state distribution `π0` is not specified, a uniform distribution is assumed. 
+Build an HMM with transition matrix `A` and observations distributions `B`.  
+If the initial state distribution `a` is not specified, a uniform distribution is assumed. 
 
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
 However they must be of the same dimension (all scalars or all multivariates).
@@ -27,30 +28,22 @@ However they must be of the same dimension (all scalars or all multivariates).
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 ```
 """
-struct HMM{F,T} <: AbstractHMM{F}
-    π0::Vector{T}
-    π::Matrix{T}
-    D::Vector{Distribution{F}}
-    HMM{F,T}(π0, π, D) where {F,T} = assert_hmm(π0, π, D) && new(π0, π, D) 
+struct HMM{S, O,
+           T <: AbstractFloat, 
+           V <: AbstractVector{T},
+           M <: AbstractMatrix{T},
+           D <: AbstractVector{<:Distribution}
+          } <: AbstractHMM{S,O}
+    a::V
+    A::M
+    B::D
+    function HMM(a::V, A::M, B::D) where {T,V<:AbstractArray{T},M<:AbstractMatrix{T},D}  
+      O = typeof(rand(B[1]))
+      assert_hmm(a, A, B) && new{Int,O,T,V,M,D}(a, A, B) 
+    end
 end
 
-HMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(π0, π, D)
-HMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(ones(size(π)[1])/size(π)[1], π, D)
-
-"""
-    StaticHMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T}
-
-See [`HMM`](@ref).
-"""
-struct StaticHMM{F,T,K} <: AbstractHMM{F}
-    π0::SVector{K,T}
-    π::SMatrix{K,K,T}
-    D::SVector{K,Distribution{F}}
-    StaticHMM{F,T,K}(π0, π, D) where {F,T,K} = assert_hmm(π0, π, D) && new(π0, π, D)
-end
-
-StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(π0, π, D)
-StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(ones(size(π)[1])/size(π)[1], π, D)
+HMM(A::AbstractMatrix{T}, B) where {T} = HMM(ones(T,size(A)[1])./size(A,1), A, B)
 
 """
     assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
@@ -58,33 +51,41 @@ StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,
 Throw an `AssertionError` if the initial state distribution and the transition matrix rows does not sum to 1,
 and if the observations distributions does not have the same dimensions.
 """
-function assert_hmm(π0::AbstractVector{T}, 
-                    π::AbstractMatrix{T}, 
-                    D::AbstractVector{<:Distribution}) where {T}
+function assert_hmm(a::AbstractVector{T}, 
+                    A::AbstractMatrix{T}, 
+                    B::AbstractVector{<:Distribution}) where {T}
     
-    if !isprobvec(π0)
+    if !isprobvec(a)
       error("Initial state distribution must sum to 1")
     end
-    if any([!isprobvec(π[i,:]) for i in 1:size(π,1)])
+    if !(isTMatrix(A))
       error("Trasition matrix rows must sum to 1")
     end
-    if any(length.(D) .!= length(D[1]))
+    if any(length.(B) .!= length(B[1]))
       error("All distributions must have the same dimensions")
     end
-    if size(π,1) != size(π,2)
+    if size(A,1) != size(A,2)
       error("Transition matrix must be squared")
     end
-    if !(length(π0) == size(π,1) == length(D))
-      error("length(π0), length(D), size(π,1) = $(length(π0)),$(length(D)),$(size(π,1)) should be matching")
+    if !(length(a) == size(A,1) == length(B))
+      error("length(a), length(B), size(A,1) = $(length(a)),$(length(B)),$(size(A,1)) should be matching")
     end
     return true
 
 end
 
-"""
-    rand(hmm::AbstractHMM, T::Int[, initial_state::Int])
 
-Generate a random trajectory of `hmm` for `T` timesteps.
+isTMatrix(A::AbstractMatrix) = all([isprobvec(A[i,:]) for i in 1:size(A,1)])
+
+"""
+    rand(hmm::AbstractHMM, Nt::Int; [s0])
+
+Generate a random trajectory of `hmm` for `Nt` timesteps. 
+Returns two `Nt`-long arrays:  
+* `y` observation sequence.
+* `s` state sequence.
+
+If the initial state `s0` is not specified it will be randomly drawn from the initial state distribution `hmm.a`.   
 
 # Example
 ```julia
@@ -92,25 +93,27 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 z, y = rand(hmm, 1000)
 ```
 """
-function rand(hmm::AbstractHMM, T::Int; initial_state=nothing)
-    z = zeros(Int, T)
-    y = zeros(T, length(hmm.D[1]))
+function rand(hmm::AbstractHMM{S,O}, Nt::Int; s0::S=rand(Categorical(hmm.a))) where {S,O}
 
-    z[1] = initial_state == nothing ? rand(Categorical(hmm.π0)) : initial_state
-    y[1,:] = rand(hmm.D[z[1]], 1)
+  # init
+  z = Array{S,1}(undef,Nt)
+  y = Array{O,1}(undef,Nt)
 
-    for t = 2:T
-        z[t] = rand(Categorical(hmm.π[z[t-1],:]))
-        y[t,:] = rand(hmm.D[z[t]], 1)
-    end
+  z[1] = s0 
+  y[1] = rand(hmm.B[z[1]])
 
-    z, y
+  for t = 2:Nt
+    z[t] = rand(Categorical(hmm.A[z[t-1],:])) # update state
+    y[t] = rand(hmm.B[z[t]])               # get observation
+  end
+
+  return y, z
 end
 
 """
-    rand(hmm::AbstractHMM, z::AbstractVector{Int})
+    rand(hmm::AbstractHMM, s::AbstractVector)
 
-Generate observations from `hmm` according to trajectory `z`.
+Generate observations `y` from a `hmm` according to trajectory `s`.
 
 # Example
 ```julia
@@ -118,12 +121,15 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-rand(hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(hmm.D[x], 1), z))...)
+rand(hmm::AbstractHMM{S,O}, s::AbstractVector{S}) where {S,O} =
+[ rand(hmm.B[si]) for si in s ]
+
+
 
 """
     size(hmm::AbstractHMM)
 
-Returns the number of states in the HMM and the dimension of the observations.
+Returns a tuple containing the number of states `S` and the dimension of the observations `N`.
 
 # Example
 ```julia
@@ -131,47 +137,45 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 size(hmm) # (2,1)
 ```
 """
-size(hmm::AbstractHMM) = (length(hmm.D), length(hmm.D[1]))
+size(hmm::AbstractHMM) = (length(hmm.B), length(hmm.B[1]))
+size(hmm::AbstractHMM, dims::Int) = size(hmm)[dims]
 
-# TODO: Naming ?
-function likelihoods(hmm::AbstractHMM{Univariate}, observations)
-    hcat(map(d -> pdf.(d, observations), hmm.D)...)
+function likelihood(hmm::AbstractHMM{S,O}, y::AbstractArray{O}; 
+                    log::Bool = false) where {S,O}
+  Nt = length(y)     # time steps
+  N = size(hmm,1)   # number HMM's states
+  L = zeros(Nt,N)
+  log ? loglikelihood!(L, hmm, y) : likelihood!(L, hmm, y)
+  return L
 end
 
-function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    # OPTIMIZE ?
-    ls = zeros(size(observations)[1], size(hmm)[1])
-    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
-        ls[t,i] = pdf(hmm.D[i], view(observations,t,:))
+for f in [:loglikelihood! => :logpdf, :likelihood! => :pdf]
+
+  @eval begin
+
+    function $(f[1])(L::AbstractMatrix, 
+                     hmm::AbstractHMM{S,O}, y::AbstractArray{O} ) where {S,O}
+      for t = 1:size(L,1), j = 1:size(L,2) 
+        L[t,j] = $(f[2])( hmm.B[j], y[t] )
+      end
+      return L
     end
-    ls
+
+  end
+
 end
-
-# TODO: Naming ?
-function log_likelihoods(hmm::AbstractHMM{Univariate}, observations)
-    hcat(map(d -> logpdf.(d, observations), hmm.D)...)
-end
-
-function log_likelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    # OPTIMIZE ?
-    lls = zeros(size(observations)[1], size(hmm)[1])
-    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
-        lls[t,i] = logpdf(hmm.D[i], view(observations,t,:))
-    end
-    lls
-end
-
-"""
-    n_parameters(hmm::AbstractHMM)
-
-Returns the number of parameters in `hmm`.  
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-n_parameters(hmm) # 6
-```
-"""
-function n_parameters(hmm::AbstractHMM)
-    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
-end
+#
+#"""
+#    n_parameters(hmm::AbstractHMM)
+#
+#Returns the number of parameters in `hmm`.  
+#
+## Example
+#```julia
+#hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+#n_parameters(hmm) # 6
+#```
+#"""
+#function n_parameters(hmm::AbstractHMM)
+#    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
+#end

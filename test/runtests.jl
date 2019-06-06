@@ -2,17 +2,13 @@ using Test
 using HMMBase
 using Distributions
 using Random
+using LinearAlgebra, Combinatorics
 
 Random.seed!(2018)
 
-targets = [
-    HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
-    HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]),
-    # StaticHMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
-    # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
-]
+@testset "HMMBase" begin
 
-@testset "Constructors" begin
+  @testset "Constructors" begin
     # Test error are raised
     # wrong Tras Matrix
     @test_throws ErrorException HMM(ones(2,2), [Normal();Normal()])
@@ -26,97 +22,261 @@ targets = [
     @test_throws ErrorException HMM([0.1;0.1],[0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
     # wrong initial state length
     @test_throws ErrorException HMM([0.1;0.1;0.8],[0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-end
+  end
 
-@testset "Random" begin
-    # Test random observations generation with a fixed sequence
+  @testset "Generative HHM" begin
+
+    # Test random observations generation for T time steps
+    T = 10
     hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
-    z = [1,1,2,2,1,1]
-    y = rand(hmm, z)
-    @test y[:] == z
-end
+    y, s = rand(hmm, T)
+    @test y == s
 
-@testset "Messages" begin
-    # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
-    π = [0.7 0.3; 0.3 0.7]
-    D = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]
-    hmm = HMM(π, D)
+    # Test random observations generation for T time steps using Multivariate
+    T = 10
+    b1 = MvNormal( convert(Array,Diagonal([1;1e-12]) ))
+    b2 = MvNormal( convert(Array,Diagonal([1e-12;1]) ))
+    hmm = HMM([0.9 0.1; 0.1 0.9], [b1,b2])
+    y, s = rand(hmm, T)
+    @test all([argmax(abs.(y[i])) == s[i] for i in eachindex(s)])
 
-    O = [1,1,2,1,1]
+    # Test random observations generation for T time steps with initial state
+    T = 2
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
+    y, s = rand(hmm, T; s0 = 2 )
+    @test s[1] == 2
 
-    α, logtot_alpha = messages_forwards(hmm, O)
-    α = round.(α, digits=4)
+    ## Test random observations generation with a fixed sequence
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0, 0.0]), Categorical([0.0, 1.0])])
+    s = [1,1,2,2,1,1]
+    y = rand(hmm, s)
+    @test y == s
 
-    β, logtot_beta = messages_backwards(hmm, O)
-    β = round.(β, digits=4)
+    ## Test random observations generation with a fixed sequence (Multivariate)
+    b1 = MvNormal( convert(Array,Diagonal([1;1e-12;1e-12]) ))
+    b2 = MvNormal( convert(Array,Diagonal([1e-12;1;1e-12]) ))
+    b3 = MvNormal( convert(Array,Diagonal([1e-12;1e-12;1]) ))
+    hmm = HMM([0.9 0.05 0.05; 0.05 0.9 0.05; 0.05 0.05 0.9], [b1,b2,b3])
+    s = [1,2,3,3,2,1]
+    y = rand(hmm, s)
+    @test all([argmax(abs.(y[i])) == s[i] for i in eachindex(s)])
 
-    γ = forward_backward(hmm, O)
-    γ = round.(γ, digits=4)
+  end
 
-    @test α == [
-        0.8182 0.1818;
-        0.8834 0.1166;
-        0.1907 0.8093;
-        0.7308 0.2692;
-        0.8673 0.1327;
-    ]
+  @testset "Likelihoods" begin
 
-    @test β == [
-        0.5923 0.4077;
-        0.3763 0.6237;
-        0.6533 0.3467;
-        0.6273 0.3727;
-        1.0    1.0;
-    ]
+    ## Testing Likelihood
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0-1e-8, 1e-8]), Categorical([1e-8, 1.0-1e-8])])
+    s = [1,1,2,2,1,1]
+    y = rand(hmm, s)
+    L = HMMBase.likelihood(hmm,y)
+    @test all([argmax(L[t,:]) == s[t] for t in eachindex(s)])
+    @test all([maximum(L[t,:]) == 1.0-1e-8 for t in eachindex(s)])
+    L = HMMBase.likelihood(hmm, y; log = true)
+    @test all([maximum(L[t,:]) == log(1-1e-8) for t in eachindex(s)])
 
-    @test γ == [
-        0.8673 0.1327;
-        0.8204 0.1796;
-        0.3075 0.6925;
-        0.8204 0.1796;
-        0.8673 0.1327;
-    ]
+    ## Test random observations generation with a fixed sequence (Multivariate)
+    b1 = MvNormal( convert(Array,Diagonal([1;1e-12;1e-12]) ))
+    b2 = MvNormal( convert(Array,Diagonal([1e-12;1;1e-12]) ))
+    b3 = MvNormal( convert(Array,Diagonal([1e-12;1e-12;1]) ))
+    hmm = HMM([0.9 0.05 0.05; 0.05 0.9 0.05; 0.05 0.05 0.9], [b1,b2,b3])
+    s = [1,2,3,3,2,1]
+    y = rand(hmm, s)
+    L = HMMBase.likelihood(hmm,y)
+    @test all([argmax(L[t,:]) == s[t] for t in eachindex(s)])
 
-    @test logtot_alpha ≈ logtot_beta atol=1e-12
-end
+  end
 
-@testset "Viterbi $(typeof(hmm))" for hmm in targets
-    # TODO: Better viterbi tests....
-    z, y = rand(hmm, 1000);
-    z_viterbi = viterbi(hmm, y)
-    @test z == z_viterbi
+  @testset "Messages" begin
+    #    # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
+    # define Markov model's parameters (λ)
+    S = 2                                                  
+    # number of states
+    a = [0.5; 0.5]                                         
+    # initial state probability  
+    A = [0.7 0.3; 0.3 0.7]                                 
+    # transmission Matrix  [a_11 a21; a12 a_22]
 
-    # Viterbi with a uniform initial distribution
-    #(Only to make sure the code path works)
-    viterbi(hmm.π, HMMBase.likelihoods(hmm, y))
-end
+    B = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])] 
+    # observation distribution [b_1; b_2]
+    T = 5                     
+    # time window length
+    o = [1;1;2;1;1]           
+    # observations
+    s_all = collect(multiset_permutations([1;2],[5;5],5))
+    # this has all possible state sequences e.g. [1;1;1;1;1], [1;1;1;1;2] ...
+    # these are S^T permutations
 
-# Test high-level API interfaces (types compatibility, ...)
-# to ensure that there is no exceptions.
+    # Probability of sequence of states
+    Pλ_s = zeros(length(s_all)) 
+    for z = 1:length(s_all)
+      Pλ_s[z] = a[1] 
+      # initial distribution, since they are equal so we don't need to do this twice
+      for t = 2:T
+        Pλ_s[z] *= A[ s_all[z][t-1], s_all[z][t] ]
+      end
+    end
+    @assert sum(Pλ_s) ≈ 1 # check it's a probability 
 
-@testset "Integration $(typeof(hmm))" for hmm in targets
-    z, y = rand(hmm, 1000)
-    z_viterbi = viterbi(hmm, y)
-    α, _ = messages_forwards(hmm, y)
-    β, _ = messages_backwards(hmm, y)
-    γ = forward_backward(hmm, y)
-    @test size(z) == size(z_viterbi)
-    @test size(α) == size(β) == size(γ)
-
-    new_hmm, _ = fit_mle!(hmm, y)
-    @test size(new_hmm) == size(hmm)
-    @test typeof(new_hmm) == typeof(hmm)
-end
-
-@testset "Utilities" begin
-    # Make sure we do not relabel states if they are in 1...K
-    mapping, _  = compute_transition_matrix([3,3,1,1,2,2])
-    for (k, v) in mapping
-        @test mapping[k] == v
+    # Likelihood of O given a sequence of states
+    Lλ_o_s = ones(length(s_all)) 
+    for z = 1:length(s_all)
+      for t = 1:T
+        Lλ_o_s[z] *= pdf(B[ s_all[z][t] ], o[t])
+      end
     end
 
-    mapping, transmat = compute_transition_matrix([3,3,8,8,3,3])
-    @test mapping[3] == 1
-    @test mapping[8] == 2
-    @test transmat == [2/3 1/3; 1/2 1/2]
+    Lkh = sum(Pλ_s .* Lλ_o_s) #likelihood
+    hmm = HMM(a,A,B)
+    L = HMMBase.likelihood(hmm,o)
+
+    # Baum's original messages
+    alphas = HMMBase.baum_forward(hmm,L)
+    betas = HMMBase.baum_backward(hmm,L)
+    @test sum(alphas[end,:]) ≈ Lkh
+    @test all(sum(alphas.*betas,dims=2) .≈ Lkh)
+
+    # normalized messages (data from Wikipedia)
+    alphas, c = HMMBase.forward(hmm,L)
+    @test round.(alphas, digits = 4) == [
+                                         0.8182 0.1818;
+                                         0.8834 0.1166;
+                                         0.1907 0.8093;
+                                         0.7308 0.2692;
+                                         0.8673 0.1327;
+                                        ]
+
+    betas = HMMBase.backward(hmm,L)
+    betas2 = HMMBase.backward(hmm,L,c)
+    @test round.(betas, digits=4) == [
+                                      0.5923 0.4077;
+                                      0.3763 0.6237;
+                                      0.6533 0.3467;
+                                      0.6273 0.3727;
+                                      1.0    1.0;
+                                     ]
+
+    gammas = alphas .* betas
+    gammas2 = alphas .* betas2
+    @test round.(gammas ./ sum(gammas, dims=2) , digits=4) == [
+                                                               0.8673 0.1327;
+                                                               0.8204 0.1796;
+                                                               0.3075 0.6925;
+                                                               0.8204 0.1796;
+                                                               0.8673 0.1327;
+                                                              ]
+
+    # println( gammas  )  # gammas by Wikipedia definitions are not prob!
+    # println( gammas2 )  # gammas by Devijver definition are:
+    @test all(sum(gammas2, dims=2) .≈ 1)
+
+  end
+
+  @testset "Decoding" begin 
+
+    # test with large random HMM
+    T = 200       # time steps 
+    S = 100       # number of states
+    A = rand(S,S) # random trans matrix
+    for i = 1:S
+      A[i,:] ./= sum(A[i,:]) 
+    end
+    B = [ Normal(i,1/(4*S)) for i = range(-1, stop=1, length=S)] # emissin prob
+
+    hmm = HMM(A, B)
+    y, z = rand(hmm, T)
+
+    L = HMMBase.likelihood(hmm,y)
+    z_viterbi = HMMBase.viterbi(hmm, L)
+    # without normalization
+    z_unviterbi = HMMBase.viterbi(hmm, L; normalize=false)
+
+    # with normalization (Wiki)
+    alphas, c = HMMBase.forward(hmm, L)
+    betas = HMMBase.backward(hmm, L)
+    @test all(sum(betas[1:end-1,:], dims=2) .≈ 1)
+
+    # with normalization (Devijver)
+    betas2 = HMMBase.backward(hmm, L, c)
+
+    # without normalization
+    alphas_un = HMMBase.baum_forward(hmm, L)
+    betas_un = HMMBase.baum_backward(hmm, L)
+
+    gammas = alphas .* betas
+    gammas2 = alphas .* betas2
+    @test all(sum(gammas2, dims=2) .≈ 1)
+    gammas_un = alphas_un .* betas_un
+
+    z_gammas = [ argmax(gammas[t,:]) for t = 1:T]
+    z_gammas2 = [ argmax(gammas2[t,:]) for t = 1:T]
+    z_gammas_un = [ argmax(gammas_un[t,:]) for t = 1:T]
+
+    @test all(z_viterbi .== z)
+    @test all(z_unviterbi .== z)
+    @test all(z_viterbi .== z_gammas) 
+    @test all(z_viterbi .== z_gammas2) 
+    @test all(z_viterbi .== z_gammas_un) 
+
+  end
+
+
+  @testset "Learn HMM - Categorical" begin
+
+    Nt = 100
+    Ns = 20
+    A = rand(Ns,Ns) # random trans matrix
+    for i = 1:Ns
+      A[i,:] ./= sum(A[i,:]) 
+    end
+    B = [ Categorical(normalize(rand(Ns),1)) for i = 1:Ns] # emissin prob
+
+    hmm = HMM(A, B)
+    y, z = rand(hmm,Nt)
+    A0 = diagm(0 => 0.5 .*ones(Ns), 1 => 0.5 .*ones(Ns-1))  # trans matrix
+    A0[end,end-1] = 0.5
+    B0 = [ Categorical(normalize(rand(Ns),1)) for i = 1:Ns] # emissin prob
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+
+    L = HMMBase.likelihood(hmm0, y, log = false)
+    alpha = HMMBase.baum_forward(hmm0, L)
+    beta  = HMMBase.baum_backward(hmm0, L)
+    gamma = HMMBase.get_gammas(alpha,beta)
+    epsilon = zeros(Nt,Ns,Ns)
+
+    HMMBase.update_A!(hmm0, epsilon, alpha, beta, gamma, L)
+    @test HMMBase.isTMatrix(hmm0.A)
+
+    HMMBase.update_a!(hmm0,gamma)
+    @test sum(hmm0.a) ≈ 1 
+
+    HMMBase.update_B!(hmm0, gamma, y)
+    @test all( [sum(b.p) ≈ 1 for b in hmm0.B] )
+
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+    nlogL = HMMBase.baum_welch!(hmm0, y; maxit = 100, normalize = false)
+
+    @test HMMBase.isTMatrix(hmm0.A)
+    @test sum(hmm0.a) ≈ 1 
+    @test all([sum(hmm0.A[i,:]) ≈ 1 for i = 1:size(hmm0.A,1)])
+    # checking negative log likelihood decreases
+    @test issorted(nlogL; rev = true)
+
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+    nlogL2 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = false)
+    @test issorted(nlogL; rev = true)
+    # checking with scaling beta and gamma same path is taken
+    @test norm(nlogL2 - nlogL) < 1e-7
+
+    Nt = 1000
+    hmm0 = deepcopy(hmm)
+    y, z = rand(hmm,Nt)
+    nlogL1 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = false)
+    @test issorted(nlogL; rev = true)
+    # training HMM on data it generated: 
+    # cost should not decrease much
+    @test (nlogL[1]-nlogL[10])/(nlogL[1]) < (nlogL2[1]-nlogL2[10])/(nlogL2[1]) 
+
+  end
+
 end
