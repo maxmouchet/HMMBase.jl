@@ -1,6 +1,6 @@
 # # MLE Estimator
 
-using Distributions
+using Distributions, Random
 using HMMBase
 using Plots
 
@@ -14,12 +14,9 @@ plot(y, linetype=:steppre, size=(600,200))
 # Hence we must instantiate an initial HMM by hand.
 
 hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,1), Normal(15,1)])
-hmm, log_likelihood = fit_mle!(hmm, y, verbose=true)
+cost = baum_welch!(hmm, y)
 #-
 
 z_viterbi = viterbi(hmm, y)
 plot(z_viterbi, linetype=:steppre, label="Viterbi decoded hidden state", size=(600,200))
 
-# We can also perform individual EM steps.
-
-hmm, log_likelihood = mle_step(hmm, y)

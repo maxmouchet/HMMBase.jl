@@ -19,6 +19,8 @@ pkg> add HMMBase
 HMMBase supports any observations distributions implementing the `Distribution` interface from Distributions.jl.
 
 ```julia
+using Distributions, HMMBase
+
 # Univariate continuous observations
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Gamma(1,1)])
 

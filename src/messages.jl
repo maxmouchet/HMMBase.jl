@@ -41,7 +41,7 @@ end
 
 Compute forward probabilities `alpha` (`Nt`x`Ns` matrix) and the scaling vector `c` (`Nt` long vector).
 
-`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihood`](@ref)) 
+`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihoods`](@ref)) 
 
 """
 function forward(hmm,L)
@@ -97,7 +97,7 @@ end
 
 Compute backward probabilities `beta` (`Nt`x`Ns` matrix) using the scaling vector `c` (`Nt` long vector).
 
-`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihood`](@ref)) 
+`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihoods`](@ref)) 
 
 """
 backward
@@ -213,17 +213,22 @@ for f in [
 
 end
 
+function viterbi(hmm, y::AbstractVector; kwargs...)
+  L = likelihoods(hmm, y)
+  viterbi(hmm,L; kwargs...)
+end
+
 """
     viterbi(hmm, L; normalize=true)
 
 Compute the best sequence of states using the observation likelihood `L` using the Viterbi algorithm.
 
-`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihood`](@ref)) 
+`L` must be a `Nt`x`Ns` matrix containing the likelihoods (see [`likelihoods`](@ref)) 
 
 `normalize` specifies if normalization is applied.
 
 """
-function viterbi(hmm,L; normalize=true)
+function viterbi(hmm, L::AbstractMatrix; normalize=true)
   T, S = size(L,1), size(hmm.A,1)
   v = zeros(T,S)
   argmax_v = zeros(Int,T,S)

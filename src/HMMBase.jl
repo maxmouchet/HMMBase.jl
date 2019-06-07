@@ -12,7 +12,6 @@ using Printf
 import Base: rand, size
 export AbstractHMM, 
   HMM, 
-  rand,
   forward,
   backward,
   posteriors,
@@ -22,7 +21,8 @@ export AbstractHMM,
   posteriors!,
   viterbi,
   nviterbi!,
-  viterbi!
+  viterbi!,
+  baum_welch!
 
 include("hmm.jl")
 include("messages.jl")

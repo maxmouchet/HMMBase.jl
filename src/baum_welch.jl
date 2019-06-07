@@ -35,62 +35,20 @@ function update_a!(hmm, gamma)
   end
 end
 
-function update_B!(hmm::HMM{S,O,T,V,M,D}, gamma, y) where {S,O,T,V,M,
-                                                           D <: Array{<:Categorical} }
+function update_B!(hmm::HMM{S,O,T,V,M,D}, gamma, y) where {S,
+                                                           O,
+                                                           T,
+                                                           V,
+                                                           M,
+                                                           C,
+                                                           D <: Array{C} }
   Nt = length(y)
   Ns = length(hmm.B)
-
-  for j = 1:Ns
-    fill!(hmm.B[j].p,0.0)
-  end
-
-  for j = 1:Ns, k = 1:Ns
-    for t = 1:Nt
-      if y[t] == k 
-        hmm.B[j].p[k] += gamma[t,j]
-      end
-    end
-  end
-
-  for j = 1:Ns
-    c = 0.0
-    for t = 1:Nt
-      c += gamma[t,j]
-    end
-    for k = 1:Ns
-      hmm.B[j].p[k] /= c
-    end
+  for i = 1:Ns
+    hmm.B[i] = fit_mle(C,y,gamma[:,i]) 
   end
 
 end
-
-function update_B!(hmm::HMM{S,O,T,V,M,D}, gamma, y) where {S,O,T,V,M,
-                                                           D <: Array{<:Normal} }
-  Nt = length(y)
-  Ns = length(hmm.B)
-
-  mu = zeros(Ns)
-  si = zeros(Ns)
-
-  for j = 1:Ns
-    # get mean
-    c = 0.0
-    for t = 1:Nt
-      mu[j] += gamma[t,j] * y[t]
-      c += gamma[t,j]
-    end
-    mu[j] = mu[j]/c
-
-    # get var
-    for t = 1:Nt
-      si[j] += gamma[t,j] * abs2(y[t] - mu[j])
-    end
-    si[j] = sqrt(si[j]/c) 
-    hmm.B[j] = Normal(mu[j],si[j])
-  end
-
-end
-
 
 
 """
@@ -119,6 +77,14 @@ function baum_welch!(hmm::HMM{S,O,T,V,M,D}, y::AbstractArray{O};
 
   L = likelihoods(hmm, y, log=false)
   Nt, Ns  = size(L)
+
+  if O <: AbstractArray # multivariate
+    y2 = hcat(y...)
+    # fit_mle takes a matrix...
+  else
+    y2 = y
+  end
+
   if normalize
     alphas, c = forward( hmm,L)
     betas  = backward(hmm, L, c)
@@ -161,7 +127,7 @@ function baum_welch!(hmm::HMM{S,O,T,V,M,D}, y::AbstractArray{O};
     # update model parameters
     update_A!(hmm, epsilon, alphas, betas, gammas, L)
     update_a!(hmm, gammas)
-    update_B!(hmm, gammas, y)
+    update_B!(hmm, gammas, y2)
 
     likelihoods!(L, hmm, y)
 

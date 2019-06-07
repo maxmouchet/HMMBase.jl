@@ -187,7 +187,9 @@ Random.seed!(2018)
     y, z = rand(hmm, T)
 
     L = HMMBase.likelihoods(hmm,y)
+    z_viterbi0 = HMMBase.viterbi(hmm, y)
     z_viterbi = HMMBase.viterbi(hmm, L)
+    @test all(z_viterbi0 .== z_viterbi)
     # without normalization
     z_unviterbi = HMMBase.viterbi(hmm, L; normalize=false)
 
@@ -276,7 +278,7 @@ Random.seed!(2018)
     @test issorted(nlogL; rev = true)
     # training HMM on data it generated: 
     # cost should not decrease much
-    @test abs(nlogL2[1]-nlogL2[end]) < abs(nlogL[1]-nlogL[end])
+    @test abs(nlogL2[1]-nlogL2[end]) < abs(nlogL[1]-nlogL1[end])
 
   end
 
@@ -298,6 +300,49 @@ Random.seed!(2018)
       A0[i,:] ./= sum(A0[i,:]) 
     end
     B0 = [ Normal(i,1/(4*Ns)) for i = range(-1, stop=1, length=Ns)] # emissin prob
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+
+    L = HMMBase.likelihoods(hmm0, y, log = false)
+    alpha = HMMBase.baum_forward(hmm0, L)
+    beta  = HMMBase.baum_backward(hmm0, L)
+    gamma = HMMBase.posteriors(alpha,beta)
+
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+    nlogL = HMMBase.baum_welch!(hmm0, y; verbose = verb)
+    @test issorted(nlogL; rev = true)
+    @test sum(hmm0.a) ≈ 1 
+    @test all([sum(hmm0.A[i,:]) ≈ 1 for i = 1:size(hmm0.A,1)])
+
+    Nt = 1000
+    hmm0 = deepcopy(hmm)
+    y, z = rand(hmm,Nt)
+    nlogL2 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = verb)
+    @test issorted(nlogL; rev = true)
+    # training HMM on data it generated: 
+    # cost should not decrease much
+    @test abs(nlogL2[1]-nlogL2[end]) < abs(nlogL[1]-nlogL[end])
+
+  end
+
+  @testset "Learn HMM - MvNormal" begin
+
+    verb = false
+    Nt = 500
+    Ns = 30
+    Ny = 3
+    A = rand(Ns,Ns) # random trans matrix
+    for i = 1:Ns
+      A[i,:] ./= sum(A[i,:]) 
+    end
+    B = [ MvNormal(randn(Ny),randn(Ny)) for i = 1:Ns] # emissin prob
+
+    hmm = HMM(A, B)
+    y, z = rand(hmm,Nt)
+    A0 = rand(Ns,Ns) # random trans matrix
+    for i = 1:Ns
+      A0[i,:] ./= sum(A0[i,:]) 
+    end
+    B0 = [ MvNormal(randn(Ny),randn(Ny)) for i = 1:Ns] # emissin prob
     hmm0 = HMM(deepcopy(A0), deepcopy(B0))
 
     L = HMMBase.likelihoods(hmm0, y, log = false)
