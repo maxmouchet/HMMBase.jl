@@ -35,17 +35,12 @@ function update_a!(hmm, gamma)
   end
 end
 
-function update_B!(hmm::HMM{S,O,T,V,M,D}, gamma, y) where {S,
-                                                           O,
-                                                           T,
-                                                           V,
-                                                           M,
-                                                           C,
-                                                           D <: Array{C} }
+function update_B!(hmm::AbstractHMM, gamma, y)  
+
   Nt = length(y)
   Ns = length(hmm.B)
   for i = 1:Ns
-    hmm.B[i] = fit_mle(C,y,gamma[:,i]) 
+    hmm.B[i] = fit_mle(typeof(hmm.B[i]), y, gamma[:,i]) 
   end
 
 end
