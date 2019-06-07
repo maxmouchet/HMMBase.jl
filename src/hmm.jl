@@ -28,7 +28,8 @@ However they must be of the same dimension (all scalars or all multivariates).
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 ```
 """
-struct HMM{S, O,
+struct HMM{S, # type of state
+           O, # type of observation
            T <: AbstractFloat, 
            V <: AbstractVector{T},
            M <: AbstractMatrix{T},
@@ -82,16 +83,11 @@ isTMatrix(A::AbstractMatrix) = all([isprobvec(A[i,:]) for i in 1:size(A,1)])
 
 Generate a random trajectory of `hmm` for `Nt` timesteps. 
 Returns two `Nt`-long arrays:  
-* `y` observation sequence.
+* `y` observation path.
 * `s` state sequence.
 
-If the initial state `s0` is not specified it will be randomly drawn from the initial state distribution `hmm.a`.   
+If the initial state `s0` is not specified it will be randomly picked using the initial state distribution `hmm.a`.   
 
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
-```
 """
 function rand(hmm::AbstractHMM{S,O}, Nt::Int; s0::S=rand(Categorical(hmm.a))) where {S,O}
 
@@ -113,13 +109,8 @@ end
 """
     rand(hmm::AbstractHMM, s::AbstractVector)
 
-Generate observations `y` from a `hmm` according to trajectory `s`.
+Generate random observations `y` from a `hmm` according to path `s`.
 
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, [1, 1, 2, 2, 1])
-```
 """
 rand(hmm::AbstractHMM{S,O}, s::AbstractVector{S}) where {S,O} =
 [ rand(hmm.B[si]) for si in s ]
@@ -129,27 +120,34 @@ rand(hmm::AbstractHMM{S,O}, s::AbstractVector{S}) where {S,O} =
 """
     size(hmm::AbstractHMM)
 
-Returns a tuple containing the number of states `S` and the dimension of the observations `N`.
+Returns a tuple containing the number of states `Ns` and the dimension of the observations `Ny`.
 
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-size(hmm) # (2,1)
-```
 """
 size(hmm::AbstractHMM) = (length(hmm.B), length(hmm.B[1]))
 size(hmm::AbstractHMM, dims::Int) = size(hmm)[dims]
 
-function likelihood(hmm::AbstractHMM{S,O}, y::AbstractArray{O}; 
+
+"""
+    likelihood(hmm, y; log=false)
+
+Returns a matrix `L` of size `Nt`x`Ns`. 
+The input `y` must be a `Nt` long `Array` representing the observations.
+
+`L[t,i]` gives the observation likelihood of the `i`-th state at the time step `t`. 
+
+Setting `log` to true returns log likelihoods.
+
+"""
+function likelihoods(hmm::AbstractHMM{S,O}, y::AbstractArray{O}; 
                     log::Bool = false) where {S,O}
   Nt = length(y)     # time steps
   N = size(hmm,1)   # number HMM's states
   L = zeros(Nt,N)
-  log ? loglikelihood!(L, hmm, y) : likelihood!(L, hmm, y)
+  log ? loglikelihoods!(L, hmm, y) : likelihoods!(L, hmm, y)
   return L
 end
 
-for f in [:loglikelihood! => :logpdf, :likelihood! => :pdf]
+for f in [:loglikelihoods! => :logpdf, :likelihoods! => :pdf]
 
   @eval begin
 
@@ -164,18 +162,3 @@ for f in [:loglikelihood! => :logpdf, :likelihood! => :pdf]
   end
 
 end
-#
-#"""
-#    n_parameters(hmm::AbstractHMM)
-#
-#Returns the number of parameters in `hmm`.  
-#
-## Example
-#```julia
-#hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-#n_parameters(hmm) # 6
-#```
-#"""
-#function n_parameters(hmm::AbstractHMM)
-#    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
-#end

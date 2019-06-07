@@ -69,10 +69,10 @@ Random.seed!(2018)
     hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([1.0-1e-8, 1e-8]), Categorical([1e-8, 1.0-1e-8])])
     s = [1,1,2,2,1,1]
     y = rand(hmm, s)
-    L = HMMBase.likelihood(hmm,y)
+    L = HMMBase.likelihoods(hmm,y)
     @test all([argmax(L[t,:]) == s[t] for t in eachindex(s)])
     @test all([maximum(L[t,:]) == 1.0-1e-8 for t in eachindex(s)])
-    L = HMMBase.likelihood(hmm, y; log = true)
+    L = HMMBase.likelihoods(hmm, y; log = true)
     @test all([maximum(L[t,:]) == log(1-1e-8) for t in eachindex(s)])
 
     ## Test random observations generation with a fixed sequence (Multivariate)
@@ -82,7 +82,7 @@ Random.seed!(2018)
     hmm = HMM([0.9 0.05 0.05; 0.05 0.9 0.05; 0.05 0.05 0.9], [b1,b2,b3])
     s = [1,2,3,3,2,1]
     y = rand(hmm, s)
-    L = HMMBase.likelihood(hmm,y)
+    L = HMMBase.likelihoods(hmm,y)
     @test all([argmax(L[t,:]) == s[t] for t in eachindex(s)])
 
   end
@@ -128,7 +128,7 @@ Random.seed!(2018)
 
     Lkh = sum(Pλ_s .* Lλ_o_s) #likelihood
     hmm = HMM(a,A,B)
-    L = HMMBase.likelihood(hmm,o)
+    L = HMMBase.likelihoods(hmm,o)
 
     # Baum's original messages
     alphas = HMMBase.baum_forward(hmm,L)
@@ -186,7 +186,7 @@ Random.seed!(2018)
     hmm = HMM(A, B)
     y, z = rand(hmm, T)
 
-    L = HMMBase.likelihood(hmm,y)
+    L = HMMBase.likelihoods(hmm,y)
     z_viterbi = HMMBase.viterbi(hmm, L)
     # without normalization
     z_unviterbi = HMMBase.viterbi(hmm, L; normalize=false)
@@ -223,6 +223,7 @@ Random.seed!(2018)
 
   @testset "Learn HMM - Categorical" begin
 
+    verb = false
     Nt = 100
     Ns = 20
     A = rand(Ns,Ns) # random trans matrix
@@ -238,10 +239,10 @@ Random.seed!(2018)
     B0 = [ Categorical(normalize(rand(Ns),1)) for i = 1:Ns] # emissin prob
     hmm0 = HMM(deepcopy(A0), deepcopy(B0))
 
-    L = HMMBase.likelihood(hmm0, y, log = false)
+    L = HMMBase.likelihoods(hmm0, y, log = false)
     alpha = HMMBase.baum_forward(hmm0, L)
     beta  = HMMBase.baum_backward(hmm0, L)
-    gamma = HMMBase.get_gammas(alpha,beta)
+    gamma = HMMBase.posteriors(alpha,beta)
     epsilon = zeros(Nt,Ns,Ns)
 
     HMMBase.update_A!(hmm0, epsilon, alpha, beta, gamma, L)
@@ -263,7 +264,7 @@ Random.seed!(2018)
     @test issorted(nlogL; rev = true)
 
     hmm0 = HMM(deepcopy(A0), deepcopy(B0))
-    nlogL2 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = false)
+    nlogL2 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = verb)
     @test issorted(nlogL; rev = true)
     # checking with scaling beta and gamma same path is taken
     @test norm(nlogL2 - nlogL) < 1e-7
@@ -271,12 +272,55 @@ Random.seed!(2018)
     Nt = 1000
     hmm0 = deepcopy(hmm)
     y, z = rand(hmm,Nt)
-    nlogL1 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = false)
+    nlogL1 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = verb)
     @test issorted(nlogL; rev = true)
     # training HMM on data it generated: 
     # cost should not decrease much
-    @test (nlogL[1]-nlogL[10])/(nlogL[1]) < (nlogL2[1]-nlogL2[10])/(nlogL2[1]) 
+    @test abs(nlogL2[1]-nlogL2[end]) < abs(nlogL[1]-nlogL[end])
 
   end
+
+  @testset "Learn HMM - Normal" begin
+
+    verb = true
+    Nt = 500
+    Ns = 30
+    A = rand(Ns,Ns) # random trans matrix
+    for i = 1:Ns
+      A[i,:] ./= sum(A[i,:]) 
+    end
+    B = [ Normal(i,1/(4*Ns)) for i = range(-1, stop=1, length=Ns)] # emissin prob
+
+    hmm = HMM(A, B)
+    y, z = rand(hmm,Nt)
+    A0 = rand(Ns,Ns) # random trans matrix
+    for i = 1:Ns
+      A0[i,:] ./= sum(A0[i,:]) 
+    end
+    B0 = [ Normal(i,1/(4*Ns)) for i = range(-1, stop=1, length=Ns)] # emissin prob
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+
+    L = HMMBase.likelihoods(hmm0, y, log = false)
+    alpha = HMMBase.baum_forward(hmm0, L)
+    beta  = HMMBase.baum_backward(hmm0, L)
+    gamma = HMMBase.posteriors(alpha,beta)
+
+    hmm0 = HMM(deepcopy(A0), deepcopy(B0))
+    nlogL = HMMBase.baum_welch!(hmm0, y; verbose = verb)
+    @test issorted(nlogL; rev = true)
+    @test sum(hmm0.a) ≈ 1 
+    @test all([sum(hmm0.A[i,:]) ≈ 1 for i = 1:size(hmm0.A,1)])
+
+    Nt = 1000
+    hmm0 = deepcopy(hmm)
+    y, z = rand(hmm,Nt)
+    nlogL2 = HMMBase.baum_welch!(hmm0, y; maxit = 100, verbose = verb)
+    @test issorted(nlogL; rev = true)
+    # training HMM on data it generated: 
+    # cost should not decrease much
+    @test abs(nlogL2[1]-nlogL2[end]) < abs(nlogL[1]-nlogL[end])
+
+  end
+
 
 end
