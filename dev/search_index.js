@@ -213,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMM with continuous observations",
     "title": "HMM with continuous observations",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=[\"Observations (1)\", \"Observations (2)\"], size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))#-This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=[\"Observations (1)\", \"Observations (2)\"], size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
 },
 
 {
@@ -229,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMM with discrete observations",
     "title": "HMM with discrete observations",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plotshttps://en.wikipedia.org/wiki/Viterbi_algorithm#Exampleπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=\"Observations\", size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))#-This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plotshttps://en.wikipedia.org/wiki/Viterbi_algorithm#Exampleπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=\"Observations\", size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
 },
 
 {
@@ -245,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "MLE Estimator",
     "title": "MLE Estimator",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plots\n\ny1 = rand(Normal(0,2), 1000)\ny2 = rand(Normal(10,1), 500)\ny = vcat(y1, y2, y1, y2)\n\nplot(y, linetype=:steppre, size=(600,200))For now HMMBase does not handle the initialization of the parameters. Hence we must instantiate an initial HMM by hand.hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,1), Normal(15,1)])\nhmm, log_likelihood = fit_mle!(hmm, y, verbose=true)z_viterbi = viterbi(hmm, y)\nplot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))We can also perform individual EM steps.hmm, log_likelihood = mle_step(hmm, y)#-This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\ny1 = rand(Normal(0,2), 1000)\ny2 = rand(Normal(10,1), 500)\ny = vcat(y1, y2, y1, y2)\n\nplot(y, linetype=:steppre, size=(600,200))For now HMMBase does not handle the initialization of the parameters. Hence we must instantiate an initial HMM by hand.hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,1), Normal(15,1)])\nhmm, log_likelihood = fit_mle!(hmm, y, verbose=true)z_viterbi = viterbi(hmm, y)\nplot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))We can also perform individual EM steps.hmm, log_likelihood = mle_step(hmm, y)This page was generated using Literate.jl."
 },
 
 {
