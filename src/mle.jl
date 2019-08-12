@@ -22,7 +22,7 @@ function mle_step(hmm::AbstractHMM{F}, observations) where F
     # E-step
 
     T, K = size(log_likelihoods)
-    log_ξ = zeros(T, K, K)
+    log_ξ = zeros(T-1, K, K)
 
     @inbounds for t = 1:T-1, i = 1:K, j = 1:K
         log_ξ[t,i,j] = log_α[t,i] + log_π[i,j] + log_β[t+1,j] + log_likelihoods[t+1,j] - normalizer
