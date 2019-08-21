@@ -22,7 +22,6 @@ The package can be installed with the Julia package manager.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
 ```
-pkg> registry add https://github.com/maxmouchet/JuliaRegistry.git
 pkg> add HMMBase
 ```
 
