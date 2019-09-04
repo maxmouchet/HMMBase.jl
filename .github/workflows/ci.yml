@@ -1,0 +1,22 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1.0.4, 1.1.1]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    
+    steps:
+      - uses: actions/checkout@v1.0.0
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v0.2
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: "Run tests"
+        run: |
+          julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+          julia --project=@. -e 'using Pkg; Pkg.test("HMMBase")'
