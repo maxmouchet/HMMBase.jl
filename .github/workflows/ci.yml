@@ -18,5 +18,5 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: "Run tests"
         run: |
-          julia --project=@. -e 'using Pkg; Pkg.instantiate()'
-          julia --project=@. -e 'using Pkg; Pkg.test("HMMBase")'
+          julia --project=@. -e "using Pkg; Pkg.instantiate();"
+          julia --project=@. -e "using Pkg; Pkg.test(\"HMMBase\");"
