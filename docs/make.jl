@@ -20,6 +20,7 @@ end
 
 makedocs(
     sitename="HMMBase.jl",
+    modules=[HMMBase],
     pages = [
         "index.md",
         "Manual" => ["hmm.md", "inference.md", "sampling.md"],
