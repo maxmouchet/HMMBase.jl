@@ -53,33 +53,23 @@ StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Dis
 StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(ones(size(π)[1])/size(π)[1], π, D)
 
 """
-    assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})
+    assert_hmm(π0, π, D)
 
-Throw an `AssertionError` if the initial state distribution and the transition matrix rows does not sum to 1,
+Throw an `ArgumentError` if the initial state distribution and the transition matrix rows does not sum to 1,
 and if the observations distributions does not have the same dimensions.
 """
-function assert_hmm(π0::AbstractVector{T}, 
-                    π::AbstractMatrix{T}, 
-                    D::AbstractVector{<:Distribution}) where {T}
-    
-    if !isprobvec(π0)
-      error("Initial state distribution must sum to 1")
-    end
-    if any([!isprobvec(π[i,:]) for i in 1:size(π,1)])
-      error("Trasition matrix rows must sum to 1")
-    end
-    if any(length.(D) .!= length(D[1]))
-      error("All distributions must have the same dimensions")
-    end
-    if size(π,1) != size(π,2)
-      error("Transition matrix must be squared")
-    end
-    if !(length(π0) == size(π,1) == length(D))
-      error("length(π0), length(D), size(π,1) = $(length(π0)),$(length(D)),$(size(π,1)) should be matching")
-    end
+function assert_hmm(π0::AbstractVector, 
+                    π::AbstractMatrix, 
+                    D::AbstractVector{<:Distribution})
+    @argcheck isprobvec(π0)
+    @argcheck istransmat(π)
+    @argcheck all(length.(D) .== length(D[1])) ArgumentError("All distributions must have the same dimensions")
+    @argcheck length(π0) == size(π,1) == length(D)
     return true
-
 end
+
+issquare(A::AbstractMatrix) = size(A,1) == size(A,2)
+istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1:size(A,1)])
 
 """
     rand(hmm::AbstractHMM, T::Int[, initial_state::Int])

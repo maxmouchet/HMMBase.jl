@@ -5,6 +5,7 @@ Hidden Markov Models for Julia.
 """
 module HMMBase
 
+using ArgCheck
 using Distributions
 using StaticArrays
 
@@ -19,6 +20,7 @@ export
     StaticHMM,
     assert_hmm,
     rand,
+    istransmat,
     n_parameters,
     # messages.jl
     messages_backwards,
