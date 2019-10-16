@@ -8,8 +8,6 @@ Random.seed!(2018)
 targets = [
     HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
     HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])]),
-    # StaticHMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
-    # StaticHMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
 ]
 
 @testset "Constructors" begin

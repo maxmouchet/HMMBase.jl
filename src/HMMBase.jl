@@ -7,7 +7,6 @@ module HMMBase
 
 using ArgCheck
 using Distributions
-using StaticArrays
 
 import Base: rand, size
 import LinearAlgebra: mul!, transpose
@@ -17,7 +16,6 @@ export
     # hmm.jl
     AbstractHMM,
     HMM,
-    StaticHMM,
     assert_hmm,
     rand,
     istransmat,

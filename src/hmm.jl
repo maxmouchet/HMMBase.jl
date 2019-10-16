@@ -38,21 +38,6 @@ HMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribut
 HMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(ones(size(π)[1])/size(π)[1], π, D)
 
 """
-    StaticHMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T}
-
-See [`HMM`](@ref).
-"""
-struct StaticHMM{F,T,K} <: AbstractHMM{F}
-    π0::SVector{K,T}
-    π::SMatrix{K,K,T}
-    D::SVector{K,Distribution{F}}
-    StaticHMM{F,T,K}(π0, π, D) where {F,T,K} = assert_hmm(π0, π, D) && new(π0, π, D)
-end
-
-StaticHMM(π0::AbstractVector{T}, π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(π0, π, D)
-StaticHMM(π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T} = StaticHMM{F,T,size(π)[1]}(ones(size(π)[1])/size(π)[1], π, D)
-
-"""
     assert_hmm(π0, π, D)
 
 Throw an `ArgumentError` if the initial state distribution and the transition matrix rows does not sum to 1,
