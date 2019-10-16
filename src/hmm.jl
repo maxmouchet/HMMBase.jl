@@ -67,11 +67,11 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 z, y = rand(hmm, 1000)
 ```
 """
-function rand(hmm::AbstractHMM, T::Int; initial_state=nothing)
-    z = zeros(Int, T)
-    y = zeros(T, length(hmm.D[1]))
+function rand(hmm::AbstractHMM, T::Int; initial_state=rand(Categorical(hmm.π0)))
+    z = Vector{Int}(undef, T)
+    y = Matrix{Float64}(undef, T, size(hmm, 2))
 
-    z[1] = initial_state == nothing ? rand(Categorical(hmm.π0)) : initial_state
+    z[1] = initial_state
     y[1,:] = rand(hmm.D[z[1]], 1)
 
     for t = 2:T
