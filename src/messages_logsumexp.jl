@@ -88,8 +88,8 @@ messages_backwards(init_distn, trans_matrix, log_likelihoods) = backward_logsume
     posteriors(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
 """
 function posteriors_logsumexp(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
-    alphas, _ = messages_forwards(init_distn, trans_matrix, log_likelihoods)
-    betas, _ = messages_backwards(init_distn, trans_matrix, log_likelihoods)
+    alphas, _ = forward_logsumexp(init_distn, trans_matrix, log_likelihoods)
+    betas, _ = backward_logsumexp(init_distn, trans_matrix, log_likelihoods)
     gammas = alphas .* betas
     gammas ./ sum(gammas, dims=2)
 end
