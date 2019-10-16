@@ -46,6 +46,8 @@ include("utilities.jl")
 
 # Deprecations
 
+include("deprecated.jl")
+
 export
     forward_backward,
     messages_backwards,

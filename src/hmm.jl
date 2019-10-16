@@ -134,9 +134,6 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
     L
 end
 
-# Deprecated
-log_likelihoods(hmm, observations) = loglikelihoods(hmm, observations)
-
 """
     n_parameters(hmm::AbstractHMM)
 

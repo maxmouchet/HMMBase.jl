@@ -69,22 +69,6 @@ Compute backward probabilities, see [Forward-backward algorithm](https://en.wiki
 end
 
 """
-    messages_forwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
-
-Compute forward probabilities, see [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
-"""
-messages_forwards(init_distn, trans_matrix, log_likelihoods) = forward_logsumexp(init_distn, trans_matrix, log_likelihoods)
-# Deprecated
-
-"""
-    messages_backwards(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
-
-Compute backward probabilities, see [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
-"""
-messages_backwards(init_distn, trans_matrix, log_likelihoods) = backward_logsumexp(init_distn, trans_matrix, log_likelihoods)
-# Deprecated
-
-"""
     posteriors(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
 """
 function posteriors_logsumexp(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
@@ -93,12 +77,6 @@ function posteriors_logsumexp(init_distn::AbstractVector, trans_matrix::Abstract
     gammas = alphas .* betas
     gammas ./ sum(gammas, dims=2)
 end
-
-"""
-    forward_backward(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
-"""
-forward_backward(init_distn, trans_matrix, log_likelihoods)
-# Deprecated
 
 # Convenience functions
 
@@ -117,19 +95,6 @@ function forward_logsumexp(hmm, observations)
 end
 
 """
-    messages_forwards(hmm, observations)
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
-alphas, logtot = messages_forwards(hmm, y)
-```
-"""
-messages_forwards(hmm, observations) = forward_logsumexp(hmm, observations)
-# Deprecated
-
-"""
     backward_logsumexp(hmm, observations)
 
 # Example
@@ -144,19 +109,6 @@ function backward_logsumexp(hmm, observations)
 end
 
 """
-    messages_backwards(hmm, observations)
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
-betas, logtot = messages_backwards(hmm, y)
-```
-"""
-messages_backwards(hmm, observations) = backward_logsumexp(hmm, observations)
-# Deprecated
-
-"""
     posteriors_logsumexp(hmm, observations)
 
 # Example
@@ -169,16 +121,3 @@ gammas = posteriors_logsumexp(hmm, y)
 function posteriors_logsumexp(hmm, observations)
     posteriors_logsumexp(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
 end
-
-"""
-    forward_backward(hmm, observations)
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
-gammas = forward_backward(hmm, y)
-```
-"""
-forward_backward(hmm, observations) = posteriors_logsumexp(hmm, observations)
-# Deprecated

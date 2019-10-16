@@ -26,7 +26,3 @@ function backward_log(trans_matrix::AbstractMatrix{Float64}, log_likelihoods::Ab
     end
     log_betas
 end
-
-# Deprecated
-messages_forwards_log(init_distn, trans_matrix, log_likelihoods) = forward_log(init_distn, trans_matrix, log_likelihoods)
-messages_backwards_log(trans_matrix, log_likelihoods) = backward_log(trans_matrix, log_likelihoods)
