@@ -42,13 +42,13 @@ end
 
     O = [1,1,2,1,1]
 
-    α, logtot_alpha = forward_log(hmm, O)
+    α, logtot_alpha = forwardlog(hmm, O)
     α = round.(α, digits=4)
 
-    β, logtot_beta = backward_log(hmm, O)
+    β, logtot_beta = backwardlog(hmm, O)
     β = round.(β, digits=4)
 
-    γ = posteriors_log(hmm, O)
+    γ = posteriorslog(hmm, O)
     γ = round.(γ, digits=4)
 
     @test α == [
@@ -95,9 +95,9 @@ end
 @testset "Integration $(typeof(hmm))" for hmm in targets
     z, y = rand(hmm, 1000)
     z_viterbi = viterbi(hmm, y)
-    α, _ = forward_log(hmm, y)
-    β, _ = backward_log(hmm, y)
-    γ = posteriors_log(hmm, y)
+    α, _ = forwardlog(hmm, y)
+    β, _ = backwardlog(hmm, y)
+    γ = posteriorslog(hmm, y)
     @test size(z) == size(z_viterbi)
     @test size(α) == size(β) == size(γ)
 

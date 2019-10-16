@@ -24,12 +24,11 @@ export
     loglikelihoods,
     # messages*.jl
     forward,
-    forward_log,
-    forward_loglog,
+    forwardlog,
     backward,
-    backward_log,
-    backward_loglog,
-    posteriors_log,
+    backwardlog,
+    posteriors,
+    posteriorslog,
     # mle.jl
     mle_step,
     fit_mle,
@@ -42,14 +41,10 @@ export
 include("hmm.jl")
 include("messages.jl")
 include("messages_log.jl")
-include("messages_loglog.jl")
+include("messages_gen.jl")
 include("mle.jl")
 include("viterbi.jl")
 include("utilities.jl")
-
-# Deprecations
-
-include("deprecated.jl")
 
 export
     forward_backward,
@@ -59,13 +54,11 @@ export
     messages_forwards_log,
 
 @deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
-@deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriors_log(init_distn, trans_matrix, log_likelihoods)
-@deprecate messages_forwards(init_distn, trans_matrix, log_likelihoods) forward_log(init_distn, trans_matrix, log_likelihoods)
-@deprecate messages_backwards(init_distn, trans_matrix, log_likelihoods) backward_log(init_distn, trans_matrix, log_likelihoods)
-@deprecate forward_backward(hmm, observations) posteriors_log(hmm, observations)
-@deprecate messages_forwards(hmm, observations) forward_log(hmm, observations)
-@deprecate messages_backwards(hmm, observations) backward_log(hmm, observations)
-@deprecate messages_forwards_log(init_distn, trans_matrix, log_likelihoods) forward_loglog(init_distn, trans_matrix, log_likelihoods)
-@deprecate messages_backwards_log(trans_matrix, log_likelihoods) backward_loglog(trans_matrix, log_likelihoods)
+@deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriorslog(init_distn, trans_matrix, log_likelihoods)
+@deprecate messages_forwards(init_distn, trans_matrix, log_likelihoods) forwardlog(init_distn, trans_matrix, log_likelihoods)
+@deprecate messages_backwards(init_distn, trans_matrix, log_likelihoods) backwardlog(init_distn, trans_matrix, log_likelihoods)
+@deprecate forward_backward(hmm, observations) posteriorslog(hmm, observations)
+@deprecate messages_forwards(hmm, observations) forwardlog(hmm, observations)
+@deprecate messages_backwards(hmm, observations) backwardlog(hmm, observations)
 
 end

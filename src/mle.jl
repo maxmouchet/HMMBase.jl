@@ -13,8 +13,8 @@ function mle_step(hmm::AbstractHMM{F}, observations) where F
 
     log_likelihoods = HMMBase.loglikelihoods(hmm, observations)
 
-    log_α = forward_loglog(hmm.π0, hmm.π, log_likelihoods)
-    log_β = backward_loglog(hmm.π, log_likelihoods)
+    log_α = log.(forwardlog(hmm.π0, hmm.π, log_likelihoods)[1])
+    log_β = log.(backwardlog(hmm.π0, hmm.π, log_likelihoods)[1])
     log_π = log.(hmm.π)
 
     normalizer = logsumexp(log_α[1,:] + log_β[1,:])
