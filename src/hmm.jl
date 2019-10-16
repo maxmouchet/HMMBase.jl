@@ -134,10 +134,8 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
     L
 end
 
-function log_likelihoods(hmm, observations)
-    @warn "log_likelihoods will be renamed to loglikelihoods in the future."
-    loglikelihoods(hmm, observations)
-end
+# Deprecated
+log_likelihoods(hmm, observations) = loglikelihoods(hmm, observations)
 
 """
     n_parameters(hmm::AbstractHMM)

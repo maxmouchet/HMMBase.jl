@@ -20,6 +20,8 @@ export
     rand,
     istransmat,
     n_parameters,
+    likelihoods,
+    loglikelihoods,
     # messages.jl
     messages_backwards,
     messages_backwards_log,
@@ -41,4 +43,5 @@ include("mle.jl")
 include("viterbi.jl")
 include("utilities.jl")
 
+@deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
 end
