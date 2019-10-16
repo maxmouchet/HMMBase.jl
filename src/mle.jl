@@ -11,7 +11,7 @@ hmm, log_likelihood = mle_step(hmm, observations)
 function mle_step(hmm::AbstractHMM{F}, observations) where F
     # NOTE: This function works but there is room for improvement.
 
-    log_likelihoods = HMMBase.log_likelihoods(hmm, observations)
+    log_likelihoods = HMMBase.loglikelihoods(hmm, observations)
 
     log_α = messages_forwards_log(hmm.π0, hmm.π, log_likelihoods)
     log_β = messages_backwards_log(hmm.π, log_likelihoods)

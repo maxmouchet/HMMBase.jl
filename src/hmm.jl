@@ -108,32 +108,35 @@ size(hmm) # (2,1)
 """
 size(hmm::AbstractHMM, dim=:) = (length(hmm.D), length(hmm.D[1]))[dim]
 
-# TODO: Naming ?
 function likelihoods(hmm::AbstractHMM{Univariate}, observations)
     hcat(map(d -> pdf.(d, observations), hmm.D)...)
 end
 
 function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    # OPTIMIZE ?
-    ls = zeros(size(observations)[1], size(hmm)[1])
-    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
-        ls[t,i] = pdf(hmm.D[i], view(observations,t,:))
+    T, K = size(observations, 1), size(hmm, 1)
+    L = Matrix{Float64}(undef, T, K)
+    @inbounds for i = 1:K, t = 1:T
+        L[t,i] = pdf(hmm.D[i], view(observations,t,:))
     end
-    ls
+    L
 end
 
-# TODO: Naming ?
-function log_likelihoods(hmm::AbstractHMM{Univariate}, observations)
+function loglikelihoods(hmm::AbstractHMM{Univariate}, observations)
     hcat(map(d -> logpdf.(d, observations), hmm.D)...)
 end
 
-function log_likelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    # OPTIMIZE ?
-    lls = zeros(size(observations)[1], size(hmm)[1])
-    @inbounds for i = 1:size(hmm)[1], t = 1:size(observations)[1]
-        lls[t,i] = logpdf(hmm.D[i], view(observations,t,:))
+function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
+    T, K = size(observations, 1), size(hmm, 1)
+    L = Matrix{Float64}(undef, T, K)
+    @inbounds for i = 1:K, t = 1:T
+        L[t,i] = pdf(hmm.D[i], view(observations,t,:))
     end
-    lls
+    L
+end
+
+function log_likelihoods(hmm, observations)
+    @warn "log_likelihoods will be renamed to loglikelihoods in the future."
+    loglikelihoods(hmm, observations)
 end
 
 """

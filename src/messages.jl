@@ -145,7 +145,7 @@ alphas, logtot = messages_forwards(hmm, y)
 ```
 """
 function messages_forwards(hmm, observations)
-    messages_forwards(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
+    messages_forwards(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
 end
 
 """
@@ -159,7 +159,7 @@ betas, logtot = messages_backwards(hmm, y)
 ```
 """
 function messages_backwards(hmm, observations)
-    messages_backwards(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
+    messages_backwards(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
 end
 
 """
@@ -173,5 +173,5 @@ gammas = forward_backward(hmm, y)
 ```
 """
 function forward_backward(hmm, observations)
-    forward_backward(hmm.π0, hmm.π, log_likelihoods(hmm, observations))
+    forward_backward(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
 end
