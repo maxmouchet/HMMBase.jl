@@ -49,19 +49,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "hmm/#HMMBase.StaticHMM",
-    "page": "Types",
-    "title": "HMMBase.StaticHMM",
-    "category": "type",
-    "text": "StaticHMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where {F,T}\n\nSee HMM.\n\n\n\n\n\n"
-},
-
-{
     "location": "hmm/#HMMBase.assert_hmm",
     "page": "Types",
     "title": "HMMBase.assert_hmm",
     "category": "function",
-    "text": "assert_hmm(π0::AbstractVector{Float64}, π::AbstractMatrix{Float64}, D::AbstractVector{<:Distribution})\n\nThrow an AssertionError if the initial state distribution and the transition matrix rows does not sum to 1, and if the observations distributions does not have the same dimensions.\n\n\n\n\n\n"
+    "text": "assert_hmm(π0, π, D)\n\nThrow an ArgumentError if the initial state distribution and the transition matrix rows does not sum to 1, and if the observations distributions does not have the same dimensions.\n\n\n\n\n\n"
 },
 
 {
@@ -69,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Types",
     "title": "Base.size",
     "category": "method",
-    "text": "size(hmm::AbstractHMM)\n\nReturns the number of states in the HMM and the dimension of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
+    "text": "size(hmm::AbstractHMM, [dim])\n\nReturns the number of states in the HMM and the dimension of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
 },
 
 {
@@ -77,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Types",
     "title": "Types",
     "category": "section",
-    "text": "AbstractHMM\nHMM\nStaticHMM\nassert_hmm\nsize(::AbstractHMM)"
+    "text": "AbstractHMM\nHMM\nassert_hmm\nsize(::AbstractHMM)"
 },
 
 {
