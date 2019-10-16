@@ -16,3 +16,26 @@ end
 # Generate random HMM of size K
 
 # ...
+
+
+@inline function normalize!(v::AbstractVector)
+    norm = sum(v)
+    v ./= norm
+    norm
+end
+
+# ~2x times faster than Base.maximum
+# v = rand(25)
+# @btime maximum(v)
+# @btime vec_maximum(v)
+#   63.909 ns (1 allocation: 16 bytes)
+#   30.307 ns (1 allocation: 16 bytes)
+function vec_maximum(v::AbstractVector)
+    m = v[1]
+    @inbounds for i = Base.OneTo(length(v))
+        if v[i] > m
+            m = v[i]
+        end
+    end
+    m
+end
