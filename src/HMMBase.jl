@@ -9,8 +9,7 @@ using ArgCheck
 using Distributions
 
 import Base: rand, size
-import LinearAlgebra: mul!, transpose
-import StatsFuns: logsumexp
+import StatsFuns: logsumexp # TODO: Remove after mle update
 
 export
     # hmm.jl

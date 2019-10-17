@@ -17,13 +17,6 @@ end
 
 # ...
 
-
-@inline function normalize!(v::AbstractVector)
-    norm = sum(v)
-    v ./= norm
-    norm
-end
-
 # ~2x times faster than Base.maximum
 # v = rand(25)
 # @btime maximum(v)
