@@ -60,5 +60,7 @@ export
 @deprecate forward_backward(hmm, observations) posteriorslog(hmm, observations)
 @deprecate messages_forwards(hmm, observations) forwardlog(hmm, observations)
 @deprecate messages_backwards(hmm, observations) backwardlog(hmm, observations)
+@deprecate messages_forwards_log(init_distn, trans_matrix, log_likelihoods) log.(forwardlog(init_distn, trans_matrix, log_likelihoods)[1])
+@deprecate messages_backwards_log(trans_matrix, log_likelihoods) log.(backwardlog(init_distn, trans_matrix, log_likelihoods)[1])
 
 end

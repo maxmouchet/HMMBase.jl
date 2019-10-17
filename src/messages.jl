@@ -75,32 +75,3 @@ function posteriors!(γ::AbstractMatrix, α::AbstractMatrix, β::AbstractMatrix)
         end
     end
 end
-
-"""
-    posteriors(α, β)
-
-Compute posterior probabilities. See [`posteriors!`](@ref).
-"""
-function posteriors(α::AbstractMatrix, β::AbstractMatrix)
-    γ = Matrix{Float64}(undef, size(L))
-    posteriors!(γ, α, β)
-    γ
-end
-
-"""
-    posteriors(hmm, observations)
-
-Compute posterior probabilities. See [`posteriors!`](@ref).
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
-γ = posteriors(hmm, y)
-```
-"""
-function posteriors(hmm::AbstractHMM, observations)
-    α, _ = forward(hmm, observations)
-    β, _ = backward(hmm, observations)
-    posteriors(α, β)
-end

@@ -75,28 +75,3 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
 
     c[1] *= exp(m);
 end
-
-"""
-    posteriorslog(init_distn, trans_matrix, log_likelihoods)
-
-See [`posteriors`](@ref).
-"""
-function posteriorslog(init_distn::AbstractVector, trans_matrix::AbstractMatrix, log_likelihoods::AbstractMatrix)
-    alphas, _ = forwardlog(init_distn, trans_matrix, log_likelihoods)
-    betas, _ = backwardlog(init_distn, trans_matrix, log_likelihoods)
-    gammas = alphas .* betas
-    gammas ./ sum(gammas, dims=2)
-end
-
-# Convenience functions
-
-for (f, s) in (:forwardlog => "α", :backwardlog => "β", :posteriorslog => "γ")
-    @eval begin
-        """
-            $($f)(hmm, observations)
-        """
-        function $(f)(hmm::AbstractHMM, observations)
-            $(f)(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
-        end
-    end
-end
