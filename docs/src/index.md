@@ -33,4 +33,4 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Categorical([0.3, 0.7]), Categorical([0.8, 0.2])]
 hmm = HMM([0.9 0.1; 0.1 0.9], [Multinomial(10, [0.3, 0.7]), Multinomial(10, [0.8, 0.2])])
 ```
 
-*Logo: Blockchain by Pablo Rozenberg from the Noun Project.*
+*Logo: lego by jon trillana from the Noun Project.*
