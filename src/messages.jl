@@ -17,7 +17,7 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
         α[1,j] /= c[1]
     end
 
-    for t in 2:T
+    @inbounds for t in 2:T
         for j in Base.OneTo(K)
             for i in Base.OneTo(K)
                 α[t,j] += α[t-1,i] * A[i,j] * L[t,j]
@@ -42,7 +42,7 @@ function backward!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::
         β[end,j] = 1.0
     end
 
-    for t in T-1:-1:1
+    @inbounds for t in T-1:-1:1
         for j in Base.OneTo(K)
             for i in Base.OneTo(K)
                 β[t,j] += β[t+1,i] * A[j,i] * L[t+1,i]

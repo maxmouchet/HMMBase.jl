@@ -21,7 +21,7 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
 
     c[1] *= exp(m)
 
-    for t in 2:T
+    @inbounds for t in 2:T
         m = vec_maximum(view(LL, t, :))
 
         for j in Base.OneTo(K)
@@ -50,7 +50,7 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
         β[end,j] = 1.0
     end
 
-    for t in T-1:-1:1
+    @inbounds for t in T-1:-1:1
         m = vec_maximum(view(LL, t+1, :))
 
         for j in Base.OneTo(K)
