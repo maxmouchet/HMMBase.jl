@@ -15,10 +15,11 @@ export
     # hmm.jl
     AbstractHMM,
     HMM,
-    assert_hmm,
     rand,
+    size,
+    nparams,
+    assert_hmm,
     istransmat,
-    n_parameters,
     likelihoods,
     loglikelihoods,
     # messages*.jl
@@ -32,27 +33,33 @@ export
     mle_step,
     fit_mle,
     fit_mle!,
-    # viterbi.jl
+    # viterbi*.jl
     viterbi,
     # utils.jl,
     compute_transition_matrix
 
 include("hmm.jl")
+include("mle.jl")
 include("messages.jl")
 include("messages_log.jl")
 include("messages_gen.jl")
-include("mle.jl")
 include("viterbi.jl")
 include("viterbi_gen.jl")
 include("utilities.jl")
 
+# To be removed in a future version
+# ---------------------------------
+
 export
+    n_parameters,
+    log_likelihoods,
     forward_backward,
     messages_backwards,
     messages_backwards_log,
     messages_forwards,
     messages_forwards_log
 
+@deprecate n_parameters(hmm) nparams(hmm)
 @deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
 @deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriorslog(init_distn, trans_matrix, log_likelihoods)
 @deprecate messages_forwards(init_distn, trans_matrix, log_likelihoods) forwardlog(init_distn, trans_matrix, log_likelihoods)
