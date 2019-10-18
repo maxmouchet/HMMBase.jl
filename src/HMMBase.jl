@@ -43,6 +43,7 @@ include("messages_log.jl")
 include("messages_gen.jl")
 include("mle.jl")
 include("viterbi.jl")
+include("viterbi_gen.jl")
 include("utilities.jl")
 
 export
@@ -50,7 +51,7 @@ export
     messages_backwards,
     messages_backwards_log,
     messages_forwards,
-    messages_forwards_log,
+    messages_forwards_log
 
 @deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
 @deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriorslog(init_distn, trans_matrix, log_likelihoods)

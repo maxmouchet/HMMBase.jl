@@ -83,10 +83,6 @@ end
     z, y = rand(hmm, 1000);
     z_viterbi = viterbi(hmm, y)
     @test z == z_viterbi
-
-    # Viterbi with a uniform initial distribution
-    #(Only to make sure the code path works)
-    viterbi(hmm.π, HMMBase.likelihoods(hmm, y))
 end
 
 # Test high-level API interfaces (types compatibility, ...)

@@ -1,66 +1,57 @@
+# Original implementations by @nantonel
+# https://github.com/maxmouchet/HMMBase.jl/pull/6
+
 """
-    viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
+    viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix)
 
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
-function viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
-    # TODO: Benchmark/optimize and cleanup code
-    likelihoods = likelihoods' # Swap dims for better mem. perf ?
-    K, T = size(likelihoods)
-    
-    T1 = zeros(K,T)
-    T2 = zeros(Int,K,T)
+function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix)
+    T, K = size(L)
 
-    T1[:,1] = init_distn.*likelihoods[:,1]
-    T1[:,1] /= sum(T1[:,1])
+    fill!(T1, 0.0)
+    fill!(T2, 0)
 
-    @inbounds for t = 2:T
-        for j in 1:K
+    c = 0.0
+
+    for i in Base.OneTo(K)
+        T1[1,i] = a[i] * L[1,i]
+        c += T1[1,i]
+    end
+
+    for i in Base.OneTo(K)
+        T1[1,i] /= c
+    end
+
+    @inbounds for t in 2:T
+        c = 0.0
+
+        for j in Base.OneTo(K)
             amax = 0
             vmax = -Inf
-            for k in 1:K
-                v = T1[k,t-1]*trans_matrix[k,j]*likelihoods[j,t]
+
+            for i in Base.OneTo(K)
+                v = T1[t-1,i] * A[i,j]
                 if v > vmax
-                    amax = k
+                    amax = i
                     vmax = v
                 end
             end
-            T1[j,t] = vmax
-            T2[j,t] = amax
+
+            T1[t,j] = vmax * L[t,j]
+            T2[t,j] = amax
+            c += T1[t,j]
         end
-        T1[:,t] /= sum(T1[:,t])
+
+        for i in Base.OneTo(K)
+            T1[t,i] /= c
+        end
     end
 
-    z = zeros(Int,T)
-    _, z[T] = findmax(T1[:,T])
-    @inbounds for t in T:-1:2
-        z[t-1] = T2[z[t],t]
+    z[T] = argmax(T1[T,:])
+    @inbounds for t in T-1:-1:1
+        z[t] = T2[t+1,z[t+1]]
     end
-    
+
     z
-end
-
-"""
-    viterbi(trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
-
-Assume an uniform initial distribution.
-"""
-function viterbi(trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)
-    init_distn = ones(size(trans_matrix)[1])/size(trans_matrix)[1]
-    viterbi(init_distn, trans_matrix, likelihoods)
-end
-
-"""
-    viterbi(hmm::HMM, observations::Vector)
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);
-z, y = rand(hmm, 1000);
-z_viterbi = viterbi(hmm, y)
-z == z_viterbi
-```
-"""
-function viterbi(hmm::AbstractHMM, observations)
-    viterbi(hmm.π0, hmm.π, likelihoods(hmm, observations))
 end
