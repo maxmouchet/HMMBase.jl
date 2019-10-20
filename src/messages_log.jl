@@ -3,6 +3,9 @@
 
 # In-place forward pass, where α and c are allocated beforehand.
 function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
+    @argcheck size(α, 1) == size(LL, 1) == size(c, 1)
+    @argcheck size(α, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+
     T, K = size(LL)
 
     fill!(α, 0.0)
@@ -41,6 +44,9 @@ end
 
 # In-place backward pass, where β and c are allocated beforehand.
 function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
+    @argcheck size(β, 1) == size(LL, 1) == size(c, 1)
+    @argcheck size(β, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+
     T, K = size(LL)
 
     fill!(β, 0.0)

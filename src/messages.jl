@@ -3,6 +3,9 @@
 
 # In-place forward pass, where α and c are allocated beforehand.
 function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix)
+    @argcheck size(α, 1) == size(L, 1) == size(c, 1)
+    @argcheck size(α, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+
     T, K = size(L)
 
     fill!(α, 0.0)
@@ -33,6 +36,9 @@ end
 
 # In-place backward pass, where β and c are allocated beforehand.
 function backward!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix)
+    @argcheck size(β, 1) == size(L, 1) == size(c, 1)
+    @argcheck size(β, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+
     T, K = size(L)
 
     fill!(β, 0.0)
@@ -62,6 +68,7 @@ end
 
 # In-place posterior computation, where γ is allocated beforehand.
 function posteriors!(γ::AbstractMatrix, α::AbstractMatrix, β::AbstractMatrix)
+    @argcheck size(γ) == size(α) == size(β)
     T, K = size(α)
     for t in Base.OneTo(T)
         c = 0.0
