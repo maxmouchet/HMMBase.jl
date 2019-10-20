@@ -121,14 +121,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "inference/#HMMBase.viterbi",
-    "page": "Inference",
-    "title": "HMMBase.viterbi",
-    "category": "function",
-    "text": "viterbi(init_distn::AbstractVector, trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)\n\nFind the most likely hidden state sequence, see Viterbi algorithm.\n\n\n\n\n\nviterbi(trans_matrix::AbstractMatrix, likelihoods::AbstractMatrix)\n\nAssume an uniform initial distribution.\n\n\n\n\n\nviterbi(hmm::HMM, observations::Vector)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]);\nz, y = rand(hmm, 1000);\nz_viterbi = viterbi(hmm, y)\nz == z_viterbi\n\n\n\n\n\n"
-},
-
-{
     "location": "inference/#Viterbi-1",
     "page": "Inference",
     "title": "Viterbi",
