@@ -85,7 +85,9 @@ end
     # TODO: Better viterbi tests....
     z, y = rand(hmm, 1000);
     z_viterbi = viterbi(hmm, y)
+    z_viterbilog = viterbilog(hmm, y)
     @test z == z_viterbi
+    # @test z == z_viterbilog
 end
 
 # Test high-level API interfaces (types compatibility, ...)
