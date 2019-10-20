@@ -25,7 +25,23 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "hmm/#",
+    "location": "notations/#",
+    "page": "Notations",
+    "title": "Notations",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "notations/#Notations-1",
+    "page": "Notations",
+    "title": "Notations",
+    "category": "section",
+    "text": "Symbol Shape Description\nK - Number of states in an HMM\nT - Number of observations\na K Initial state distribution\nA KxK Transition matrix\nB K Vector of observations distributions\nα TxK Forward filter\nβ TxK Backward filter\nγ TxK Posteriors (α * β)Before version 1.0:Symbol Shape Description\nπ0 K Initial state distribution\nπ KxK Transition matrix\nD K Vector of observation distributions"
+},
+
+{
+    "location": "types/#",
     "page": "Types",
     "title": "Types",
     "category": "page",
@@ -33,43 +49,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "hmm/#HMMBase.AbstractHMM",
-    "page": "Types",
-    "title": "HMMBase.AbstractHMM",
-    "category": "type",
-    "text": "AbstractHMM{F<:VariateForm}\n\nAn HMM type must at-least implement the following interface:\n\nstruct CustomHMM{F,T} <: AbstractHMM{F}\n    π0::AbstractVector{T}              # Initial state distribution\n    π::AbstractMatrix{T}               # Transition matrix\n    D::AbstractVector{Distribution{F}} # Observations distributions\n    # Custom fields ....\nend\n\n\n\n\n\n"
-},
-
-{
-    "location": "hmm/#HMMBase.HMM",
-    "page": "Types",
-    "title": "HMMBase.HMM",
-    "category": "type",
-    "text": "HMM([π0::AbstractVector{T}, ]π::AbstractMatrix{T}, D::AbstractVector{<:Distribution{F}}) where F where T\n\nBuild an HMM with transition matrix π and observations distributions D.   If the initial state distribution π0 is not specified, a uniform distribution is assumed. \n\nObservations distributions can be of different types (for example Normal and Exponential).   However they must be of the same dimension (all scalars or all multivariates).\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\n\n\n\n\n\n"
-},
-
-{
-    "location": "hmm/#HMMBase.assert_hmm",
-    "page": "Types",
-    "title": "HMMBase.assert_hmm",
-    "category": "function",
-    "text": "assert_hmm(π0, π, D)\n\nThrow an ArgumentError if the initial state distribution and the transition matrix rows does not sum to 1, and if the observations distributions does not have the same dimensions.\n\n\n\n\n\n"
-},
-
-{
-    "location": "hmm/#Base.size-Tuple{AbstractHMM}",
-    "page": "Types",
-    "title": "Base.size",
-    "category": "method",
-    "text": "size(hmm::AbstractHMM, [dim])\n\nReturns the number of states in the HMM and the dimension of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
-},
-
-{
-    "location": "hmm/#Types-1",
+    "location": "types/#Types-1",
     "page": "Types",
     "title": "Types",
     "category": "section",
-    "text": "AbstractHMM\nHMM\nassert_hmm\nsize(::AbstractHMM)"
+    "text": "AbstractHMM\nHMM\nistransmat\nnparams\ncopy\nsize"
 },
 
 {
@@ -89,35 +73,67 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "inference/#Forward-backward-1",
+    "location": "inference/#HMMBase.forward",
     "page": "Inference",
-    "title": "Forward-backward",
-    "category": "section",
-    "text": "messages_forwards\nmessages_backwards\nforward_backward"
-},
-
-{
-    "location": "inference/#HMMBase.fit_mle!",
-    "page": "Inference",
-    "title": "HMMBase.fit_mle!",
+    "title": "HMMBase.forward",
     "category": "function",
-    "text": "fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)\n\nPerform EM (Baum-Welch) steps until max_iterations is reached, or the change in the log-likelihood is smaller than eps.\n\nExample\n\nhmm, log_likelihood = fit_mle!(hmm, observations)\n\n\n\n\n\n"
+    "text": "HMMBase.forward(a, A, L)\n\nCompute HMMBase.forward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.forward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forward(hmm, y)\n\n\n\n\n\n"
 },
 
 {
-    "location": "inference/#HMMBase.mle_step",
+    "location": "inference/#HMMBase.backward",
     "page": "Inference",
-    "title": "HMMBase.mle_step",
+    "title": "HMMBase.backward",
     "category": "function",
-    "text": "mle_step(hmm::AbstractHMM{F}, observations) where F\n\nPerform one step of the EM (Baum-Welch) algorithm.\n\nExample\n\nhmm, log_likelihood = mle_step(hmm, observations)\n\n\n\n\n\n"
+    "text": "HMMBase.backward(a, A, L)\n\nCompute HMMBase.backward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.backward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backward(hmm, y)\n\n\n\n\n\n"
 },
 
 {
-    "location": "inference/#Baum–Welch-algorithm-1",
+    "location": "inference/#HMMBase.posteriors",
     "page": "Inference",
-    "title": "Baum–Welch algorithm",
+    "title": "HMMBase.posteriors",
+    "category": "function",
+    "text": "posteriors(α, β)\n\nCompute posterior probabilities from α and β.\n\n\n\n\n\nposteriors(a, A, L)\n\nCompute posterior probabilities using samples likelihoods.\n\n\n\n\n\nposteriors(hmm, observations)\n\nCompute posterior probabilities using samples likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.forwardlog",
+    "page": "Inference",
+    "title": "HMMBase.forwardlog",
+    "category": "function",
+    "text": "HMMBase.forwardlog(a, A, LL)\n\nCompute HMMBase.forward probabilities using samples log-likelihoods. See HMMBase.forward.\n\n\n\n\n\nHMMBase.forwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forwardlog(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.backwardlog",
+    "page": "Inference",
+    "title": "HMMBase.backwardlog",
+    "category": "function",
+    "text": "HMMBase.backwardlog(a, A, LL)\n\nCompute HMMBase.backward probabilities using samples log-likelihoods. See HMMBase.backward.\n\n\n\n\n\nHMMBase.backwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backwardlog(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#HMMBase.posteriorslog",
+    "page": "Inference",
+    "title": "HMMBase.posteriorslog",
+    "category": "function",
+    "text": "posteriorslog(α, A, L)\n\nCompute posterior probabilities using samples log-likelihoods.\n\n\n\n\n\nposteriorslog(hmm, observations)\n\nCompute posterior probabilities using samples log-likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "inference/#Forward-Backward-1",
+    "page": "Inference",
+    "title": "Forward-Backward",
     "category": "section",
-    "text": "fit_mle!\nmle_step"
+    "text": "forward\nbackward\nposteriors\nforwardlog\nbackwardlog\nposteriorslog"
+},
+
+{
+    "location": "inference/#Baum–Welch-1",
+    "page": "Inference",
+    "title": "Baum–Welch",
+    "category": "section",
+    "text": "fit_mle"
 },
 
 {
@@ -125,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Inference",
     "title": "Viterbi",
     "category": "section",
-    "text": "viterbi"
+    "text": "viterbi\nviterbilog"
 },
 
 {
@@ -137,19 +153,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sampling/#Base.rand-Tuple{AbstractHMM,Int64}",
+    "location": "sampling/#Base.rand",
     "page": "Sampling",
     "title": "Base.rand",
-    "category": "method",
-    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\n"
-},
-
-{
-    "location": "sampling/#Base.rand-Tuple{AbstractHMM,AbstractArray{Int64,1}}",
-    "page": "Sampling",
-    "title": "Base.rand",
-    "category": "method",
-    "text": "rand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
+    "category": "function",
+    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\nrand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
 },
 
 {
@@ -157,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Sampling",
     "title": "Sampling",
     "category": "section",
-    "text": "rand(hmm::AbstractHMM, T::Int)\nrand(hmm::AbstractHMM, z::AbstractVector{Int})"
+    "text": "rand"
 },
 
 {
@@ -194,18 +202,34 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "examples/mle/#",
-    "page": "MLE Estimator",
-    "title": "MLE Estimator",
+    "page": "Maximum Likelihood Estimation",
+    "title": "Maximum Likelihood Estimation",
     "category": "page",
     "text": "EditURL = \"https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/mle.jl\""
 },
 
 {
-    "location": "examples/mle/#MLE-Estimator-1",
-    "page": "MLE Estimator",
-    "title": "MLE Estimator",
+    "location": "examples/mle/#Maximum-Likelihood-Estimation-1",
+    "page": "Maximum Likelihood Estimation",
+    "title": "Maximum Likelihood Estimation",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plots\n\ny1 = rand(Normal(0,2), 1000)\ny2 = rand(Normal(10,1), 500)\ny = vcat(y1, y2, y1, y2)\n\nplot(y, linetype=:steppre, size=(600,200))For now HMMBase does not handle the initialization of the parameters. Hence we must instantiate an initial HMM by hand.hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,1), Normal(15,1)])\nhmm, log_likelihood = fit_mle!(hmm, y, verbose=true)z_viterbi = viterbi(hmm, y)\nplot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))We can also perform individual EM steps.hmm, log_likelihood = mle_step(hmm, y)This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\ny1 = rand(Normal(0,2), 1000)\ny2 = rand(Normal(10,1), 500)\ny = vcat(y1, y2, y1, y2)\n\nplot(y, linetype=:steppre, size=(600,200))For now HMMBase does not handle the initialization of the parameters. Hence we must instantiate an initial HMM by hand.hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,2), Normal(15,2)])\nhmm = fit_mle(hmm, y, verbose=true)z_viterbi = viterbi(hmm, y)\nplot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
+},
+
+{
+    "location": "internals/#",
+    "page": "Internals",
+    "title": "Internals",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "internals/#Internals-1",
+    "page": "Internals",
+    "title": "Internals",
+    "category": "section",
+    "text": ""
 },
 
 {
