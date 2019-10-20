@@ -34,7 +34,10 @@ end
     @test y[:] == z
 end
 
-@testset "Messages" begin
+@testset "Messages $f" for f in [
+    (forward, backward, posteriors),
+    (forwardlog, backwardlog, posteriorslog)
+]
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
     π = [0.7 0.3; 0.3 0.7]
     D = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]
@@ -42,13 +45,13 @@ end
 
     O = [1,1,2,1,1]
 
-    α, logtot_alpha = forwardlog(hmm, O)
+    α, logtot_alpha = f[1](hmm, O)
     α = round.(α, digits=4)
 
-    β, logtot_beta = backwardlog(hmm, O)
+    β, logtot_beta = f[2](hmm, O)
     β = round.(β, digits=4)
 
-    γ = posteriorslog(hmm, O)
+    γ = f[3](hmm, O)
     γ = round.(γ, digits=4)
 
     @test α == [

@@ -36,7 +36,8 @@ export
     # viterbi*.jl
     viterbi,
     # utils.jl,
-    compute_transition_matrix
+    compute_transition_matrix,
+    rand_transition_matrix
 
 include("hmm.jl")
 include("mle.jl")

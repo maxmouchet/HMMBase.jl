@@ -1,5 +1,3 @@
-# Compute transition matrix
-
 function compute_transition_matrix(seq::Vector{Int64})
     # /!\ Sort is important here, so that we don't relabel already contiguous states.
     mapping = Dict([(x[2], x[1]) for x in enumerate(sort(unique(seq)))])
@@ -9,6 +7,15 @@ function compute_transition_matrix(seq::Vector{Int64})
     end
     transmat = transmat ./ sum(transmat, dims=2)
     mapping, transmat
+end
+
+function rand_transition_matrix(K::Integer, α = 1.0)
+    prior = Dirichlet(K, α)
+    A = Matrix{Float64}(undef, K, K)
+    for i in Base.OneTo(K)
+        A[i,:] = rand(prior)
+    end
+    A
 end
 
 # Align sequences
