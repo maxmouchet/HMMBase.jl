@@ -102,7 +102,7 @@ end
     @test size(z) == size(z_viterbi)
     @test size(α) == size(β) == size(γ)
 
-    new_hmm, _ = fit_mle!(hmm, y)
+    new_hmm = fit_mle(hmm, y)
     @test size(new_hmm) == size(hmm)
     @test typeof(new_hmm) == typeof(hmm)
 end
