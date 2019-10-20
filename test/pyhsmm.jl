@@ -48,8 +48,10 @@ end
         zeros(Int32, size(LL,1))
     ) 
     
-    res = viterbi(hmm.π0, hmm.π, L)
+    res1 = viterbi(hmm.π0, hmm.π, L)
+    res2 = viterbilog(hmm.π0, hmm.π, LL)
 
-    # Python indices are shifted by 1
-    @test res == (ref .+ 1)
+    # Python indices are off by 1
+    @test res1 == (ref .+ 1)
+    @test res2 == (ref .+ 1)
 end

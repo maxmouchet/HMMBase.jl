@@ -35,6 +35,7 @@ export
     fit_mle!,
     # viterbi*.jl
     viterbi,
+    viterbilog,
     # utils.jl,
     compute_transition_matrix,
     rand_transition_matrix
@@ -45,6 +46,7 @@ include("messages.jl")
 include("messages_log.jl")
 include("messages_gen.jl")
 include("viterbi.jl")
+include("viterbi_log.jl")
 include("viterbi_gen.jl")
 include("utilities.jl")
 
