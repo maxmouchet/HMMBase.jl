@@ -1,80 +1,98 @@
-"""
-    mle_step(hmm::AbstractHMM{F}, observations) where F
+# TODO: Viterbi EM
 
-Perform one step of the EM (Baum-Welch) algorithm.
-
-# Example
-```julia
-hmm, log_likelihood = mle_step(hmm, observations)
-```
-"""
-function mle_step(hmm::AbstractHMM{F}, observations) where F
-    # NOTE: This function works but there is room for improvement.
-
-    log_likelihoods = HMMBase.loglikelihoods(hmm, observations)
-
-    log_α = log.(forwardlog(hmm.π0, hmm.π, log_likelihoods)[1])
-    log_β = log.(backwardlog(hmm.π0, hmm.π, log_likelihoods)[1])
-    log_π = log.(hmm.π)
-
-    normalizer = logsumexp(log_α[1,:] + log_β[1,:])
-
-    # E-step
-
-    T, K = size(log_likelihoods)
-    log_ξ = zeros(T-1, K, K)
-
-    @inbounds for t = 1:T-1, i = 1:K, j = 1:K
-        log_ξ[t,i,j] = log_α[t,i] + log_π[i,j] + log_β[t+1,j] + log_likelihoods[t+1,j] - normalizer
+# In-place update of the initial state distribution.
+function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
+    for i in 1:length(a)
+        a[i] = α[1,i] * β[1,i]
     end
-
-    ξ = exp.(log_ξ)
-    ξ ./= sum(ξ, dims=[2,3])
-
-    # M-step
-
-    new_π = sum(ξ, dims=1)[1,:,:]
-    new_π ./= sum(new_π, dims=2)
-
-    new_π0 = exp.((log_α[1,:] + log_β[1,:]) .- normalizer)
-    new_π0 ./= sum(new_π0)
-
-    # TODO: Cleanup/optimize this part
-    γ = exp.((log_α .+ log_β) .- normalizer)
-
-    D = Distribution{F}[]
-    for (i, d) in enumerate(hmm.D)
-        # Super hacky...
-        # https://github.com/JuliaStats/Distributions.jl/issues/809
-        push!(D, fit_mle(eval(typeof(d).name.name), permutedims(observations), γ[:,i]))
-    end
-
-    typeof(hmm)(new_π0, new_π, D), normalizer
 end
 
-# function fit_mle(::Type{U}, y; initialization=) where U <: AbstractHMM
-# TODO
-# end
+# In-place update of the transition matrix.
+function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β::AbstractMatrix, LL::AbstractMatrix)
+    T, K = size(LL)
 
-"""
-    fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)
+    @inbounds for t in 1:T-1
+        m = vec_maximum(view(LL, t, :))
+        c = 0.0
 
-Perform EM (Baum-Welch) steps until `max_iterations` is reached, or the change in the log-likelihood is smaller than `eps`.
+        for i in 1:K, j in 1:K
+            ξ[t,i,j] = α[t,i] * A[i,j] * exp(LL[t+1,j] - m) * β[t+1,j]
+            c += ξ[t,i,j]
+        end
 
-# Example
-```julia
-hmm, log_likelihood = fit_mle!(hmm, observations)
-```
-"""
-function fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, max_iterations=100, verbose=false)
-    new_hmm, last_norm = mle_step(hmm, observations)
-    for i = 2:max_iterations
-        new_hmm, norm = mle_step(new_hmm, observations)
-        if abs(last_norm - norm) < eps
-            verbose && println("Converged after $(i) iterations")
+        for i in 1:K, j in 1:K
+            ξ[t,i,j] /= c
+        end
+    end
+
+    fill!(A, 0.0)
+
+    @inbounds for i in 1:K
+        c = 0.0
+
+        for j in 1:K
+            for t in 1:T
+                A[i,j] += ξ[t,i,j]
+            end
+            c += A[i,j]
+        end
+        
+        for j in 1:K
+            A[i,j] /= c
+        end
+    end
+end
+
+# In-place update of the observations distributions.
+function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
+    for i in 1:length(B)
+        B[i] = fit_mle(typeof(B[i]), permutedims(observations), γ[:,i])
+    end
+end
+
+function fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, maxit=100, verbose=false)
+    # TODO: In-place loglikelihoods update
+    LL = loglikelihoods(hmm, observations)
+    T, K = size(LL)
+
+    # Allocate memory for in-place updates
+    c = Vector{Float64}(undef, T)
+    α = Matrix{Float64}(undef, T, K)
+    β = Matrix{Float64}(undef, T, K)
+    γ = Matrix{Float64}(undef, T, K)
+    ξ = Array{Float64}(undef, T, K, K)
+
+    forwardlog!(α, c, hmm.π0, hmm.π, LL)
+    backwardlog!(β, c, hmm.π0, hmm.π, LL)
+    posteriors!(γ, α, β)
+
+    logtot = sum(log.(c))
+    verbose && println("Iteration 0: logtot = $logtot")
+
+    for it in 1:maxit
+        update_a!(hmm.π0, α, β)
+        update_A!(hmm.π, ξ, α, β, LL)
+        update_B!(hmm.D, γ, observations)
+
+        LL = loglikelihoods(hmm, observations)
+
+        forwardlog!(α, c, hmm.π0, hmm.π, LL)
+        backwardlog!(β, c, hmm.π0, hmm.π, LL)
+        posteriors!(γ, α, β)
+
+        logtotp = sum(log.(c))
+        println("Iteration $it: logtot = $logtotp")
+
+        if abs(logtotp - logtot) < eps
             break
         end
-        last_norm = norm
+
+        logtot = logtotp
     end
-    new_hmm, last_norm
+end
+
+function fit_mle(hmm::AbstractHMM, observations; kwargs...)
+    hmm = copy(hmm)
+    fit_mle!(hmm, observations; kwargs...)
+    hmm
 end

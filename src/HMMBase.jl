@@ -8,13 +8,14 @@ module HMMBase
 using ArgCheck
 using Distributions
 
-import Base: rand, size
-import StatsFuns: logsumexp # TODO: Remove after mle update
+import Base: copy, rand, size
+import Distributions: fit_mle
 
 export
     # hmm.jl
     AbstractHMM,
     HMM,
+    copy,
     rand,
     size,
     nparams,
@@ -30,9 +31,7 @@ export
     posteriors,
     posteriorslog,
     # mle.jl
-    mle_step,
     fit_mle,
-    fit_mle!,
     # viterbi*.jl
     viterbi,
     viterbilog,

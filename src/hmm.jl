@@ -148,3 +148,7 @@ nparams(hmm) # 6
 function nparams(hmm::AbstractHMM)
     length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
 end
+
+function copy(hmm::HMM)
+    HMM(copy(hmm.π0), copy(hmm.π), copy(hmm.D))
+end
