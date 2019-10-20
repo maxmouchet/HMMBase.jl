@@ -1,22 +1,25 @@
 # Inference
 
-## Forward-backward
+## Forward-Backward
 
 ```@docs
-messages_forwards
-messages_backwards
-forward_backward
+forward
+backward
+posteriors
+forwardlog
+backwardlog
+posteriorslog
 ```
 
-## Baum–Welch algorithm
+## Baum–Welch
 
 ```@docs
-fit_mle!
-mle_step
+fit_mle
 ```
 
 ## Viterbi
 
 ```@docs
 viterbi
+viterbilog
 ```

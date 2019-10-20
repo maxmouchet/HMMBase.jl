@@ -1,4 +1,4 @@
-# # MLE Estimator
+# # Maximum Likelihood Estimation
 
 using Distributions
 using HMMBase

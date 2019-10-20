@@ -19,7 +19,6 @@ export
     rand,
     size,
     nparams,
-    assert_hmm,
     istransmat,
     likelihoods,
     loglikelihoods,

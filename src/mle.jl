@@ -50,7 +50,7 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
     end
 end
 
-function fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, maxit=100, verbose=false)
+function fit_mle!(hmm::AbstractHMM, observations; tol=1e-3, maxit=100, verbose=false)
     # TODO: In-place loglikelihoods update
     LL = loglikelihoods(hmm, observations)
     T, K = size(LL)
@@ -83,7 +83,7 @@ function fit_mle!(hmm::AbstractHMM, observations; eps=1e-3, maxit=100, verbose=f
         logtotp = sum(log.(c))
         println("Iteration $it: logtot = $logtotp")
 
-        if abs(logtotp - logtot) < eps
+        if abs(logtotp - logtot) < tol
             break
         end
 

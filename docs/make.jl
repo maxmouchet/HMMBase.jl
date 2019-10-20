@@ -19,12 +19,13 @@ if !("SKIP_EXAMPLES" in keys(ENV))
 end
 
 makedocs(
-    sitename="HMMBase.jl",
+    sitename="HMMBase",
     modules=[HMMBase],
     pages = [
         "index.md",
-        "Manual" => ["hmm.md", "inference.md", "sampling.md"],
+        "Manual" => ["notations.md", "types.md", "inference.md", "sampling.md"],
         "Examples" => map(example -> "$(example).md", find_examples()),
+        "internals.md",
         "_index.md"
     ]
 )
