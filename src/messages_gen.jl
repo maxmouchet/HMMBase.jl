@@ -5,6 +5,7 @@
 # forward(hmm, observation)      -> α, logtot
 # forwardlog(a, A, LL)           -> α, logtot
 # forwardlog(hmm, observations)  -> α, logtot
+#
 # backward(a, A, L)              -> β, logtot
 # backward(hmm, observations)    -> β, logtot
 # backwardlog(a, A, LL)          -> β, logtot

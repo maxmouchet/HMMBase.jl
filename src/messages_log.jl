@@ -8,7 +8,7 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
     fill!(α, 0.0)
     fill!(c, 0.0)
 
-    m = vec_maximum(view(LL, 1,:))
+    m = vec_maximum(view(LL, 1, :))
 
     for j in Base.OneTo(K)
         α[1,j] = a[j] * exp(LL[1,j] - m)

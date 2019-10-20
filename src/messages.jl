@@ -9,7 +9,7 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
     fill!(c, 0.0)
 
     for j in Base.OneTo(K)
-        α[1,j] = a[j]*L[1,j]
+        α[1,j] = a[j] * L[1,j]
         c[1] += α[1,j]
     end
 
