@@ -105,6 +105,7 @@ end
     new_hmm = fit_mle(hmm, y)
     @test size(new_hmm) == size(hmm)
     @test typeof(new_hmm) == typeof(hmm)
+    @test typeof(copy(hmm)) == typeof(hmm)
 end
 
 @testset "Utilities" begin
@@ -118,4 +119,8 @@ end
     @test mapping[3] == 1
     @test mapping[8] == 2
     @test transmat == [2/3 1/3; 1/2 1/2]
+
+    transmat = rand_transition_matrix(10)
+    @test HMMBase.issquare(transmat)
+    @test istransmat(transmat)
 end
