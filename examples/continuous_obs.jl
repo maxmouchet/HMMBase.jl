@@ -4,10 +4,10 @@ using Distributions
 using HMMBase
 using Plots
 
-π0 = [0.6, 0.4]
-π = [0.7 0.3; 0.4 0.6]
-D = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]
-hmm = HMM(π0, π, D)
+a = [0.6, 0.4]
+A = [0.7 0.3; 0.4 0.6]
+B = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]
+hmm = HMM(a, A, B)
 #-
 
 z, y = rand(hmm, 250)

@@ -15,7 +15,7 @@ function viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix)
 end
 
 function viterbi(hmm::AbstractHMM, observations)
-    viterbi(hmm.π0, hmm.π, likelihoods(hmm, observations))
+    viterbi(hmm.a, hmm.A, likelihoods(hmm, observations))
 end
 
 function viterbilog(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
@@ -27,5 +27,5 @@ function viterbilog(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
 end
 
 function viterbilog(hmm::AbstractHMM, observations)
-    viterbilog(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
+    viterbilog(hmm.a, hmm.A, loglikelihoods(hmm, observations))
 end

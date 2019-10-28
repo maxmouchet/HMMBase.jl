@@ -21,14 +21,14 @@ end
     z, y = rand(hmm, 2500)
     LL = loglikelihoods(hmm, y)
 
-    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(hmm.π, hmm.π0, LL)
-    res = forwardlog(hmm.π0, hmm.π, LL)
+    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(hmm.A, hmm.a, LL)
+    res = forwardlog(hmm.a, hmm.A, LL)
 
     @test sum(abs.(ref[1]-res[1])) < 1e-11
     @test abs(ref[2]-res[2]) < 1e-10
 
-    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized(hmm.π, hmm.π0, LL)
-    res = backwardlog(hmm.π0, hmm.π, LL)
+    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized(hmm.A, hmm.a, LL)
+    res = backwardlog(hmm.a, hmm.A, LL)
 
     @test sum(abs.(ref[1]-res[1])) < 1e-11
     @test abs(ref[2]-res[2]) < 1e-10
@@ -42,14 +42,14 @@ end
     LL = loglikelihoods(hmm, y)
 
     ref = pyhsmmi.viterbi(
-        PyReverseDims(permutedims(hmm.π)),
+        PyReverseDims(permutedims(hmm.A)),
         PyReverseDims(permutedims(LL)),
-        hmm.π0,
+        hmm.a,
         zeros(Int32, size(LL,1))
     ) 
     
-    res1 = viterbi(hmm.π0, hmm.π, L)
-    res2 = viterbilog(hmm.π0, hmm.π, LL)
+    res1 = viterbi(hmm.a, hmm.A, L)
+    res2 = viterbilog(hmm.a, hmm.A, LL)
 
     # Python indices are off by 1
     @test res1 == (ref .+ 1)

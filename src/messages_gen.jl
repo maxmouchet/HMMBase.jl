@@ -62,7 +62,7 @@ for f in (:forward, :backward)
         ```
         """
         function $(f)(hmm::AbstractHMM, observations)
-            $(f)(hmm.π0, hmm.π, likelihoods(hmm, observations))
+            $(f)(hmm.a, hmm.A, likelihoods(hmm, observations))
         end
 
         """
@@ -76,7 +76,7 @@ for f in (:forward, :backward)
         ```
         """
         function $(fl)(hmm::AbstractHMM, observations)
-            $(fl)(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
+            $(fl)(hmm.a, hmm.A, loglikelihoods(hmm, observations))
         end
     end
 end
@@ -118,7 +118,7 @@ z, y = rand(hmm, 1000)
 ```
 """
 function posteriors(hmm::AbstractHMM, observations)
-    posteriors(hmm.π0, hmm.π, likelihoods(hmm, observations))
+    posteriors(hmm.a, hmm.A, likelihoods(hmm, observations))
 end
 
 """
@@ -145,5 +145,5 @@ z, y = rand(hmm, 1000)
 ```
 """
 function posteriorslog(hmm::AbstractHMM, observations)
-    posteriorslog(hmm.π0, hmm.π, loglikelihoods(hmm, observations))
+    posteriorslog(hmm.a, hmm.A, loglikelihoods(hmm, observations))
 end

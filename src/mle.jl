@@ -62,22 +62,22 @@ function fit_mle!(hmm::AbstractHMM, observations; tol=1e-3, maxit=100, verbose=f
     γ = Matrix{Float64}(undef, T, K)
     ξ = Array{Float64}(undef, T, K, K)
 
-    forwardlog!(α, c, hmm.π0, hmm.π, LL)
-    backwardlog!(β, c, hmm.π0, hmm.π, LL)
+    forwardlog!(α, c, hmm.a, hmm.A, LL)
+    backwardlog!(β, c, hmm.a, hmm.A, LL)
     posteriors!(γ, α, β)
 
     logtot = sum(log.(c))
     verbose && println("Iteration 0: logtot = $logtot")
 
     for it in 1:maxit
-        update_a!(hmm.π0, α, β)
-        update_A!(hmm.π, ξ, α, β, LL)
-        update_B!(hmm.D, γ, observations)
+        update_a!(hmm.a, α, β)
+        update_A!(hmm.A, ξ, α, β, LL)
+        update_B!(hmm.B, γ, observations)
 
         LL = loglikelihoods(hmm, observations)
 
-        forwardlog!(α, c, hmm.π0, hmm.π, LL)
-        backwardlog!(β, c, hmm.π0, hmm.π, LL)
+        forwardlog!(α, c, hmm.a, hmm.A, LL)
+        backwardlog!(β, c, hmm.a, hmm.A, LL)
         posteriors!(γ, α, β)
 
         logtotp = sum(log.(c))

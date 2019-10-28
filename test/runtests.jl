@@ -46,9 +46,9 @@ end
     (forwardlog, backwardlog, posteriorslog)
 ]
     # Example from https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm
-    π = [0.7 0.3; 0.3 0.7]
-    D = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]
-    hmm = HMM(π, D)
+    A = [0.7 0.3; 0.3 0.7]
+    B = [Categorical([0.9, 0.1]), Categorical([0.2, 0.8])]
+    hmm = HMM(A, B)
 
     O = [1,1,2,1,1]
 
@@ -137,11 +137,11 @@ end
     perm = [3,4,2,1]
     hmm1 = rand_hmm(4)
     hmm2 = permute(hmm1, perm)
-    @test hmm2.D[1] == hmm1.D[3]
-    @test hmm2.D[2] == hmm1.D[4]
-    @test hmm2.D[3] == hmm1.D[2]
-    @test hmm2.D[4] == hmm1.D[1]
-    @test diag(hmm2.π) == diag(hmm1.π)[perm]
+    @test hmm2.B[1] == hmm1.B[3]
+    @test hmm2.B[2] == hmm1.B[4]
+    @test hmm2.B[3] == hmm1.B[2]
+    @test hmm2.B[4] == hmm1.B[1]
+    @test diag(hmm2.A) == diag(hmm1.A)[perm]
 
     A = zeros(4,4)
     A[1:2,1:2] = [0.9 0.1; 0.25 0.75]
