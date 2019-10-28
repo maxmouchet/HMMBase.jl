@@ -108,6 +108,35 @@ size(hmm) # (2,1)
 """
 size(hmm::AbstractHMM, dim=:) = (length(hmm.D), length(hmm.D[1]))[dim]
 
+function copy(hmm::HMM)
+    HMM(copy(hmm.π0), copy(hmm.π), copy(hmm.D))
+end
+
+"""
+    nparams(hmm::AbstractHMM)
+
+Returns the number of parameters in `hmm`.  
+
+# Example
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+nparams(hmm) # 6
+```
+"""
+function nparams(hmm::AbstractHMM)
+    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
+end
+
+function permute(hmm::HMM, perm::Vector{<:Integer})
+    π0 = hmm.π0[perm]
+    D = hmm.D[perm]
+    π = zeros(size(hmm.π))
+    for i in 1:size(π,1), j in 1:size(π,2)
+        π[i,j] = hmm.π[perm[i],perm[j]]
+    end
+    HMM(π0, π, D)
+end
+
 function likelihoods(hmm::AbstractHMM{Univariate}, observations)
     hcat(map(d -> pdf.(d, observations), hmm.D)...)
 end
@@ -132,33 +161,4 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
         L[t,i] = pdf(hmm.D[i], view(observations,t,:))
     end
     L
-end
-
-"""
-    nparams(hmm::AbstractHMM)
-
-Returns the number of parameters in `hmm`.  
-
-# Example
-```julia
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-nparams(hmm) # 6
-```
-"""
-function nparams(hmm::AbstractHMM)
-    length(hmm.π) - size(hmm.π)[1] + sum(d -> length(params(d)), hmm.D)
-end
-
-function copy(hmm::HMM)
-    HMM(copy(hmm.π0), copy(hmm.π), copy(hmm.D))
-end
-
-function permute(hmm::HMM, perm::Vector{<:Integer})
-    π0 = hmm.π0[perm]
-    D = hmm.D[perm]
-    π = zeros(size(hmm.π))
-    for i in 1:size(π,1), j in 1:size(π,2)
-        π[i,j] = hmm.π[perm[i],perm[j]]
-    end
-    HMM(π0, π, D)
 end
