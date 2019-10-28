@@ -4,6 +4,7 @@
 AbstractHMM
 HMM
 rand
+permute
 statdists
 istransmat
 nparams

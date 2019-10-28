@@ -16,7 +16,7 @@ abstract type AbstractHMM{F<:VariateForm} end
 """
     HMM([a::AbstractVector{T}, ]A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where F where T
 
-Build an HMM with transition matrix `A` and observations distributions `D`.  
+Build an HMM with transition matrix `A` and observations distributions `B`.  
 If the initial state distribution `a` is not specified, a uniform distribution is assumed. 
 
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
@@ -53,7 +53,18 @@ function assert_hmm(a::AbstractVector,
     return true
 end
 
+"""
+    issquare(A)
+
+Return true if `A` is a square matrix.
+"""
 issquare(A::AbstractMatrix) = size(A,1) == size(A,2)
+
+"""
+    istransmat(A)
+
+Return true if `A` is square and its rows sums to 1.
+"""
 istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1:size(A,1)])
 
 """
@@ -108,14 +119,40 @@ size(hmm) # (2,1)
 """
 size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
 
-function copy(hmm::HMM)
-    HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
+"""
+    copy(hmm::HMM)
+
+Returns a copy of `hmm`.
+"""
+copy(hmm::HMM) = HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
+
+"""
+    permute(hmm::HMM)
+
+Permute the states of `hmm` according to `perm`.
+
+# Example
+```julia
+hmm = HMM([0.8 0.2; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+hmm = permute(hmm, [2, 1])
+hmm.A # [0.9 0.1; 0.2 0.8]
+hmm.B # [Normal(10,1), Normal(0,1)]
+```
+"""
+function permute(hmm::HMM, perm::Vector{<:Integer})
+    a = hmm.a[perm]
+    B = hmm.B[perm]
+    A = zeros(size(hmm.A))
+    for i in 1:size(A,1), j in 1:size(A,2)
+        A[i,j] = hmm.A[perm[i],perm[j]]
+    end
+    HMM(a, A, B)
 end
 
 """
     nparams(hmm::AbstractHMM)
 
-Returns the number of parameters in `hmm`.  
+Return the number of parameters in `hmm`.  
 
 # Example
 ```julia
@@ -127,16 +164,11 @@ function nparams(hmm::AbstractHMM)
     length(hmm.A) - size(hmm.A)[1] + sum(d -> length(params(d)), hmm.B)
 end
 
-function permute(hmm::HMM, perm::Vector{<:Integer})
-    a = hmm.a[perm]
-    B = hmm.B[perm]
-    A = zeros(size(hmm.A))
-    for i in 1:size(A,1), j in 1:size(A,2)
-        A[i,j] = hmm.A[perm[i],perm[j]]
-    end
-    HMM(a, A, B)
-end
+"""
+    likelihoods(hmm, observations)
 
+Return the likelihood per-state and per-observation.
+"""
 function likelihoods(hmm::AbstractHMM{Univariate}, observations)
     hcat(map(d -> pdf.(d, observations), hmm.B)...)
 end
@@ -150,6 +182,11 @@ function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
     L
 end
 
+"""
+    loglikelihoods(hmm, observations)
+
+Return the log-likelihood per-state and per-observation.
+"""
 function loglikelihoods(hmm::AbstractHMM{Univariate}, observations)
     hcat(map(d -> logpdf.(d, observations), hmm.B)...)
 end
@@ -163,6 +200,12 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
     L
 end
 
+"""
+    statdists(hmm)
+
+Return the stationnary distribution(s) of `hmm`.  
+That is, the eigenvectors of transpose(hmm.A) with eigenvalues 1.
+"""
 function statdists(hmm::AbstractHMM)
     eig = eigen(collect(transpose(hmm.A)))
     dists = []
