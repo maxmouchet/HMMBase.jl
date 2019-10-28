@@ -1,4 +1,4 @@
-# Inference
+# Algorithms
 
 ## Forward-Backward
 

@@ -23,7 +23,7 @@ makedocs(
     modules=[HMMBase],
     pages = [
         "index.md",
-        "Manual" => ["notations.md", "types.md", "inference.md", "sampling.md"],
+        "Manual" => ["model.md", "algorithms.md", "notations.md"],
         "Examples" => map(example -> "$(example).md", find_examples()),
         "internals.md",
         "_index.md"
