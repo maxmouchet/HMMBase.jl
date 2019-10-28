@@ -25,6 +25,110 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "model/#",
+    "page": "Model",
+    "title": "Model",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "model/#Model-1",
+    "page": "Model",
+    "title": "Model",
+    "category": "section",
+    "text": "AbstractHMM\nHMM\nrand\nstatdists\nistransmat\nnparams\ncopy\nsize"
+},
+
+{
+    "location": "algorithms/#",
+    "page": "Algorithms",
+    "title": "Algorithms",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "algorithms/#Algorithms-1",
+    "page": "Algorithms",
+    "title": "Algorithms",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "algorithms/#HMMBase.forward",
+    "page": "Algorithms",
+    "title": "HMMBase.forward",
+    "category": "function",
+    "text": "HMMBase.forward(a, A, L)\n\nCompute HMMBase.forward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.forward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forward(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#HMMBase.backward",
+    "page": "Algorithms",
+    "title": "HMMBase.backward",
+    "category": "function",
+    "text": "HMMBase.backward(a, A, L)\n\nCompute HMMBase.backward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.backward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backward(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#HMMBase.posteriors",
+    "page": "Algorithms",
+    "title": "HMMBase.posteriors",
+    "category": "function",
+    "text": "posteriors(α, β)\n\nCompute posterior probabilities from α and β.\n\n\n\n\n\nposteriors(a, A, L)\n\nCompute posterior probabilities using samples likelihoods.\n\n\n\n\n\nposteriors(hmm, observations)\n\nCompute posterior probabilities using samples likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#HMMBase.forwardlog",
+    "page": "Algorithms",
+    "title": "HMMBase.forwardlog",
+    "category": "function",
+    "text": "HMMBase.forwardlog(a, A, LL)\n\nCompute HMMBase.forward probabilities using samples log-likelihoods. See HMMBase.forward.\n\n\n\n\n\nHMMBase.forwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forwardlog(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#HMMBase.backwardlog",
+    "page": "Algorithms",
+    "title": "HMMBase.backwardlog",
+    "category": "function",
+    "text": "HMMBase.backwardlog(a, A, LL)\n\nCompute HMMBase.backward probabilities using samples log-likelihoods. See HMMBase.backward.\n\n\n\n\n\nHMMBase.backwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backwardlog(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#HMMBase.posteriorslog",
+    "page": "Algorithms",
+    "title": "HMMBase.posteriorslog",
+    "category": "function",
+    "text": "posteriorslog(α, A, L)\n\nCompute posterior probabilities using samples log-likelihoods.\n\n\n\n\n\nposteriorslog(hmm, observations)\n\nCompute posterior probabilities using samples log-likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
+},
+
+{
+    "location": "algorithms/#Forward-Backward-1",
+    "page": "Algorithms",
+    "title": "Forward-Backward",
+    "category": "section",
+    "text": "forward\nbackward\nposteriors\nforwardlog\nbackwardlog\nposteriorslog"
+},
+
+{
+    "location": "algorithms/#Baum–Welch-1",
+    "page": "Algorithms",
+    "title": "Baum–Welch",
+    "category": "section",
+    "text": "fit_mle"
+},
+
+{
+    "location": "algorithms/#Viterbi-1",
+    "page": "Algorithms",
+    "title": "Viterbi",
+    "category": "section",
+    "text": "viterbi\nviterbilog"
+},
+
+{
     "location": "notations/#",
     "page": "Notations",
     "title": "Notations",
@@ -41,134 +145,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "types/#",
-    "page": "Types",
-    "title": "Types",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "types/#Types-1",
-    "page": "Types",
-    "title": "Types",
-    "category": "section",
-    "text": "AbstractHMM\nHMM\nistransmat\nnparams\ncopy\nsize"
-},
-
-{
-    "location": "inference/#",
-    "page": "Inference",
-    "title": "Inference",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "inference/#Inference-1",
-    "page": "Inference",
-    "title": "Inference",
-    "category": "section",
-    "text": ""
-},
-
-{
-    "location": "inference/#HMMBase.forward",
-    "page": "Inference",
-    "title": "HMMBase.forward",
-    "category": "function",
-    "text": "HMMBase.forward(a, A, L)\n\nCompute HMMBase.forward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.forward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forward(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#HMMBase.backward",
-    "page": "Inference",
-    "title": "HMMBase.backward",
-    "category": "function",
-    "text": "HMMBase.backward(a, A, L)\n\nCompute HMMBase.backward probabilities using samples likelihoods. See Forward-backward algorithm.\n\n\n\n\n\nHMMBase.backward(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backward(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#HMMBase.posteriors",
-    "page": "Inference",
-    "title": "HMMBase.posteriors",
-    "category": "function",
-    "text": "posteriors(α, β)\n\nCompute posterior probabilities from α and β.\n\n\n\n\n\nposteriors(a, A, L)\n\nCompute posterior probabilities using samples likelihoods.\n\n\n\n\n\nposteriors(hmm, observations)\n\nCompute posterior probabilities using samples likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#HMMBase.forwardlog",
-    "page": "Inference",
-    "title": "HMMBase.forwardlog",
-    "category": "function",
-    "text": "HMMBase.forwardlog(a, A, LL)\n\nCompute HMMBase.forward probabilities using samples log-likelihoods. See HMMBase.forward.\n\n\n\n\n\nHMMBase.forwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.forwardlog(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#HMMBase.backwardlog",
-    "page": "Inference",
-    "title": "HMMBase.backwardlog",
-    "category": "function",
-    "text": "HMMBase.backwardlog(a, A, LL)\n\nCompute HMMBase.backward probabilities using samples log-likelihoods. See HMMBase.backward.\n\n\n\n\n\nHMMBase.backwardlog(hmm, observations)\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nprobs, tot = HMMBase.backwardlog(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#HMMBase.posteriorslog",
-    "page": "Inference",
-    "title": "HMMBase.posteriorslog",
-    "category": "function",
-    "text": "posteriorslog(α, A, L)\n\nCompute posterior probabilities using samples log-likelihoods.\n\n\n\n\n\nposteriorslog(hmm, observations)\n\nCompute posterior probabilities using samples log-likelihoods.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\nγ = posteriors(hmm, y)\n\n\n\n\n\n"
-},
-
-{
-    "location": "inference/#Forward-Backward-1",
-    "page": "Inference",
-    "title": "Forward-Backward",
-    "category": "section",
-    "text": "forward\nbackward\nposteriors\nforwardlog\nbackwardlog\nposteriorslog"
-},
-
-{
-    "location": "inference/#Baum–Welch-1",
-    "page": "Inference",
-    "title": "Baum–Welch",
-    "category": "section",
-    "text": "fit_mle"
-},
-
-{
-    "location": "inference/#Viterbi-1",
-    "page": "Inference",
-    "title": "Viterbi",
-    "category": "section",
-    "text": "viterbi\nviterbilog"
-},
-
-{
-    "location": "sampling/#",
-    "page": "Sampling",
-    "title": "Sampling",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "sampling/#Base.rand",
-    "page": "Sampling",
-    "title": "Base.rand",
-    "category": "function",
-    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\nrand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
-},
-
-{
-    "location": "sampling/#Sampling-1",
-    "page": "Sampling",
-    "title": "Sampling",
-    "category": "section",
-    "text": "rand"
-},
-
-{
     "location": "examples/continuous_obs/#",
     "page": "HMM with continuous observations",
     "title": "HMM with continuous observations",
@@ -181,7 +157,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMM with continuous observations",
     "title": "HMM with continuous observations",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plots\n\nπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=[\"Observations (1)\", \"Observations (2)\"], size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plots\n\na = [0.6, 0.4]\nA = [0.7 0.3; 0.4 0.6]\nB = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]\nhmm = HMM(a, A, B)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=[\"Observations (1)\", \"Observations (2)\"], size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
 },
 
 {
@@ -197,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "HMM with discrete observations",
     "title": "HMM with discrete observations",
     "category": "section",
-    "text": "using Distributions\nusing HMMBase\nusing Plotshttps://en.wikipedia.org/wiki/Viterbi_algorithm#Exampleπ0 = [0.6, 0.4]\nπ = [0.7 0.3; 0.4 0.6]\nD = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]\nhmm = HMM(π0, π, D)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=\"Observations\", size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
+    "text": "using Distributions\nusing HMMBase\nusing Plotshttps://en.wikipedia.org/wiki/Viterbi_algorithm#Examplea = [0.6, 0.4]\nA = [0.7 0.3; 0.4 0.6]\nB = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]\nhmm = HMM(a, A, B)z, y = rand(hmm, 250)\nz_viterbi = viterbi(hmm, y);plot(y, linetype=:steppre, label=\"Observations\", size=(600,200))plot(z, linetype=:steppre, label=\"True hidden state\", size=(600,200))plot(z_viterbi, linetype=:steppre, label=\"Viterbi decoded hidden state\", size=(600,200))This page was generated using Literate.jl."
 },
 
 {
@@ -230,6 +206,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Internals",
     "category": "section",
     "text": ""
+},
+
+{
+    "location": "internals/#In-place-versions-1",
+    "page": "Internals",
+    "title": "In-place versions",
+    "category": "section",
+    "text": "Not exported, used internally. Generated with macros."
 },
 
 {
