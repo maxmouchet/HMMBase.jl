@@ -33,11 +33,83 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "model/#HMMBase.AbstractHMM",
+    "page": "Model",
+    "title": "HMMBase.AbstractHMM",
+    "category": "type",
+    "text": "AbstractHMM{F<:VariateForm}\n\nAn HMM type must at-least implement the following interface:\n\nstruct CustomHMM{F,T} <: AbstractHMM{F}\n    a::AbstractVector{T}              # Initial state distribution\n    A::AbstractMatrix{T}               # Transition matrix\n    B::AbstractVector{Distribution{F}} # Observations distributions\n    # Custom fields ....\nend\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#HMMBase.HMM",
+    "page": "Model",
+    "title": "HMMBase.HMM",
+    "category": "type",
+    "text": "HMM([a::AbstractVector{T}, ]A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where F where T\n\nBuild an HMM with transition matrix A and observations distributions B.   If the initial state distribution a is not specified, a uniform distribution is assumed. \n\nObservations distributions can be of different types (for example Normal and Exponential).   However they must be of the same dimension (all scalars or all multivariates).\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#Base.rand",
+    "page": "Model",
+    "title": "Base.rand",
+    "category": "function",
+    "text": "rand(hmm::AbstractHMM, T::Int[, initial_state::Int])\n\nGenerate a random trajectory of hmm for T timesteps.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nz, y = rand(hmm, 1000)\n\n\n\n\n\nrand(hmm::AbstractHMM, z::AbstractVector{Int})\n\nGenerate observations from hmm according to trajectory z.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\ny = rand(hmm, [1, 1, 2, 2, 1])\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#HMMBase.permute",
+    "page": "Model",
+    "title": "HMMBase.permute",
+    "category": "function",
+    "text": "permute(hmm::HMM)\n\nPermute the states of hmm according to perm.\n\nExample\n\nhmm = HMM([0.8 0.2; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nhmm = permute(hmm, [2, 1])\nhmm.A # [0.9 0.1; 0.2 0.8]\nhmm.B # [Normal(10,1), Normal(0,1)]\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#HMMBase.statdists",
+    "page": "Model",
+    "title": "HMMBase.statdists",
+    "category": "function",
+    "text": "statdists(hmm)\n\nReturn the stationnary distribution(s) of hmm.   That is, the eigenvectors of transpose(hmm.A) with eigenvalues 1.\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#HMMBase.istransmat",
+    "page": "Model",
+    "title": "HMMBase.istransmat",
+    "category": "function",
+    "text": "istransmat(A)\n\nReturn true if A is square and its rows sums to 1.\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#HMMBase.nparams",
+    "page": "Model",
+    "title": "HMMBase.nparams",
+    "category": "function",
+    "text": "nparams(hmm::AbstractHMM)\n\nReturn the number of parameters in hmm.  \n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nnparams(hmm) # 6\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#Base.copy",
+    "page": "Model",
+    "title": "Base.copy",
+    "category": "function",
+    "text": "copy(hmm::HMM)\n\nReturns a copy of hmm.\n\n\n\n\n\n"
+},
+
+{
+    "location": "model/#Base.size",
+    "page": "Model",
+    "title": "Base.size",
+    "category": "function",
+    "text": "size(hmm::AbstractHMM, [dim])\n\nReturns the number of states in the HMM and the dimension of the observations.\n\nExample\n\nhmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])\nsize(hmm) # (2,1)\n\n\n\n\n\n"
+},
+
+{
     "location": "model/#Model-1",
     "page": "Model",
     "title": "Model",
     "category": "section",
-    "text": "AbstractHMM\nHMM\nrand\nstatdists\nistransmat\nnparams\ncopy\nsize"
+    "text": "AbstractHMM\nHMM\nrand\npermute\nstatdists\nistransmat\nnparams\ncopy\nsize"
 },
 
 {
