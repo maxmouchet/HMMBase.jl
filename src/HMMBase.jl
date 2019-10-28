@@ -19,6 +19,7 @@ export
     rand,
     size,
     nparams,
+    permute,
     istransmat,
     likelihoods,
     loglikelihoods,

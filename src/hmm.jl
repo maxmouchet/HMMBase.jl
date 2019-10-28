@@ -152,3 +152,13 @@ end
 function copy(hmm::HMM)
     HMM(copy(hmm.π0), copy(hmm.π), copy(hmm.D))
 end
+
+function permute(hmm::HMM, perm::Vector{<:Integer})
+    π0 = hmm.π0[perm]
+    D = hmm.D[perm]
+    π = zeros(size(hmm.π))
+    for i in 1:size(π,1), j in 1:size(π,2)
+        π[i,j] = hmm.π[perm[i],perm[j]]
+    end
+    HMM(π0, π, D)
+end

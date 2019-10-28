@@ -1,9 +1,16 @@
 using Test
 using HMMBase
 using Distributions
+using LinearAlgebra
 using Random
 
 Random.seed!(2018)
+
+function rand_hmm(K)
+    A = rand_transition_matrix(K)
+    B = [Normal(rand()*100, rand()*10) for _ in 1:K]
+    HMM(A, B)
+end
 
 targets = [
     HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)]),
@@ -123,4 +130,16 @@ end
     transmat = rand_transition_matrix(10)
     @test HMMBase.issquare(transmat)
     @test istransmat(transmat)
+
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+    @test nparams(hmm) == 6
+
+    perm = [3,4,2,1]
+    hmm1 = rand_hmm(4)
+    hmm2 = permute(hmm1, perm)
+    @test hmm2.D[1] == hmm1.D[3]
+    @test hmm2.D[2] == hmm1.D[4]
+    @test hmm2.D[3] == hmm1.D[2]
+    @test hmm2.D[4] == hmm1.D[1]
+    @test diag(hmm2.π) == diag(hmm1.π)[perm]
 end
