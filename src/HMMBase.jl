@@ -2,11 +2,14 @@ __precompile__()
 
 """
 Hidden Markov Models for Julia.
+    
+[Documentation](https://maxmouchet.github.io/HMMBase.jl/stable/).
 """
 module HMMBase
 
 using ArgCheck
 using Distributions
+using LinearAlgebra
 
 import Base: copy, rand, size
 import Distributions: fit_mle
@@ -20,6 +23,7 @@ export
     size,
     nparams,
     permute,
+    statdists,
     istransmat,
     likelihoods,
     loglikelihoods,

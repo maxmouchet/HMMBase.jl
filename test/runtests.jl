@@ -142,4 +142,13 @@ end
     @test hmm2.D[3] == hmm1.D[2]
     @test hmm2.D[4] == hmm1.D[1]
     @test diag(hmm2.π) == diag(hmm1.π)[perm]
+
+    A = zeros(4,4)
+    A[1:2,1:2] = [0.9 0.1; 0.25 0.75]
+    A[3:4,3:4] = [0.3 0.7; 0.25 0.75]
+    hmm = HMM(A, [Normal(0,1), Normal(10,1), Exponential(1), Exponential(4)])
+    dists = statdists(hmm)
+    @test length(dists) == 2
+    @test permutedims(dists[1]) ≈ [1.0 0.0 0.0 0.0]*(A^1000)
+    @test permutedims(dists[2]) ≈ [0.0 0.0 1.0 0.0]*(A^1000)
 end

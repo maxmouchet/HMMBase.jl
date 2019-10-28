@@ -162,3 +162,16 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
     end
     L
 end
+
+function statdists(hmm::AbstractHMM)
+    eig = eigen(collect(transpose(hmm.π)))
+    dists = []
+    for (i, val) in enumerate(eig.values)
+        if val == 1.0
+            dist = eig.vectors[:,i]
+            dist /= sum(dist)
+            push!(dists, dist)
+        end
+    end
+    dists
+end
