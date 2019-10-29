@@ -4,8 +4,8 @@
   <a href="https://maxmouchet.github.io/HMMBase.jl/stable">
     <img src="https://img.shields.io/badge/docs-stable-blue.svg?style=flat">
   </a>
-  <a href="https://travis-ci.org/maxmouchet/HMMBase.jl">
-    <img src="https://travis-ci.org/maxmouchet/HMMBase.jl.svg?branch=master">
+  <a href="https://github.com/maxmouchet/HMMBase.jl/actions">
+    <img src="https://github.com/maxmouchet/HMMBase.jl/workflows/CI/badge.svg">
   </a>
   <a href="https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master">
     <img src="https://codecov.io/github/maxmouchet/HMMBase.jl/coverage.svg?branch=master">
