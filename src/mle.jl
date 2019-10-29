@@ -25,7 +25,7 @@ function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β:
 
     T, K = size(LL)
 
-    @inbounds for t in 1:T - 1
+    @inbounds for t in OneTo(T - 1)
         m = vec_maximum(view(LL, t, :))
         c = 0.0
 
@@ -45,7 +45,7 @@ function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β:
         c = 0.0
 
         for j in OneTo(K)
-            for t in 1:T - 1
+            for t in OneTo(T - 1)
                 A[i,j] += ξ[t,i,j]
             end
             c += A[i,j]
