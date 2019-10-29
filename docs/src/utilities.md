@@ -1,0 +1,6 @@
+# Utilities
+
+```@docs
+gettransmat
+randtransmat
+```

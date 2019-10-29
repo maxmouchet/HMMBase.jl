@@ -1,15 +1,21 @@
-function compute_transition_matrix(seq::Vector{Int64})
-    # /!\ Sort is important here, so that we don't relabel already contiguous states.
-    mapping = Dict([(x[2], x[1]) for x in enumerate(sort(unique(seq)))])
+function gettransmat(seq::Vector{Int64}; relabel = false)
+    if relabel
+        # /!\ Sort is important here, so that we don't relabel already contiguous states.
+        mapping = Dict([(x[2], x[1]) for x in enumerate(sort(unique(seq)))])
+    else
+        mapping = Dict([(x, x) for x in unique(seq)])
+    end
+
     transmat = zeros(length(mapping), length(mapping))
     for i in 1:length(seq)-1
         transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
     end
     transmat = transmat ./ sum(transmat, dims=2)
+
     mapping, transmat
 end
 
-function rand_transition_matrix(K::Integer, α = 1.0)
+function randtransmat(K::Integer, α = 1.0)
     prior = Dirichlet(K, α)
     A = Matrix{Float64}(undef, K, K)
     for i in Base.OneTo(K)
@@ -17,6 +23,9 @@ function rand_transition_matrix(K::Integer, α = 1.0)
     end
     A
 end
+
+
+# function rand(::HMM, K::Integer; A_prior = Dirichlet(K, 1.0), B_prior = )
 
 # Align sequences
 

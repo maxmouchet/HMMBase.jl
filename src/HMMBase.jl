@@ -75,5 +75,7 @@ export
 @deprecate messages_backwards(hmm, observations) backwardlog(hmm, observations)
 @deprecate messages_forwards_log(init_distn, trans_matrix, log_likelihoods) log.(forwardlog(init_distn, trans_matrix, log_likelihoods)[1])
 @deprecate messages_backwards_log(trans_matrix, log_likelihoods) log.(backwardlog(init_distn, trans_matrix, log_likelihoods)[1])
+@deprecate compute_transition_matrix(seq) gettransmat(seq, relabel = true)
+@deprecate rand_transition_matrix(K, α = 1.0) randtransmat(K, α)
 
 end
