@@ -22,6 +22,36 @@ See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](h
 
 <img src="https://github.com/maxmouchet/HMMBase.jl/blob/master/benchmark/benchmark_summary.png" width="480">
 
+## Migrating to v1.0
+
+HMMBase v1.0 will be released before the end of the year, and contains breaking API changes.  
+Many methods have been renamed, and most importantly, the fields of the `HMM` structure have
+been renamed from `π0, π, D` to `a, A, B`.
+
+See the [Migrating to v1.0]() section of the documentation for more informations. The [release notes]() contains a detailed list of the changes.
+
+You can try the new version before it is released.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
+
+```julia
+pkg> add HMMBase#v1.0.0-beta1
+```
+
+If after the release you'd like to temporarily keep the old version, add the following in your `Project.toml`:
+
+```toml
+[compat]
+HMMBase = "0.0.14"
+```
+
+Note that HMMBase v0.0.x will not be maintained anymore.  
+Starting from v1.0, we will follow [semantic versioning]():
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+> 1. MAJOR version when you make incompatible API changes,
+> 2. MINOR version when you add functionality in a backwards compatible manner, and
+> 3. PATCH version when you make backwards compatible bug fixes.
+
 ## Installation
 
 The package can be installed with the Julia package manager.
@@ -38,7 +68,7 @@ pkg> add HMMBase
 
 ## Project Status
 
-The package is tested against Julia 1.0 and the nightly builds of the Julia `master` branch on Linux, macOS and Windows.
+The package is tested against Julia 1.2 and the nightly builds of the Julia `master` branch on Linux, macOS and Windows.
 
 ## Questions and Contributions
 

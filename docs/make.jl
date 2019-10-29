@@ -26,6 +26,7 @@ makedocs(
         "Manual" => ["model.md", "algorithms.md", "notations.md"],
         "Examples" => map(example -> "$(example).md", find_examples()),
         "internals.md",
+        "migration.md",
         "_index.md"
     ]
 )
