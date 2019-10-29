@@ -102,6 +102,12 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxit = 100, verbo
         logtotp = sum(log.(c))
         verbose && println("Iteration $it: logtot = $logtotp")
 
+        # The likelihood should never decrease.
+        # We should probably use propre tests for this instead...
+        if logtotp < logtot
+            @warn "The likelihood has decreased during the EM step. This is probably a bug."
+        end
+
         if abs(logtotp - logtot) < tol
             break
         end
