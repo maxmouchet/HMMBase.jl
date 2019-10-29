@@ -11,7 +11,7 @@ using ArgCheck
 using Distributions
 using LinearAlgebra
 
-import Base: copy, rand, size
+import Base: copy, rand, size, OneTo
 import Distributions: fit_mle
 
 export

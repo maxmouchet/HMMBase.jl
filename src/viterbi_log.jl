@@ -15,12 +15,12 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
     m = vec_maximum(view(LL, 1, :))
     c = 0.0
 
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         T1[1,i] = a[i] * exp(LL[1,i] - m)
         c += T1[1,i]
     end
 
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         T1[1,i] /= c
     end
 
@@ -28,11 +28,11 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
         m = vec_maximum(view(LL, t, :))
         c = 0.0
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             amax = 0
             vmax = -Inf
 
-            for i in Base.OneTo(K)
+            for i in OneTo(K)
                 v = T1[t-1,i] * A[i,j]
                 if v > vmax
                     amax = i
@@ -45,7 +45,7 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
             c += T1[t,j]
         end
 
-        for i in Base.OneTo(K)
+        for i in OneTo(K)
             T1[t,i] /= c
         end
     end

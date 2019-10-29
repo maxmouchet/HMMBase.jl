@@ -18,7 +18,7 @@ end
 function randtransmat(K::Integer, α = 1.0)
     prior = Dirichlet(K, α)
     A = Matrix{Float64}(undef, K, K)
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         A[i,:] = rand(prior)
     end
     A
@@ -41,7 +41,7 @@ end
 #   30.307 ns (1 allocation: 16 bytes)
 function vec_maximum(v::AbstractVector)
     m = v[1]
-    @inbounds for i = Base.OneTo(length(v))
+    @inbounds for i = OneTo(length(v))
         if v[i] > m
             m = v[i]
         end

@@ -8,12 +8,12 @@ function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
     K = length(a)
     c = 0.0
     
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         a[i] = α[1,i] * β[1,i]
         c += a[i]
     end
 
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         a[i] /= c
     end
 end
@@ -29,29 +29,29 @@ function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β:
         m = vec_maximum(view(LL, t, :))
         c = 0.0
 
-        for i in Base.OneTo(K), j in Base.OneTo(K)
+        for i in OneTo(K), j in OneTo(K)
             ξ[t,i,j] = α[t,i] * A[i,j] * exp(LL[t + 1,j] - m) * β[t + 1,j]
             c += ξ[t,i,j]
         end
 
-        for i in Base.OneTo(K), j in Base.OneTo(K)
+        for i in OneTo(K), j in OneTo(K)
             ξ[t,i,j] /= c
         end
     end
 
     fill!(A, 0.0)
 
-    @inbounds for i in Base.OneTo(K)
+    @inbounds for i in OneTo(K)
         c = 0.0
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             for t in 1:T - 1
                 A[i,j] += ξ[t,i,j]
             end
             c += A[i,j]
         end
         
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             A[i,j] /= c
         end
     end
@@ -62,7 +62,7 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
     @argcheck size(γ, 1) == size(observations, 1)
     @argcheck size(γ, 2) == size(B, 1)
     K = length(B)
-    for i in Base.OneTo(K)
+    for i in OneTo(K)
         if sum(γ[:,i]) > 0
             B[i] = fit_mle(typeof(B[i]), permutedims(observations), γ[:,i])
         end

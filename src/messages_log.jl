@@ -13,12 +13,12 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
 
     m = vec_maximum(view(LL, 1, :))
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         α[1,j] = a[j] * exp(LL[1,j] - m)
         c[1] += α[1,j]
     end
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         α[1,j] /= c[1]
     end
 
@@ -27,14 +27,14 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
     @inbounds for t in 2:T
         m = vec_maximum(view(LL, t, :))
 
-        for j in Base.OneTo(K)
-            for i in Base.OneTo(K)
+        for j in OneTo(K)
+            for i in OneTo(K)
                 α[t,j] += α[t-1,i] * A[i,j] * exp(LL[t,j] - m)
             end
             c[t] += α[t,j]
         end
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             α[t,j] /= c[t]
         end
 
@@ -52,21 +52,21 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
     fill!(β, 0.0)
     fill!(c, 0.0)
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         β[end,j] = 1.0
     end
 
     @inbounds for t in T-1:-1:1
         m = vec_maximum(view(LL, t+1, :))
 
-        for j in Base.OneTo(K)
-            for i in Base.OneTo(K)
+        for j in OneTo(K)
+            for i in OneTo(K)
                 β[t,j] += β[t+1,i] * A[j,i] * exp(LL[t+1,i] - m)
             end
             c[t+1] += β[t,j]
         end
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             β[t,j] /= c[t+1]
         end
 
@@ -75,7 +75,7 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
 
     m = vec_maximum(view(LL, 1,:))
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         c[1] += a[j] * exp(LL[1,j] - m) * β[1,j]
     end
 

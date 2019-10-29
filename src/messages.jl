@@ -11,24 +11,24 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
     fill!(α, 0.0)
     fill!(c, 0.0)
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         α[1,j] = a[j] * L[1,j]
         c[1] += α[1,j]
     end
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         α[1,j] /= c[1]
     end
 
     @inbounds for t in 2:T
-        for j in Base.OneTo(K)
-            for i in Base.OneTo(K)
+        for j in OneTo(K)
+            for i in OneTo(K)
                 α[t,j] += α[t-1,i] * A[i,j] * L[t,j]
             end
             c[t] += α[t,j]
         end
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             α[t,j] /= c[t]
         end
     end
@@ -44,24 +44,24 @@ function backward!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::
     fill!(β, 0.0)
     fill!(c, 0.0)
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         β[end,j] = 1.0
     end
 
     @inbounds for t in T-1:-1:1
-        for j in Base.OneTo(K)
-            for i in Base.OneTo(K)
+        for j in OneTo(K)
+            for i in OneTo(K)
                 β[t,j] += β[t+1,i] * A[j,i] * L[t+1,i]
             end
             c[t+1] += β[t,j]
         end
 
-        for j in Base.OneTo(K)
+        for j in OneTo(K)
             β[t,j] /= c[t+1]
         end
     end
 
-    for j in Base.OneTo(K)
+    for j in OneTo(K)
         c[1] += a[j] * L[1,j] * β[1,j]
     end
 end
@@ -70,14 +70,14 @@ end
 function posteriors!(γ::AbstractMatrix, α::AbstractMatrix, β::AbstractMatrix)
     @argcheck size(γ) == size(α) == size(β)
     T, K = size(α)
-    for t in Base.OneTo(T)
+    for t in OneTo(T)
         c = 0.0
-        for i = Base.OneTo(K)
+        for i = OneTo(K)
             γ[t,i] = α[t,i] * β[t,i]
             c += γ[t,i]
         end
 
-        for i in Base.OneTo(K)
+        for i in OneTo(K)
             γ[t,i] /= c
         end
     end
