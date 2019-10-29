@@ -46,7 +46,9 @@ end
 # In-place update of the observations distributions.
 function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
     for i in 1:length(B)
-        B[i] = fit_mle(typeof(B[i]), permutedims(observations), γ[:,i])
+        if sum(γ[:,i]) > 0
+            B[i] = fit_mle(typeof(B[i]), permutedims(observations), γ[:,i])
+        end
     end
 end
 
@@ -81,7 +83,7 @@ function fit_mle!(hmm::AbstractHMM, observations; tol=1e-3, maxit=100, verbose=f
         posteriors!(γ, α, β)
 
         logtotp = sum(log.(c))
-        println("Iteration $it: logtot = $logtotp")
+        verbose && println("Iteration $it: logtot = $logtotp")
 
         if abs(logtotp - logtot) < tol
             break

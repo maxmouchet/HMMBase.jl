@@ -22,7 +22,7 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
         α[1,j] /= c[1]
     end
 
-    c[1] *= exp(m)
+    c[1] *= exp(m) + eps()
 
     @inbounds for t in 2:T
         m = vec_maximum(view(LL, t, :))
@@ -38,7 +38,7 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
             α[t,j] /= c[t]
         end
 
-        c[t] *= exp(m)
+        c[t] *= exp(m) + eps()
     end
 end
 
@@ -70,7 +70,7 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
             β[t,j] /= c[t+1]
         end
 
-        c[t+1] *= exp(m)
+        c[t+1] *= exp(m) + eps()
     end
 
     m = vec_maximum(view(LL, 1,:))
@@ -79,5 +79,5 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
         c[1] += a[j] * exp(LL[1,j] - m) * β[1,j]
     end
 
-    c[1] *= exp(m);
+    c[1] *= exp(m) + eps();
 end
