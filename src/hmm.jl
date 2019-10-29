@@ -195,7 +195,7 @@ function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
     T, K = size(observations, 1), size(hmm, 1)
     L = Matrix{Float64}(undef, T, K)
     @inbounds for i = 1:K, t = 1:T
-        L[t,i] = pdf(hmm.B[i], view(observations,t,:))
+        L[t,i] = logpdf(hmm.B[i], view(observations,t,:))
     end
     L
 end
