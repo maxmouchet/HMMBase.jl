@@ -1,5 +1,8 @@
 name: Benchmark
-on: [push]
+on:
+  push:
+    tags:
+      - '*'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
