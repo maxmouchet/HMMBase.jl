@@ -28,7 +28,8 @@ HMMBase v1.0 will be released before the end of the year, and contains breaking 
 Many methods have been renamed, and most importantly, the fields of the `HMM` structure have
 been renamed from `π0, π, D` to `a, A, B`.
 
-See the [Migrating to v1.0]() section of the documentation for more informations. The [release notes]() contains a detailed list of the changes.
+See the [Migrating to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) section of the documentation for more informations.
+<!-- The [release notes]() contains a detailed list of the changes. -->
 
 You can try the new version before it is released.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
