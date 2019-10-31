@@ -41,7 +41,8 @@ Generate a transition matrix where each row is sampled from `prior`.
 The prior must be a multivariate probability distribution, such as a
 Dirichlet distribution.
 """
-function randtransmat(prior)
+function randtransmat(prior::MultivariateDistribution)
+    K = length(prior)
     A = Matrix{Float64}(undef, K, K)
     for i in OneTo(K)
         A[i,:] = rand(prior)
