@@ -69,7 +69,7 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
     end
 end
 
-function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxit = 100, verbose = false)
+function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, display = :none)
     # TODO: In-place loglikelihoods update
     LL = loglikelihoods(hmm, observations)
     T, K = size(LL)
@@ -86,9 +86,9 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxit = 100, verbo
     posteriors!(γ, α, β)
 
     logtot = sum(log.(c))
-    verbose && println("Iteration 0: logtot = $logtot")
+    (display == :iter) && println("Iteration 0: logtot = $logtot")
 
-    for it in 1:maxit
+    for it in 1:maxiter
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations)
@@ -100,7 +100,7 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxit = 100, verbo
         posteriors!(γ, α, β)
 
         logtotp = sum(log.(c))
-        verbose && println("Iteration $it: logtot = $logtotp")
+        (display == :iter) && println("Iteration $it: logtot = $logtotp")
 
         # The likelihood should never decrease.
         # We should probably use propre tests for this instead...
@@ -109,11 +109,14 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxit = 100, verbo
         end
 
         if abs(logtotp - logtot) < tol
-            break
+            (display in [:iter, :final]) && println("EM converged in $it iterations, logtot = $logtotp")
+            return
         end
 
         logtot = logtotp
     end
+
+    (display in [:iter, :final]) && println("EM has not converged after $maxiter iterations, logtot = $logtot")
 end
 
 function fit_mle(hmm::AbstractHMM, observations; kwargs...)

@@ -14,7 +14,7 @@ plot(y, linetype=:steppre, size=(600,200))
 # Hence we must instantiate an initial HMM by hand.
 
 hmm = HMM([0.5 0.5; 0.5 0.5], [Normal(-1,2), Normal(15,2)])
-hmm = fit_mle(hmm, y, verbose=true)
+hmm = fit_mle(hmm, y, display = :iter)
 #-
 
 z_viterbi = viterbi(hmm, y)
