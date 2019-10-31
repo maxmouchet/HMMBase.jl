@@ -7,7 +7,7 @@ using Random
 Random.seed!(2018)
 
 function rand_hmm(K)
-    A = rand_transition_matrix(K)
+    A = randtransmat(K)
     B = [Normal(rand()*100, rand()*10) for _ in 1:K]
     HMM(A, B)
 end
@@ -118,17 +118,17 @@ end
 
 @testset "Utilities" begin
     # Make sure we do not relabel states if they are in 1...K
-    mapping, _  = compute_transition_matrix([3,3,1,1,2,2])
+    mapping, _  = gettransmat([3,3,1,1,2,2], relabel = true)
     for (k, v) in mapping
         @test mapping[k] == v
     end
 
-    mapping, transmat = compute_transition_matrix([3,3,8,8,3,3])
+    mapping, transmat = gettransmat([3,3,8,8,3,3], relabel = true)
     @test mapping[3] == 1
     @test mapping[8] == 2
     @test transmat == [2/3 1/3; 1/2 1/2]
 
-    transmat = rand_transition_matrix(10)
+    transmat = randtransmat(10)
     @test HMMBase.issquare(transmat)
     @test istransmat(transmat)
 
