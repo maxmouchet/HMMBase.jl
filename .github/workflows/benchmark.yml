@@ -1,0 +1,23 @@
+name: Benchmark
+on: [push]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1.2.0]
+        julia-arch: [x86]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1.0.0
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Install dependencies
+        run: |
+          julia --project=@. -e "using Pkg; Pkg.instantiate();"
+          julia --project=@. -e "using Pkg; Pkg.add(\"PkgBenchmark\");"
+      - name: Benchmark
+        # TODO: Save/upload result files
+        run: |
+          julia --project=@. -e "using PkgBenchmark; benchmarkpkg(pwd());"
