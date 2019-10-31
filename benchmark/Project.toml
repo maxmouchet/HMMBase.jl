@@ -1,0 +1,5 @@
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+HMMBase = "b2b3ca75-8444-5ffa-85e6-af70e2b64fe7"
+PkgBenchmark = "32113eaa-f34f-5b0d-bd6c-c81e245fc73d"

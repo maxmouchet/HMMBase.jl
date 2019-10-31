@@ -15,9 +15,8 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: Install dependencies
         run: |
-          julia --project=@. -e "using Pkg; Pkg.instantiate();"
-          julia --project=@. -e "using Pkg; Pkg.add(\"PkgBenchmark\");"
+          julia --project=benchmark/ -e "using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()"
       - name: Benchmark
-        # TODO: Save/upload result files
+        # TODO: Save/upload result/md files
         run: |
-          julia --project=@. -e "using PkgBenchmark; benchmarkpkg(pwd());"
+          julia --project=benchmark/ -e "using PkgBenchmark; benchmarkpkg(pwd());"
