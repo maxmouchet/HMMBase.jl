@@ -40,8 +40,8 @@ export
     viterbi,
     viterbilog,
     # utils.jl,
-    compute_transition_matrix,
-    rand_transition_matrix
+    gettransmat,
+    randtransmat
 
 include("hmm.jl")
 include("mle.jl")
