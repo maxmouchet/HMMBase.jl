@@ -19,4 +19,5 @@ jobs:
       - name: "Run tests"
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
-          julia --project=@. --check-bounds=yes -e "using Pkg; Pkg.test(\"HMMBase\");"
+          julia --project=@. --check-bounds=yes -e "using Pkg; Pkg.test(\"HMMBase\", coverage=true);"
+          julia --project=@. -e "using Pkg; Pkg.add(\"Coverage\"); using Coverage; Codecov.submit(Codecov.process_folder())"
