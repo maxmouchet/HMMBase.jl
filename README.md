@@ -35,7 +35,7 @@ You can try the new version before it is released.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
 ```julia
-pkg> add HMMBase#v1.0.0-beta1
+pkg> add HMMBase#master
 ```
 
 If after the release you'd like to temporarily keep the old version, add the following in your `Project.toml`:
