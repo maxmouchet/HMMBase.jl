@@ -51,6 +51,7 @@ include("messages_gen.jl")
 include("viterbi.jl")
 include("viterbi_log.jl")
 include("viterbi_gen.jl")
+include("likelihoods.jl")
 include("utilities.jl")
 
 # To be removed in a future version

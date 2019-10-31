@@ -165,42 +165,6 @@ function nparams(hmm::AbstractHMM)
 end
 
 """
-    likelihoods(hmm, observations)
-
-Return the likelihood per-state and per-observation.
-"""
-function likelihoods(hmm::AbstractHMM{Univariate}, observations)
-    hcat(map(d -> pdf.(d, observations), hmm.B)...)
-end
-
-function likelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    T, K = size(observations, 1), size(hmm, 1)
-    L = Matrix{Float64}(undef, T, K)
-    @inbounds for i = 1:K, t = 1:T
-        L[t,i] = pdf(hmm.B[i], view(observations,t,:))
-    end
-    L
-end
-
-"""
-    loglikelihoods(hmm, observations)
-
-Return the log-likelihood per-state and per-observation.
-"""
-function loglikelihoods(hmm::AbstractHMM{Univariate}, observations)
-    hcat(map(d -> logpdf.(d, observations), hmm.B)...)
-end
-
-function loglikelihoods(hmm::AbstractHMM{Multivariate}, observations)
-    T, K = size(observations, 1), size(hmm, 1)
-    L = Matrix{Float64}(undef, T, K)
-    @inbounds for i = 1:K, t = 1:T
-        L[t,i] = logpdf(hmm.B[i], view(observations,t,:))
-    end
-    L
-end
-
-"""
     statdists(hmm)
 
 Return the stationnary distribution(s) of `hmm`.  

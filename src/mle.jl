@@ -70,9 +70,7 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
 end
 
 function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, display = :none)
-    # TODO: In-place loglikelihoods update
-    LL = loglikelihoods(hmm, observations)
-    T, K = size(LL)
+    T, K = size(observations, 1), size(hmm, 1)
 
     # Allocate memory for in-place updates
     c = zeros(T)
@@ -80,6 +78,9 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
     β = zeros(T, K)
     γ = zeros(T, K)
     ξ = zeros(T, K, K)
+    LL = zeros(T, K)
+
+    loglikelihoods!(LL, hmm, observations)
 
     forwardlog!(α, c, hmm.a, hmm.A, LL)
     backwardlog!(β, c, hmm.a, hmm.A, LL)
@@ -93,8 +94,8 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations)
 
-        LL = loglikelihoods(hmm, observations)
-
+        loglikelihoods!(LL, hmm, observations)
+    
         forwardlog!(α, c, hmm.a, hmm.A, LL)
         backwardlog!(β, c, hmm.a, hmm.A, LL)
         posteriors!(γ, α, β)
