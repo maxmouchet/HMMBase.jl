@@ -12,7 +12,7 @@ using Clustering
 using Distributions
 using LinearAlgebra
 
-import Base: copy, rand, size, OneTo
+import Base: ==, copy, rand, size, OneTo
 import Distributions: fit_mle
 
 export

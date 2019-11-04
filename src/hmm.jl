@@ -67,6 +67,8 @@ Return true if `A` is square and its rows sums to 1.
 """
 istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1:size(A,1)])
 
+==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
+
 """
     rand(hmm::AbstractHMM, T::Int[, initial_state::Int])
 
@@ -152,7 +154,8 @@ end
 """
     nparams(hmm::AbstractHMM)
 
-Return the number of parameters in `hmm`.  
+Return the number of _free_ parameters in `hmm`.  
+*NOTE: Does not work, currently, for observations distributions with non-scalar parameters.*
 
 # Example
 ```julia
