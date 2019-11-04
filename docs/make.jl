@@ -8,6 +8,9 @@ using Distributions
 using HMMBase
 using Random
 
+# https://discourse.julialang.org/t/deactivate-plot-display-to-avoid-need-for-x-server/19359
+ENV["GKSwstype"] = "nul"
+
 Random.seed!(2019)
 
 find_examples() = map(x -> joinpath("examples/", split(basename(x), ".")[1]), glob("*.jl", "examples/"))
