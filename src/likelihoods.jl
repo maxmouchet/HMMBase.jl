@@ -46,7 +46,7 @@ function likelihoods(hmm::AbstractHMM, observations)
 end
 
 """
-    loglikelihoods(hmm, observations)
+    loglikelihoods(hmm, observations) -> Matrix
 
 Return the log-likelihood per-state and per-observation.
 

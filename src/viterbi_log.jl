@@ -1,11 +1,6 @@
 # Same methods as in `viterbi.jl` but using the
 # samples log-likelihood instead of the likelihood.
 
-"""
-    viterbilog!(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
-
-Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
-"""
 function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
     T, K = size(LL)
 
