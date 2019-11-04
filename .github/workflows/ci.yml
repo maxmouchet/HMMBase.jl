@@ -22,8 +22,8 @@ jobs:
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
           julia --project=@. -e "using Pkg; Pkg.add(\"PyCall\");"
-          pip install future
-          pip install numpy pyhsmm
+          pip install future numpy 'scipy==0.19.1'
+          pip install pyhsmm
       - name: "Run Julia tests"
         run: |
           julia --project=@. --check-bounds=yes -e "using Pkg; Pkg.test(\"HMMBase\", coverage=true);"
