@@ -40,6 +40,11 @@ end
 Generate a transition matrix where each row is sampled from `prior`.  
 The prior must be a multivariate probability distribution, such as a
 Dirichlet distribution.
+
+# Example
+```julia
+A = randtransmat(Dirichlet([0.1, 0.1, 0.1]))
+```
 """
 function randtransmat(prior::MultivariateDistribution)
     K = length(prior)
@@ -56,6 +61,11 @@ end
 Generate a transition matrix where each row is sampled from
 a Dirichlet distribution of dimension `K` and concentration
 parameter `α`.
+
+# Example
+```julia
+A = randtransmat(4)
+```
 """
 randtransmat(K::Integer, α = 1.0) = randtransmat(Dirichlet(K, α))
 

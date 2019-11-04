@@ -4,7 +4,7 @@
 An HMM type must at-least implement the following interface:
 ```julia
 struct CustomHMM{F,T} <: AbstractHMM{F}
-    a::AbstractVector{T}              # Initial state distribution
+    a::AbstractVector{T}               # Initial state distribution
     A::AbstractMatrix{T}               # Transition matrix
     B::AbstractVector{Distribution{F}} # Observations distributions
     # Custom fields ....
@@ -154,7 +154,8 @@ end
 """
     nparams(hmm::AbstractHMM)
 
-Return the number of _free_ parameters in `hmm`.  
+Return the number of _free_ parameters in `hmm`.
+
 *NOTE: Does not work, currently, for observations distributions with non-scalar parameters.*
 
 # Example
