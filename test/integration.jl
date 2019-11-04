@@ -19,6 +19,10 @@ hmms = [
     @test size(z, 1) == size(y, 1)
     @test size(y, 2) == size(hmm, 2)
 
+    yp = rand(hmm, z)
+    @test size(z, 1) == size(y, 1)
+    @test size(y, 2) == size(hmm, 2)
+
     L = likelihoods(hmm, y)
     LL = likelihoods(hmm, y, logl = true)
     @test size(L) == size(LL)
