@@ -6,9 +6,6 @@
 forward
 backward
 posteriors
-forwardlog
-backwardlog
-posteriorslog
 ```
 
 ## Baum–Welch
@@ -21,5 +18,4 @@ fit_mle
 
 ```@docs
 viterbi
-viterbilog
 ```

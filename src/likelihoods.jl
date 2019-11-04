@@ -29,33 +29,3 @@ function loglikelihoods!(LL::AbstractMatrix, hmm::AbstractHMM{Multivariate}, obs
         LL[t,i] = logpdf(hmm.B[i], view(observations, t, :))
     end
 end
-
-"""
-    likelihoods(hmm, observations) -> Matrix
-
-Return the likelihood per-state and per-observation.
-
-# Output
-- `Matrix{Float64}`: a TxK likelihoods matrix.
-"""
-function likelihoods(hmm::AbstractHMM, observations)
-    T, K = size(observations, 1), size(hmm, 1)
-    L = Matrix{Float64}(undef, T, K)
-    likelihoods!(L, hmm, observations)
-    L
-end
-
-"""
-    loglikelihoods(hmm, observations) -> Matrix
-
-Return the log-likelihood per-state and per-observation.
-
-# Output
-- `Matrix{Float64}`: a TxK log-likelihoods matrix.
-"""
-function loglikelihoods(hmm::AbstractHMM, observations)
-    T, K = size(observations, 1), size(hmm, 1)
-    LL = Matrix{Float64}(undef, T, K)
-    loglikelihoods!(LL, hmm, observations)
-    LL
-end

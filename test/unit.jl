@@ -126,13 +126,13 @@ end
     z, y = rand(hmm, 1000)
 
     α1, logtot1 = forward(hmm, y)
-    α2, logtot2 = forwardlog(hmm, y)
+    α2, logtot2 = forward(hmm, y, logl = true)
 
     @test logtot1 ≈ logtot2
     @test α1 ≈ α2
 
     β1, logtot3 = backward(hmm, y)
-    β2, logtot4 = backwardlog(hmm, y)
+    β2, logtot4 = backward(hmm, y, logl = true)
 
     @test logtot3 ≈ logtot4
     @test β1 ≈ β2
@@ -141,7 +141,7 @@ end
     @test logtot1 ≈ logtot2 ≈ logtot3 ≈ logtot4
 
     γ1 = posteriors(hmm, y)
-    γ2 = posteriorslog(hmm, y)
+    γ2 = posteriors(hmm, y, logl = true)
 
     @test γ1 ≈ γ2
 end
@@ -151,7 +151,7 @@ end
     z, y = rand(hmm, 1000)
 
     zv1 = viterbi(hmm, y)
-    zv2 = viterbilog(hmm, y)
+    zv2 = viterbi(hmm, y, logl = true)
 
     @test zv1 == z
     @test zv1 == zv2

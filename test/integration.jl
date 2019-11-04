@@ -20,18 +20,18 @@ hmms = [
     @test size(y, 2) == size(hmm, 2)
 
     L = likelihoods(hmm, y)
-    LL = loglikelihoods(hmm, y)
+    LL = likelihoods(hmm, y, logl = true)
     @test size(L) == size(LL)
 
     # Forward/Backward
     α1, logtot1 = forward(hmm, y)
-    α2, logtot2 = forwardlog(hmm, y)
+    α2, logtot2 = forward(hmm, y, logl = true)
 
     @test logtot1 ≈ logtot2
     @test α1 ≈ α2
 
     β1, logtot3 = backward(hmm, y)
-    β2, logtot4 = backwardlog(hmm, y)
+    β2, logtot4 = backward(hmm, y, logl = true)
 
     @test logtot3 ≈ logtot4
     @test β1 ≈ β2
@@ -40,13 +40,14 @@ hmms = [
     @test logtot1 ≈ logtot2 ≈ logtot3 ≈ logtot4
 
     γ1 = posteriors(hmm, y)
-    γ2 = posteriorslog(hmm, y)
+    γ2 = posteriors(hmm, y, logl = true)
 
     @test γ1 ≈ γ2
 
     # Viterbi
-    zv = viterbi(hmm, y)
-    @test size(zv) == size(z)
+    zv1 = viterbi(hmm, y)
+    zv2 = viterbi(hmm, y; logl = true)
+    @test size(zv1) == size(zv2) == size(z)
 
     # MLE
     hmm2 = fit_mle(hmm, y, display = :final, init = nothing)
