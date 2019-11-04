@@ -69,7 +69,7 @@ pkg> add HMMBase
 
 ## Project Status
 
-The package is tested against Julia 1.2 and the nightly builds of the Julia `master` branch on Linux, macOS and Windows.
+The package is tested against Julia 1.0 and Julia 1.2.
 
 ## Questions and Contributions
 

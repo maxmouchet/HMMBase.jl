@@ -37,7 +37,6 @@ export
     gettransmat,
     randtransmat
 
-# TODO: Rename _gen.jl to _pub.jl
 include("hmm.jl")
 include("mle.jl")
 include("mle_api.jl")
