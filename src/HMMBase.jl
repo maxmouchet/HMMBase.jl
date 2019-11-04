@@ -8,6 +8,7 @@ Hidden Markov Models for Julia.
 module HMMBase
 
 using ArgCheck
+using Clustering
 using Distributions
 using LinearAlgebra
 
@@ -45,6 +46,7 @@ export
 
 include("hmm.jl")
 include("mle.jl")
+include("mle_init.jl")
 include("messages.jl")
 include("messages_log.jl")
 include("messages_gen.jl")

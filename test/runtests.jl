@@ -110,7 +110,12 @@ end
     @test size(α) == size(β) == size(γ)
 
     # TODO: Test that likelihood is always incrementing
-    new_hmm = fit_mle(hmm, y)
+    new_hmm = fit_mle(hmm, y, display = :iter)
+    @test size(new_hmm) == size(hmm)
+    @test typeof(new_hmm) == typeof(hmm)
+    @test typeof(copy(hmm)) == typeof(hmm)
+
+    new_hmm = fit_mle(hmm, y, display = :iter, init = :kmeans)
     @test size(new_hmm) == size(hmm)
     @test typeof(new_hmm) == typeof(hmm)
     @test typeof(copy(hmm)) == typeof(hmm)

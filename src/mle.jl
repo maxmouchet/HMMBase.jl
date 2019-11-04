@@ -105,7 +105,7 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
 
         # The likelihood should never decrease.
         # We should probably use propre tests for this instead...
-        if logtotp < logtot
+        if logtotp < logtot + eps()
             @warn "The likelihood has decreased during the EM step. This is probably a bug."
         end
 
@@ -120,8 +120,13 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
     (display in [:iter, :final]) && println("EM has not converged after $maxiter iterations, logtot = $logtot")
 end
 
-function fit_mle(hmm::AbstractHMM, observations; kwargs...)
+function fit_mle(hmm::AbstractHMM, observations; init = :none, kwargs...)
     hmm = copy(hmm)
+
+    if init == :kmeans
+        kmeans_init!(hmm, observations, display = get(kwargs, :display, :none))
+    end
+
     fit_mle!(hmm, observations; kwargs...)
     hmm
 end
