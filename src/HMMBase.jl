@@ -1,5 +1,3 @@
-__precompile__()
-
 """
 Hidden Markov Models for Julia.
     
