@@ -7,19 +7,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: [1.0.4, 1.1.1]
-        os: [ubuntu-latest, macOS-latest]
+        julia-version: [1.0.4, 1.2.0]
+        os: [ubuntu-latest]
     
     steps:
       - uses: actions/checkout@v1.0.0
-      - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v0.2
+      - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
-      - name: "Run tests"
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
+      - name: "Setup tests"
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
+          julia --project=@. -e "using Pkg; Pkg.add(\"PyCall\");"
+          pip install numpy pyhsmm
+      - name: "Run Julia tests"
+        run: |
           julia --project=@. --check-bounds=yes -e "using Pkg; Pkg.test(\"HMMBase\", coverage=true);"
+      - name: "Run Python tests"
+        run: |
+          julia --project=@. --check-bounds=yes test/pyhsmm.jl
       - name: "Upload coverage"
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
