@@ -59,15 +59,13 @@ parameter `α`.
 """
 randtransmat(K::Integer, α = 1.0) = randtransmat(Dirichlet(K, α))
 
+# function rand(::Type{HMM}, D::Type{Distribution}, K::Integer, fn::Function)
 
+# end
 
 # function rand(::HMM, K::Integer; A_prior = Dirichlet(K, 1.0), B_prior = )
 
-# Align sequences
-
-# Generate random HMM of size K
-
-# ...
+# Align sequences (hungarian)
 
 # ~2x times faster than Base.maximum
 # v = rand(25)

@@ -25,6 +25,7 @@ for f in (:forward, :backward)
     fl  = Symbol("$(f)log") # forwardlog
     fl! = Symbol("$(fl)!")  # forwardlog!
     @eval begin
+        # [forward,backward](a, A, L)
         """
             $($f)(a, A, L)
 
@@ -38,6 +39,7 @@ for f in (:forward, :backward)
             m, sum(log.(c))
         end
 
+        # [forwardlog,backwardlog](a, A, LL)
         """
             $($fl)(a, A, LL)
 
@@ -50,7 +52,8 @@ for f in (:forward, :backward)
             $(fl!)(m, c, a, A, L)
             m, sum(log.(c))
         end
-        
+
+        # [forward,backward](hmm, observations)
         """
             $($f)(hmm, observations)
 
@@ -65,6 +68,7 @@ for f in (:forward, :backward)
             $(f)(hmm.a, hmm.A, likelihoods(hmm, observations))
         end
 
+        # [forwardlog,backwardlog](hmm,observations)
         """
             $($fl)(hmm, observations)
 
