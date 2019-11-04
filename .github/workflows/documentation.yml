@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         # TODO: Remove temporary install of Documenter from master (for v0.24)
         run: |
-          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(url="https://github.com/JuliaDocs/Documenter.jl.git", rev="master"))'
+          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(url="https://github.com/JuliaDocs/Documenter.jl.git"))'
           julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
       - name: Build and deploy
         env:
