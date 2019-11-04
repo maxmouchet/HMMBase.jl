@@ -67,6 +67,13 @@ randtransmat(K::Integer, α = 1.0) = randtransmat(Dirichlet(K, α))
 
 # Align sequences (hungarian)
 
+
+function warn_logl(L::AbstractMatrix)
+    if any(L .< 0)
+        @warn "Negative likelihoods values, use the `logl = true` option if you are using log-likelihoods."
+    end
+end
+
 # ~2x times faster than Base.maximum
 # v = rand(25)
 # @btime maximum(v)

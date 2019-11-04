@@ -4,7 +4,7 @@ using Distributions
 using LinearAlgebra
 using Random
 
-import HMMBase: issquare
+import HMMBase: issquare, warn_logl
 
 Random.seed!(2019)
 
@@ -181,4 +181,7 @@ end
     transmat = randtransmat(10)
     @test issquare(transmat)
     @test istransmat(transmat)
+
+    @test_logs (:warn, r".+") warn_logl(rand(10, 2) .- 10)
+    @test_nowarn warn_logl(rand(10, 2))
 end

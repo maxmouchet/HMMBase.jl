@@ -95,9 +95,3 @@ function posteriors(hmm::AbstractHMM, observations; logl = false)
     L = likelihoods(hmm, observations, logl = logl)
     posteriors(hmm.a, hmm.A, L, logl = logl)
 end
-
-function warn_logl(L::AbstractMatrix)
-    if any(L .< 0)
-        @warn "Negative likelihoods values, use the `logl = true` option if you are using log-likelihoods."
-    end
-end
