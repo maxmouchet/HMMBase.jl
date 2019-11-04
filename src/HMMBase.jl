@@ -28,6 +28,7 @@ export
     # messages_api.jl
     forward,
     backward,
+    likelihood,
     posteriors,
     # mle_api.jl
     fit_mle,

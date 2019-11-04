@@ -109,3 +109,9 @@ function posteriors(hmm::AbstractHMM, observations; logl = false)
     L = likelihoods(hmm, observations, logl = logl)
     posteriors(hmm.a, hmm.A, L, logl = logl)
 end
+
+# Likelihood
+
+function likelihood(hmm::AbstractHMM, observations; logl = false)
+    forward(hmm, observations, logl = logl)[2]
+end
