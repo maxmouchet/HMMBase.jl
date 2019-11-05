@@ -23,8 +23,9 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
     @inbounds for t in 2:T
         for j in OneTo(K)
             for i in OneTo(K)
-                α[t,j] += α[t-1,i] * A[i,j] * L[t,j]
+                α[t,j] += α[t-1,i] * A[i,j]
             end
+            α[t,j] *= L[t,j]
             c[t] += α[t,j]
         end
 

@@ -29,8 +29,9 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
 
         for j in OneTo(K)
             for i in OneTo(K)
-                α[t,j] += α[t-1,i] * A[i,j] * exp(LL[t,j] - m)
+                α[t,j] += α[t-1,i] * A[i,j]
             end
+            α[t,j] *= exp(LL[t,j] - m)
             c[t] += α[t,j]
         end
 
@@ -48,6 +49,7 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
     @argcheck size(β, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
 
     T, K = size(LL)
+    L = zeros(K)
 
     fill!(β, 0.0)
     fill!(c, 0.0)
@@ -59,9 +61,13 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
     @inbounds for t in T-1:-1:1
         m = vec_maximum(view(LL, t+1, :))
 
+        for i in OneTo(K)
+            L[i] = exp(LL[t+1,i] - m)
+        end
+
         for j in OneTo(K)
             for i in OneTo(K)
-                β[t,j] += β[t+1,i] * A[j,i] * exp(LL[t+1,i] - m)
+                β[t,j] += β[t+1,i] * A[j,i] * L[i]
             end
             c[t+1] += β[t,j]
         end
