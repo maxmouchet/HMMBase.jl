@@ -9,6 +9,7 @@
 ```@docs
 forward
 backward
+likelihood
 posteriors
 ```
 

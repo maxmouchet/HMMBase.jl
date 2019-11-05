@@ -5,10 +5,20 @@ AbstractHMM
 HMM
 rand
 permute
-likelihoods
-statdists
 istransmat
 nparams
 copy
 size
+```
+
+## Likelihoods
+
+```@docs
+likelihoods
+```
+
+## Stationnary Distributions
+
+```@docs
+statdists
 ```
