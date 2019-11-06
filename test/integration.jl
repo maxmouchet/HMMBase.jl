@@ -56,11 +56,11 @@ hmms = [
     @test size(zv1) == size(zv2) == size(z)
 
     # MLE
-    hmm2 = fit_mle(hmm, y, display = :final, init = nothing)
+    hmm2, _ = fit_mle(hmm, y, display = :final, init = nothing)
     @test size(hmm2) == size(hmm)
     @test typeof(hmm2) == typeof(hmm)
 
-    hmm2 = fit_mle(hmm, y, display = :final, init = :kmeans)
+    hmm2, _ = fit_mle(hmm, y, display = :final, init = :kmeans)
     @test size(hmm2) == size(hmm)
     @test typeof(hmm2) == typeof(hmm)
 end

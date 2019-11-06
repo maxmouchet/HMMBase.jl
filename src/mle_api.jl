@@ -19,6 +19,6 @@ function fit_mle(hmm::AbstractHMM, observations; init = :none, kwargs...)
         kmeans_init!(hmm, observations, display = get(kwargs, :display, :none))
     end
 
-    fit_mle!(hmm, observations; kwargs...)
-    hmm
+    history = fit_mle!(hmm, observations; kwargs...)
+    hmm, history
 end

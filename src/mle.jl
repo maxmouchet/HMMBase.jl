@@ -17,18 +17,17 @@ function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
 end
 
 # In-place update of the transition matrix.
-function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β::AbstractMatrix, LL::AbstractMatrix)
-    @argcheck size(α, 1) == size(β, 1) == size(LL, 1) == size(ξ, 1)
-    @argcheck size(α, 2) == size(β, 2) == size(LL, 2) == size(A, 1) == size(A, 2) == size(ξ, 2) == size(ξ, 3)
+function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β::AbstractMatrix, L::AbstractMatrix)
+    @argcheck size(α, 1) == size(β, 1) == size(L, 1) == size(ξ, 1)
+    @argcheck size(α, 2) == size(β, 2) == size(L, 2) == size(A, 1) == size(A, 2) == size(ξ, 2) == size(ξ, 3)
 
-    T, K = size(LL)
+    T, K = size(L)
 
     @inbounds for t in OneTo(T - 1)
-        m = vec_maximum(view(LL, t, :))
         c = 0.0
 
         for i in OneTo(K), j in OneTo(K)
-            ξ[t,i,j] = α[t,i] * A[i,j] * exp(LL[t + 1,j] - m) * β[t + 1,j]
+            ξ[t,i,j] = α[t,i] * A[i,j] * L[t + 1,j] * β[t + 1,j]
             c += ξ[t,i,j]
         end
 
@@ -67,8 +66,9 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
     end
 end
 
-function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, display = :none)
+function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100, tol=1e-3, robust = false)
     T, K = size(observations, 1), size(hmm, 1)
+    history = EMHistory(false, 0, [])
 
     # Allocate memory for in-place updates
     c = zeros(T)
@@ -76,12 +76,13 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
     β = zeros(T, K)
     γ = zeros(T, K)
     ξ = zeros(T, K, K)
-    LL = zeros(T, K)
+    L = zeros(T, K)
 
-    loglikelihoods!(LL, hmm, observations)
+    likelihoods!(L, hmm, observations)
+    robust && replace!(L, -Inf => eps(), Inf => prevfloat(Inf))
 
-    forwardlog!(α, c, hmm.a, hmm.A, LL)
-    backwardlog!(β, c, hmm.a, hmm.A, LL)
+    forward!(α, c, hmm.a, hmm.A, L)
+    backward!(β, c, hmm.a, hmm.A, L)
     posteriors!(γ, α, β)
 
     logtot = sum(log.(c))
@@ -89,31 +90,42 @@ function fit_mle!(hmm::AbstractHMM, observations; tol = 1e-3, maxiter = 100, dis
 
     for it in 1:maxiter
         update_a!(hmm.a, α, β)
-        update_A!(hmm.A, ξ, α, β, LL)
+        update_A!(hmm.A, ξ, α, β, L)
         update_B!(hmm.B, γ, observations)
 
-        loglikelihoods!(LL, hmm, observations)
+        likelihoods!(L, hmm, observations)
+        robust && replace!(L, -Inf => eps(), Inf => prevfloat(Inf))
     
-        forwardlog!(α, c, hmm.a, hmm.A, LL)
-        backwardlog!(β, c, hmm.a, hmm.A, LL)
+        forward!(α, c, hmm.a, hmm.A, L)
+        backward!(β, c, hmm.a, hmm.A, L)
         posteriors!(γ, α, β)
 
         logtotp = sum(log.(c))
         (display == :iter) && println("Iteration $it: logtot = $logtotp")
 
-        # The likelihood should never decrease.
-        # We should probably use propre tests for this instead...
-        if logtotp < logtot + eps()
-            @warn "The likelihood has decreased during the EM step. This is probably a bug."
-        end
+        push!(history.logtots, logtotp)
+        history.iterations += 1
 
         if abs(logtotp - logtot) < tol
             (display in [:iter, :final]) && println("EM converged in $it iterations, logtot = $logtotp")
-            return
+            history.converged = true
+            break
         end
 
         logtot = logtotp
     end
 
-    (display in [:iter, :final]) && println("EM has not converged after $maxiter iterations, logtot = $logtot")
+    if !history.converged
+        if display in [:iter, :final]
+            println("EM has not converged after $(history.iterations) iterations, logtot = $logtot")
+        end
+    end
+
+    history
+end
+
+mutable struct EMHistory
+    converged::Bool
+    iterations::Int
+    logtots::Vector{Float64}
 end

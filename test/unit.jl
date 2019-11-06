@@ -162,8 +162,8 @@ end
     z, y = rand(hmm, 1000)
 
     # Likelihood should not decrease
-    hmmp = fit_mle(hmm, y, display = :final)
-    @test forward(hmmp, y)[2] >= forward(hmm, y)[2]
+    hmmp, hist = fit_mle(hmm, y, display = :final)
+    @test issorted(round.(hist.logtots, digits=9))
 end
 
 @testset "Utilities" begin
