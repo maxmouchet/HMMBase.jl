@@ -12,13 +12,22 @@
   </a>
 </p>
 
+## Migrating to v1.0
+
+HMMBase v1.0 introduces breaking API changes (see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/)). To temporarily keep the old (and unmaintained) version, add the following in your `Project.toml`:
+
+```toml
+[compat]
+HMMBase = "0.0.14"
+```
+
 ## Introduction
 
 HMMBase provides a lightweight and efficient abstraction for hidden Markov models in Julia. Most HMMs libraries only support discrete (e.g. categorical) or normal distributions. In contrast HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to support arbitrary univariate and multivariate distributions.  
 
 **Features:**
-- Supports any observation distributions conforming to the  [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) interface.
-- Fast and clean implementations of the forward/backward, EM (Baum-Welch) and Viterbi algorithms.
+- Supports any observation distributions conforming to the  [Distribution](https://juliastats.org/Distributions.jl/latest/types/) interface.
+- Fast and stable implementations of the forward/backward, EM (Baum-Welch) and Viterbi algorithms.
 
 See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](https://discourse.julialang.org/t/ann-hmmbase-jl-a-lightweight-and-efficient-hidden-markov-model-abstraction/21604) for more details on the motivation behind this package.
 
@@ -31,13 +40,6 @@ From the Julia REPL, type `]` to enter the Pkg REPL mode and run:
 
 ```
 pkg> add HMMBase
-```
-
-HMMBase v1.0 introduced breaking API changes (see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/)). To temporarily keep the old (and unmaintained) version, add the following in your `Project.toml`:
-
-```toml
-[compat]
-HMMBase = "0.0.14"
 ```
 
 ## Documentation
@@ -58,7 +60,7 @@ Starting with v1.0, we follow [semantic versioning]():
 
 ## Questions and Contributions
 
-Contributions are very welcome, as are feature requests and suggestions. Please open an [issue][issues-url] if you encounter any problems.
+Contributions are very welcome, as are feature requests and suggestions. Please read the [CONTRIBUTING.md](/CONTRIBUTING.md) file for informations on how to contribute. Please open an [issue][issues-url] if you encounter any problems.
 
 *Logo: lego by jon trillana from the Noun Project.*
 
