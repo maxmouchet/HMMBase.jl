@@ -61,8 +61,8 @@ for f in (:forward, :backward)
         probs, tot = $($f)(hmm, y)
         ```
         """
-        function $(f)(hmm::AbstractHMM, observations; logl = false)
-            L = likelihoods(hmm, observations, logl = logl)
+        function $(f)(hmm::AbstractHMM, observations; logl = false, robust = false)
+            L = likelihoods(hmm, observations, logl = logl, robust = robust)
             $(f)(hmm.a, hmm.A, L, logl = logl)
         end
     end
@@ -105,13 +105,13 @@ z, y = rand(hmm, 1000)
 γ = posteriors(hmm, y)
 ```
 """
-function posteriors(hmm::AbstractHMM, observations; logl = false)
-    L = likelihoods(hmm, observations, logl = logl)
+function posteriors(hmm::AbstractHMM, observations; logl = false, robust = false)
+    L = likelihoods(hmm, observations, logl = logl, robust = robust)
     posteriors(hmm.a, hmm.A, L, logl = logl)
 end
 
 # Likelihood
 
-function loglikelihood(hmm::AbstractHMM, observations)
-    forward(hmm, observations, logl = true)[2]
+function loglikelihood(hmm::AbstractHMM, observations, robust = false)
+    forward(hmm, observations, logl = true, robust = robust)[2]
 end
