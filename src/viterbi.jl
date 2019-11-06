@@ -25,7 +25,11 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
         c = 0.0
 
         for j in OneTo(K)
-            amax = 1
+            # TODO: If there is NaNs in T1 this may
+            # stay to 0 (NaN > -Inf == false).
+            # Hence it will crash when computing z[t].
+            # Maybe we should check for NaNs beforehand ?
+            amax = 0
             vmax = -Inf
 
             for i in OneTo(K)
@@ -47,7 +51,7 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
     end
 
     z[T] = argmax(T1[T,:])
-    @inbounds for t in T-1:-1:1
+    for t in T-1:-1:1
         z[t] = T2[t+1,z[t+1]]
     end
 

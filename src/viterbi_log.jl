@@ -24,6 +24,7 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
         c = 0.0
 
         for j in OneTo(K)
+            # TODO: See comment in viterbi.jl
             amax = 0
             vmax = -Inf
 

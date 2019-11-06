@@ -15,12 +15,10 @@ function likelihoods(hmm::AbstractHMM, observations; logl = false, robust = fals
 
     if logl
         loglikelihoods!(L, hmm, observations)
+        robust && replace!(L, -Inf => eps(), Inf => log(prevfloat(Inf)))
     else
         likelihoods!(L, hmm, observations)
-    end
-
-    if robust
-        replace!(L, -Inf => eps(), Inf => prevfloat(Inf))
+        robust && replace!(L, -Inf => eps(), Inf => prevfloat(Inf))
     end
 
     L
