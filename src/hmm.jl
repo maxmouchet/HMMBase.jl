@@ -1,7 +1,7 @@
 """
     AbstractHMM{F<:VariateForm}
 
-An HMM type must at-least implement the following interface:
+A custom HMM type must at-least implement the following interface:
 ```julia
 struct CustomHMM{F,T} <: AbstractHMM{F}
     a::AbstractVector{T}               # Initial state distribution
@@ -14,13 +14,18 @@ end
 abstract type AbstractHMM{F<:VariateForm} end
 
 """
-    HMM([a::AbstractVector{T}, ]A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where F where T
+    HMM([a, ]A, B) -> HMM
 
 Build an HMM with transition matrix `A` and observations distributions `B`.  
 If the initial state distribution `a` is not specified, a uniform distribution is assumed. 
 
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
 However they must be of the same dimension (all scalars or all multivariates).
+
+# Arguments
+- `a::AbstractVector{T}`: initial probabilities vector.
+- `A::AbstractMatrix{T}`: transition matrix.
+- `B::AbstractVector{<:Distribution{F}}`: observations distributions.
 
 # Example
 ```julia
@@ -54,14 +59,14 @@ function assert_hmm(a::AbstractVector,
 end
 
 """
-    issquare(A)
+    issquare(A) -> Bool
 
 Return true if `A` is a square matrix.
 """
 issquare(A::AbstractMatrix) = size(A,1) == size(A,2)
 
 """
-    istransmat(A)
+    istransmat(A) -> Bool
 
 Return true if `A` is square and its rows sums to 1.
 """
@@ -70,14 +75,26 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand(hmm::AbstractHMM, T::Int[, initial_state::Int])
+    rand(hmm, T; ...) -> (Vector, Matrix)
 
 Generate a random trajectory of `hmm` for `T` timesteps.
+
+# Arguments
+- `initial_state::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
+
+# Output
+- `Vector{Int}`: hidden state sequence.
+- `Matrix{Float64}`: observations (T x dim(obs)).
 
 # Example
 ```julia
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 z, y = rand(hmm, 1000)
+```
+
+```julia
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+z, y = rand(hmm, 1000, initial_state = 2)
 ```
 """
 function rand(hmm::AbstractHMM, T::Integer; initial_state=rand(Categorical(hmm.a)))
@@ -97,7 +114,7 @@ function rand(hmm::AbstractHMM, T::Integer; initial_state=rand(Categorical(hmm.a
 end
 
 """
-    rand(hmm::AbstractHMM, z::AbstractVector{Int})
+    rand(hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
 
 Generate observations from `hmm` according to trajectory `z`.
 
@@ -110,7 +127,7 @@ y = rand(hmm, [1, 1, 2, 2, 1])
 rand(hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(hmm.B[x], 1), z))...)
 
 """
-    size(hmm::AbstractHMM, [dim])
+    size(hmm, [dim]) -> Int | Tuple
 
 Returns the number of states in the HMM and the dimension of the observations.
 
@@ -123,14 +140,14 @@ size(hmm) # (2,1)
 size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
 
 """
-    copy(hmm::HMM)
+    copy(hmm) -> HMM
 
 Returns a copy of `hmm`.
 """
 copy(hmm::HMM) = HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
 
 """
-    permute(hmm::HMM)
+    permute(hmm) -> HMM
 
 Permute the states of `hmm` according to `perm`.
 
@@ -153,11 +170,12 @@ function permute(hmm::HMM, perm::Vector{<:Integer})
 end
 
 """
-    nparams(hmm::AbstractHMM)
+    nparams(hmm) -> Int
 
 Return the number of _free_ parameters in `hmm`.
 
-*NOTE: Does not work, currently, for observations distributions with non-scalar parameters.*
+!!! warning
+    Does not work, currently, for observations distributions with non-scalar parameters.
 
 # Example
 ```julia

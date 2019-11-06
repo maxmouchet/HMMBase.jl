@@ -112,6 +112,15 @@ end
 
 # Likelihood
 
+"""
+    likelihood(hmm, observations; ...)
+
+Compute the likelihood of the observations under the model.  
+This is defined as the sum of the log of the normalization coefficients in the forward filter.
+
+# Arguments
+- `logl`, `robust`: see [common options](@ref common_options).
+"""
 function loglikelihood(hmm::AbstractHMM, observations; logl = false, robust = false)
     forward(hmm, observations, logl = logl, robust = robust)[2]
 end

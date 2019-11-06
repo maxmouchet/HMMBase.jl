@@ -1,7 +1,6 @@
 # Models
 
 ```@docs
-AbstractHMM
 HMM
 rand
 permute
@@ -22,4 +21,10 @@ loglikelihood
 
 ```@docs
 statdists
+```
+
+## Custom Types
+
+```@docs
+AbstractHMM
 ```
