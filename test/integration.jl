@@ -40,13 +40,10 @@ hmms = [
     @test logtot3 ≈ logtot4
     @test β1 ≈ β2
 
-    logtot5 = likelihood(hmm, y)
-    logtot6 = likelihood(hmm, y, logl = true)
-
-    @test logtot5 ≈ logtot6
+    logtot5 = loglikelihood(hmm, y)
 
     @test size(α1) == size(α2) == size(β1) == size(β2)
-    @test logtot1 ≈ logtot2 ≈ logtot3 ≈ logtot4 ≈ logtot5 ≈ logtot6
+    @test logtot1 ≈ logtot2 ≈ logtot3 ≈ logtot4 ≈ logtot5
 
     γ1 = posteriors(hmm, y)
     γ2 = posteriors(hmm, y, logl = true)
