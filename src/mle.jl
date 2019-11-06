@@ -83,7 +83,7 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
     LL = zeros(T, K)
 
     loglikelihoods!(LL, hmm, observations)
-    robust && replace!(LL, -Inf => eps(), Inf => log(prevfloat(Inf)))
+    robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
 
     forwardlog!(α, c, hmm.a, hmm.A, LL)
     backwardlog!(β, c, hmm.a, hmm.A, LL)
@@ -106,7 +106,7 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
         @check istransmat(hmm.A)
 
         loglikelihoods!(LL, hmm, observations)
-        robust && replace!(LL, -Inf => eps(), Inf => log(prevfloat(Inf)))
+        robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
     
         forwardlog!(α, c, hmm.a, hmm.A, LL)
         backwardlog!(β, c, hmm.a, hmm.A, LL)
