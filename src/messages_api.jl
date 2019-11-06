@@ -112,6 +112,6 @@ end
 
 # Likelihood
 
-function likelihood(hmm::AbstractHMM, observations; logl = false)
-    forward(hmm, observations, logl = logl)[2]
+function loglikelihood(hmm::AbstractHMM, observations)
+    forward(hmm, observations, logl = true)[2]
 end

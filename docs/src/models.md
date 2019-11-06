@@ -15,6 +15,7 @@ size
 
 ```@docs
 likelihoods
+loglikelihood
 ```
 
 ## Stationnary Distributions
