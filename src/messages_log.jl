@@ -7,6 +7,7 @@ function forwardlog!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A
     @argcheck size(α, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
 
     T, K = size(LL)
+    (T == 0) && return
 
     fill!(α, 0.0)
     fill!(c, 0.0)
@@ -50,6 +51,7 @@ function backwardlog!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, 
 
     T, K = size(LL)
     L = zeros(K)
+    (T == 0) && return
 
     fill!(β, 0.0)
     fill!(c, 0.0)

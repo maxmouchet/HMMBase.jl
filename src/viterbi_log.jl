@@ -3,6 +3,7 @@
 
 function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix)
     T, K = size(LL)
+    (T == 0) && return
 
     fill!(T1, 0.0)
     fill!(T2, 0)
@@ -50,6 +51,4 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
     @inbounds for t in T-1:-1:1
         z[t] = T2[t+1,z[t+1]]
     end
-
-    z
 end

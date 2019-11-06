@@ -80,9 +80,10 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 z, y = rand(hmm, 1000)
 ```
 """
-function rand(hmm::AbstractHMM, T::Int; initial_state=rand(Categorical(hmm.a)))
+function rand(hmm::AbstractHMM, T::Integer; initial_state=rand(Categorical(hmm.a)))
     z = Vector{Int}(undef, T)
     y = Matrix{Float64}(undef, T, size(hmm, 2))
+    (T < 1) && return z, y
 
     z[1] = initial_state
     y[1,:] = rand(hmm.B[z[1]], 1)
