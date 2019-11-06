@@ -5,7 +5,7 @@ function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
 
     K = length(a)
     c = 0.0
-    
+
     for i in OneTo(K)
         a[i] = α[1,i] * β[1,i]
         c += a[i]
@@ -96,6 +96,11 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations)
+
+        # Ensure the "connected-ness" of the states,
+        # this prevents case where there is no transitions
+        # between two extremely likely observations.
+        robust && (hmm.A .+= eps())
 
         @check isprobvec(hmm.a)
         @check istransmat(hmm.A)
