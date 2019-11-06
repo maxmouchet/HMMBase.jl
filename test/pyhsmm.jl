@@ -24,14 +24,14 @@ end
     ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(hmm.A, hmm.a, LL)
     res = forward(hmm.a, hmm.A, LL, logl = true)
 
-    @test sum(abs.(ref[1]-res[1])) < 1e-11
-    @test abs(ref[2]-res[2]) < 1e-10
+    @test all(res[1] .≈ ref[1])
+    @test res[2] ≈ ref[2]
 
     ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized(hmm.A, hmm.a, LL)
     res = backward(hmm.a, hmm.A, LL, logl = true)
 
-    @test sum(abs.(ref[1]-res[1])) < 1e-11
-    @test abs(ref[2]-res[2]) < 1e-10
+    @test all(res[1] .≈ ref[1])
+    @test res[2] ≈ ref[2]
 end
 
 @testset "Viterbi #$k" for k in 2:10
