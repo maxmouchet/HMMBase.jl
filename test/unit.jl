@@ -200,8 +200,15 @@ end
     z, y = rand(hmm, 1000)
 
     # Likelihood should not decrease
-    hmmp, hist = fit_mle(hmm, y)
+    _, hist = fit_mle(hmm, y)
     @test issorted(round.(hist.logtots, digits=9))
+
+    _, hist = fit_mle(hmm, y, robust = true)
+    @test issorted(round.(hist.logtots, digits=9))
+
+    _, hist = fit_mle(hmm, y, maxiter = 0)
+    @test hist.iterations == 0
+    @test !hist.converged
 end
 
 @testset "Utilities" begin

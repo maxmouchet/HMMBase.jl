@@ -60,7 +60,7 @@ hmms = [
     @test size(hmm2) == size(hmm)
     @test typeof(hmm2) == typeof(hmm)
 
-    hmm2, _ = fit_mle(hmm, y, init = :kmeans)
+    hmm2, _ = fit_mle(hmm, y, init = :kmeans, robust = true)
     @test size(hmm2) == size(hmm)
     @test typeof(hmm2) == typeof(hmm)
 end
