@@ -25,7 +25,7 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
         c = 0.0
 
         for j in OneTo(K)
-            amax = 0
+            amax = 1
             vmax = -Inf
 
             for i in OneTo(K)
