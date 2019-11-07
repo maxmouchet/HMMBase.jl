@@ -8,6 +8,7 @@ function kmeans_init!(hmm::AbstractHMM, observations; kwargs...)
     
     # Initialize A
     copyto!(hmm.A, gettransmat(seq)[2])
+    @check istransmat(hmm.A)
 
     # Initialize B
     for i in OneTo(K)

@@ -11,7 +11,7 @@ using Distributions
 using LinearAlgebra
 
 import Base: ==, copy, rand, size, OneTo
-import Distributions: fit_mle
+import Distributions: fit_mle, loglikelihood
 
 export
     # hmm.jl
@@ -28,8 +28,8 @@ export
     # messages_api.jl
     forward,
     backward,
-    likelihood,
     posteriors,
+    loglikelihood,
     # mle_api.jl
     fit_mle,
     # viterbi_api.jl

@@ -6,6 +6,7 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
     @argcheck size(T1, 2) == size(T2, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
 
     T, K = size(L)
+    (T == 0) && return
 
     fill!(T1, 0.0)
     fill!(T2, 0)
@@ -25,6 +26,10 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
         c = 0.0
 
         for j in OneTo(K)
+            # TODO: If there is NaNs in T1 this may
+            # stay to 0 (NaN > -Inf == false).
+            # Hence it will crash when computing z[t].
+            # Maybe we should check for NaNs beforehand ?
             amax = 0
             vmax = -Inf
 
@@ -47,9 +52,7 @@ function viterbi!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, a::
     end
 
     z[T] = argmax(T1[T,:])
-    @inbounds for t in T-1:-1:1
+    for t in T-1:-1:1
         z[t] = T2[t+1,z[t+1]]
     end
-
-    z
 end

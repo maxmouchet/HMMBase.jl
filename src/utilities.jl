@@ -22,6 +22,7 @@ function gettransmat(seq::Vector{<:Integer}; relabel = false)
         mapping = Dict([(x, x) for x in unique(seq)])
     end
 
+    (length(mapping) == 0) && return mapping, Float64[]
     K = maximum(values(mapping))
 
     transmat = zeros(K, K)

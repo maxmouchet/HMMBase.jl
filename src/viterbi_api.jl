@@ -25,7 +25,7 @@ end
 """
     viterbi(hmm, observations) -> Vector
 """
-function viterbi(hmm::AbstractHMM, observations; logl = false)
-    L = likelihoods(hmm, observations, logl = logl)
+function viterbi(hmm::AbstractHMM, observations; logl = false, robust = false)
+    L = likelihoods(hmm, observations, logl = logl, robust = robust)
     viterbi(hmm.a, hmm.A, L, logl = logl)
 end

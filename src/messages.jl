@@ -7,6 +7,7 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
     @argcheck size(α, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
 
     T, K = size(L)
+    (T == 0) && return
 
     fill!(α, 0.0)
     fill!(c, 0.0)
@@ -23,8 +24,9 @@ function forward!(α::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::A
     @inbounds for t in 2:T
         for j in OneTo(K)
             for i in OneTo(K)
-                α[t,j] += α[t-1,i] * A[i,j] * L[t,j]
+                α[t,j] += α[t-1,i] * A[i,j]
             end
+            α[t,j] *= L[t,j]
             c[t] += α[t,j]
         end
 
@@ -40,6 +42,7 @@ function backward!(β::AbstractMatrix, c::AbstractVector, a::AbstractVector, A::
     @argcheck size(β, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
 
     T, K = size(L)
+    (T == 0) && return
 
     fill!(β, 0.0)
     fill!(c, 0.0)

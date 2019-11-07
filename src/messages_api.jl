@@ -61,8 +61,8 @@ for f in (:forward, :backward)
         probs, tot = $($f)(hmm, y)
         ```
         """
-        function $(f)(hmm::AbstractHMM, observations; logl = false)
-            L = likelihoods(hmm, observations, logl = logl)
+        function $(f)(hmm::AbstractHMM, observations; logl = false, robust = false)
+            L = likelihoods(hmm, observations, logl = logl, robust = robust)
             $(f)(hmm.a, hmm.A, L, logl = logl)
         end
     end
@@ -105,13 +105,22 @@ z, y = rand(hmm, 1000)
 γ = posteriors(hmm, y)
 ```
 """
-function posteriors(hmm::AbstractHMM, observations; logl = false)
-    L = likelihoods(hmm, observations, logl = logl)
+function posteriors(hmm::AbstractHMM, observations; logl = false, robust = false)
+    L = likelihoods(hmm, observations, logl = logl, robust = robust)
     posteriors(hmm.a, hmm.A, L, logl = logl)
 end
 
 # Likelihood
 
-function likelihood(hmm::AbstractHMM, observations; logl = false)
-    forward(hmm, observations, logl = logl)[2]
+"""
+    likelihood(hmm, observations; ...)
+
+Compute the likelihood of the observations under the model.  
+This is defined as the sum of the log of the normalization coefficients in the forward filter.
+
+# Arguments
+- `logl`, `robust`: see [common options](@ref common_options).
+"""
+function loglikelihood(hmm::AbstractHMM, observations; logl = false, robust = false)
+    forward(hmm, observations, logl = logl, robust = robust)[2]
 end

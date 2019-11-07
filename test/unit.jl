@@ -146,6 +146,44 @@ end
     @test γ1 ≈ γ2
 end
 
+@testset "Messages (3)" begin
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 0), Normal(10, 0)])
+    z, y = rand(hmm, 1000)
+
+    # The likelihood of a Normal distribution with std. = 0
+    # equals either 0 or +Inf (-Inf, +Inf in log domain).
+    # This cause the forward/backward algorithms to return NaNs,
+    # We mark the tests as broken, since I don't know if this can be fixed.
+    # The workaround is to set `robust = true`.
+    _, logtot1 = forward(hmm, y)
+    _, logtot2 = forward(hmm, y, logl = true)
+    _, logtot3 = backward(hmm, y)
+    _, logtot4 = backward(hmm, y, logl = true)
+
+    @test_broken !isnan(logtot1)
+    @test_broken !isnan(logtot2)
+    @test_broken !isnan(logtot3)
+    @test_broken !isnan(logtot4)
+
+    # See comment in viterbi.jl
+    @test_broken @test_throws BoundsError viterbi(hmm, y)
+    @test_broken @test_throws BoundsError viterbi(hmm, y, logl = true)
+
+    _, logtot5 = forward(hmm, y, robust = true)
+    _, logtot6 = forward(hmm, y, logl = true, robust = true)
+    _, logtot7 = backward(hmm, y, robust = true)
+    _, logtot8 = backward(hmm, y, logl = true, robust = true)
+
+    @test !isnan(logtot5)
+    @test !isnan(logtot6)
+    @test !isnan(logtot7)
+    @test !isnan(logtot8)
+    
+    @test logtot5 ≈ logtot6 ≈ logtot7 ≈ logtot8
+
+    @test viterbi(hmm, y, robust = true) == viterbi(hmm, y, logl = true, robust = true)
+end
+
 @testset "Viterbi" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(100, 1)])
     z, y = rand(hmm, 1000)
@@ -162,8 +200,15 @@ end
     z, y = rand(hmm, 1000)
 
     # Likelihood should not decrease
-    hmmp = fit_mle(hmm, y, display = :final)
-    @test forward(hmmp, y)[2] >= forward(hmm, y)[2]
+    _, hist = fit_mle(hmm, y)
+    @test issorted(round.(hist.logtots, digits=9))
+
+    _, hist = fit_mle(hmm, y, robust = true)
+    @test issorted(round.(hist.logtots, digits=9))
+
+    _, hist = fit_mle(hmm, y, maxiter = 0)
+    @test hist.iterations == 0
+    @test !hist.converged
 end
 
 @testset "Utilities" begin
