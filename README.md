@@ -14,6 +14,8 @@
 
 ## Migrating to v1.0
 
+*(Not yet released)*
+
 HMMBase v1.0 introduces breaking API changes (see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/)). To temporarily keep the old (and unmaintained) version, add the following in your `Project.toml`:
 
 ```toml
