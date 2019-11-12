@@ -36,8 +36,8 @@ See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](h
 - Fast and stable implementations of the forward/backward, EM (Baum-Welch) and Viterbi algorithms.
 
 **Non-features:**
-- Multi-sequences HMMs, see HMMBase-MS
-- Bayesian models, probabilistic programming, see Turing
+- Multi-sequences HMMs, see [MS_HMMBase](https://github.com/mmattocks/MS_HMMBase.jl)
+- Bayesian models, probabilistic programming, see [Turing](https://github.com/TuringLang/Turing.jl)
 - Nonparametric models (HDP-H(S)MM, ...)
 
 <img src="/benchmark/benchmark_summary.png" width="480">
