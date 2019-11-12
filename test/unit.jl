@@ -123,7 +123,7 @@ end
 
 @testset "Messages (2)" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
-    z, y = rand(hmm, 1000)
+    y = rand(hmm, 1000)
 
     α1, logtot1 = forward(hmm, y)
     α2, logtot2 = forward(hmm, y, logl = true)
@@ -148,7 +148,7 @@ end
 
 @testset "Messages (3)" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 0), Normal(10, 0)])
-    z, y = rand(hmm, 1000)
+    y = rand(hmm, 1000)
 
     # The likelihood of a Normal distribution with std. = 0
     # equals either 0 or +Inf (-Inf, +Inf in log domain).
@@ -186,7 +186,7 @@ end
 
 @testset "Viterbi" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(100, 1)])
-    z, y = rand(hmm, 1000)
+    z, y = rand(hmm, 1000, seq = true)
 
     zv1 = viterbi(hmm, y)
     zv2 = viterbi(hmm, y, logl = true)
@@ -197,7 +197,7 @@ end
 
 @testset "MLE" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
-    z, y = rand(hmm, 1000)
+    y = rand(hmm, 1000)
 
     # Likelihood should not decrease
     _, hist = fit_mle(hmm, y)

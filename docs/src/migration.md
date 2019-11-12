@@ -5,6 +5,7 @@ HMMBase v1.0 introduces the following breaking changes:
 - Methods renaming, see below for a full list
 - Forward/Backward algorithms uses likelihood by default (instead of log-likelihoods), use the `logl` option to use log-likelihoods
 - Baum-Welch algorithm returns `hmm, history` instead of `hmm, logtot`
+- `rand(hmm, T)` returns `y` instead of `z, y` by default, use `seq = true` to get `z, y`
 
 ## Deprecated/renamed methods
 

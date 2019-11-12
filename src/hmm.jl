@@ -75,34 +75,35 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand(hmm, T; ...) -> (Vector, Matrix)
+    rand(hmm, T; ...) -> Matrix | (Vector, Matrix)
 
 Generate a random trajectory of `hmm` for `T` timesteps.
 
 # Arguments
-- `initial_state::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
+- `init::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
+- `seq::Bool` (false by default): whether to return the hidden state sequence.
 
 # Output
 - `Vector{Int}`: hidden state sequence.
-- `Matrix{Float64}`: observations (T x dim(obs)).
+- `Matrix{Float64}` (if `seq` is true): observations (T x dim(obs)).
 
 # Example
 ```julia
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
+y = rand(hmm, 1000)
 ```
 
 ```julia
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000, initial_state = 2)
+z, y = rand(hmm, 1000, seq = true)
 ```
 """
-function rand(hmm::AbstractHMM, T::Integer; initial_state=rand(Categorical(hmm.a)))
+function rand(hmm::AbstractHMM, T::Integer; init = rand(Categorical(hmm.a)), seq = false)
     z = Vector{Int}(undef, T)
     y = Matrix{Float64}(undef, T, size(hmm, 2))
     (T < 1) && return z, y
 
-    z[1] = initial_state
+    z[1] = init
     y[1,:] = rand(hmm.B[z[1]], 1)
 
     for t = 2:T
@@ -110,7 +111,7 @@ function rand(hmm::AbstractHMM, T::Integer; initial_state=rand(Categorical(hmm.a
         y[t,:] = rand(hmm.B[z[t]], 1)
     end
 
-    z, y
+    seq ? (z, y) : y
 end
 
 """
