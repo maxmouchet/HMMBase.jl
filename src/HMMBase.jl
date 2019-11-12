@@ -62,7 +62,9 @@ export
     messages_backwards,
     messages_backwards_log,
     messages_forwards,
-    messages_forwards_log
+    messages_forwards_log,
+    compute_transition_matrix,
+    rand_transition_matrix
 
 @deprecate n_parameters(hmm) nparams(hmm)
 @deprecate log_likelihoods(hmm, observations) likelihoods(hmm, observations, logl = true)
