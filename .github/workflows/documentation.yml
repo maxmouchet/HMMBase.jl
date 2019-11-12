@@ -27,6 +27,4 @@ jobs:
         env:
           DOCUMENTER_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          julia --project=docs/ docs/make.jl
-          curl -u maxmouchet:${GITHUB_TOKEN} -X POST https://api.github.com/repositories/164427411/pages/builds -H "Accept: application/vnd.github.mister-fantastic-preview+json"
+        run: julia --project=docs/ docs/make.jl
