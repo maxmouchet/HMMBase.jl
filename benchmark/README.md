@@ -1,7 +1,4 @@
 ```bash
-# In HMMBase/
-julia --project=. benchmark.jl
-
-# In hmmlearn/
-pipenv run python benchmark.py
+pip install hmmlearn pyhsmm
+julia --project=benchmark/ benchmark/make.jl
 ```

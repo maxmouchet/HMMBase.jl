@@ -40,7 +40,7 @@ See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](h
 - Bayesian models, probabilistic programming, see [Turing](https://github.com/TuringLang/Turing.jl)
 - Nonparametric models (HDP-H(S)MM, ...)
 
-<img src="/benchmark/benchmark_summary.png" width="480">
+<img src="/benchmark/old/benchmark_summary.png" width="480">
 
 ## Installation
 
