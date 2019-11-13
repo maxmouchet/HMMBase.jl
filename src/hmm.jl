@@ -75,11 +75,12 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand(hmm, T; ...) -> Matrix | (Vector, Matrix)
+    rand([rng, ]hmm, T; ...) -> Matrix | (Vector, Matrix)
 
 Generate a random trajectory of `hmm` for `T` timesteps.
 
 # Arguments
+- `rng::AbstractRNG` (`GLOBAL_RNG` by default): random number generator to use.
 - `init::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
 - `seq::Bool` (false by default): whether to return the hidden state sequence.
 
@@ -98,24 +99,26 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 z, y = rand(hmm, 1000, seq = true)
 ```
 """
-function rand(hmm::AbstractHMM, T::Integer; init = rand(Categorical(hmm.a)), seq = false)
+function rand(rng::AbstractRNG, hmm::AbstractHMM, T::Integer; init = rand(rng, Categorical(hmm.a)), seq = false)
     z = Vector{Int}(undef, T)
     y = Matrix{Float64}(undef, T, size(hmm, 2))
     (T < 1) && return z, y
 
     z[1] = init
-    y[1,:] = rand(hmm.B[z[1]], 1)
+    y[1,:] = rand(rng, hmm.B[z[1]], 1)
 
     for t = 2:T
-        z[t] = rand(Categorical(hmm.A[z[t-1],:]))
-        y[t,:] = rand(hmm.B[z[t]], 1)
+        z[t] = rand(rng, Categorical(hmm.A[z[t-1],:]))
+        y[t,:] = rand(rng, hmm.B[z[t]], 1)
     end
 
     seq ? (z, y) : y
 end
 
+rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
+
 """
-    rand(hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
+    rand([rng, ]hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
 
 Generate observations from `hmm` according to trajectory `z`.
 
@@ -125,7 +128,9 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-rand(hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(hmm.B[x], 1), z))...)
+rand(rng::AbstractRNG, hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(rng, hmm.B[x], 1), z))...)
+
+rand(hmm::AbstractHMM, z::AbstractVector{Int}) = rand(GLOBAL_RNG, hmm, z)
 
 """
     size(hmm, [dim]) -> Int | Tuple

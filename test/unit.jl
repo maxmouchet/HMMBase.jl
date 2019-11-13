@@ -18,7 +18,7 @@ Random.seed!(2019)
     @test nparams(hmm1) == 6
     # 2 free parameters for the transition matrix, 2x4 for the covariance matrices,
     # and 2x2 for the means vectors.
-    @test_broken nparams(hmm2) == 14    
+    @test_broken nparams(hmm2) == 14
 end
 
 @testset "Base (2)" begin
@@ -45,6 +45,14 @@ end
     @test hmmp != hmm
     @test hmmp.B == hmm.B[perm]
     @test diag(hmmp.A) == diag(hmm.A)[perm]
+
+    z1, y1 = rand(MersenneTwister(0), hmm, 1000, seq = true)
+    z2, y2 = rand(MersenneTwister(0), hmm, 1000, seq = true)
+    z3, y3 = rand(hmm, 1000, seq = true)
+    @test z1 == z2
+    @test y1 == y1
+    @test z1 != z3
+    @test z3 != y3
 end
 
 @testset "Constructors" begin

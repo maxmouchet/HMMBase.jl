@@ -12,6 +12,7 @@ using LinearAlgebra
 
 import Base: ==, copy, rand, size, OneTo
 import Distributions: fit_mle, loglikelihood
+import Random: AbstractRNG, GLOBAL_RNG
 
 export
     # hmm.jl
