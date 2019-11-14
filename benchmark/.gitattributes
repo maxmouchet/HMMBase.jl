@@ -1,1 +1,2 @@
 * linguist-detectable=false
+*.ipynb filter=nbstrip_full

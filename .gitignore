@@ -7,3 +7,5 @@ docs/Manifest.toml
 docs/src/examples
 benchmark/**/*.csv
 tune.json
+benchmark.md
+benchmark.json

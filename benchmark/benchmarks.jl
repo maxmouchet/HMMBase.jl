@@ -53,6 +53,11 @@ end
 pyhsmm = pyimport("pyhsmm")
 pyhsmmi = pyimport("pyhsmm.internals.hmm_messages_interface")
 
+# fs = [
+#     :_messages_forwards_normalized,
+#     :_messages_backwards_normalized
+# ]
+
 fs = [
     pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized,
     pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized
