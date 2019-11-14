@@ -10,15 +10,15 @@
 
 
 - `hmm::AbstractHMM`: an HMM.
-- `observations`: T or Txdim(obs)
+- `observations`: vector of size `T` or matrix of size `T x dim(obs)`
 
 
-- `rng::AbstractRNG` (`GLOBAL_RNG` by default): random number generator to use.
+- `rng::AbstractRNG = GLOBAL_RNG`: random number generator to use.
 
 ### Keyword Arguments
 
-- `logl::Bool` (`false` by default): whether to use samples likelihoods, or log-likelihoods.
-- `robust::Bool` (`false` by default): truncates `[-Inf, +Inf]` to `[eps(), prevfloat(Inf)]` or `[eps(), log(prevfloat(Inf))]` in the log case.
+- `logl::Bool = false`: whether to use samples likelihoods, or log-likelihoods.
+- `robust::Bool = false`: truncates `-Inf` to `eps()` and `+Inf` to `prevfloat(Inf)` (`log(prevfloat(Inf))` in the log. case).
 
 ## Notations
 

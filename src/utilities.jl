@@ -8,7 +8,7 @@ The labels must be positive integer.
 - `seq::Vector{<:Integer}`: positive label sequence.
 
 **Keyword Arguments**
-- `relabel::Bool` (false by default): if set to true the sequence
+- `relabel::Bool = false`: if set to true the sequence
   will be made contiguous. E.g. `[7,7,9,9,1,1]` will become `[2,2,3,3,1,1]`.
 
 **Output**
@@ -46,9 +46,7 @@ The prior must be a multivariate probability distribution, such as a
 Dirichlet distribution.
 
 **Arguments**
-
-- `rng`: see [common options](@ref common_options).
-- `prior::MultivariateDistribution`: TODO
+- `prior::MultivariateDistribution`: distribution over the transition matrix rows.
 
 **Example**
 ```julia
@@ -74,10 +72,8 @@ a Dirichlet distribution of dimension `K` and concentration
 parameter `α`.
 
 **Arguments**
-
-- `rng`: see [common options](@ref common_options).
 - `K::Integer`: number of states.
-- `α::Float64` (`1.0` by default): concentration parameter of the Dirichlet distribution.
+- `α::Float64 = 1.0`: concentration parameter of the Dirichlet distribution.
 
 **Example**
 ```julia

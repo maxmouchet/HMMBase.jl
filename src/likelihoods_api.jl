@@ -4,7 +4,7 @@
 Return the likelihood per-state and per-observation.
 
 **Output**
-- `Matrix{Float64}`: a TxK likelihoods matrix.
+- `Matrix{Float64}`: likelihoods matrix (`T x K`).
 
 **Example**
 ```julia

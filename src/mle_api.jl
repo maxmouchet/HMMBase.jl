@@ -1,7 +1,7 @@
 """
     fit_mle(hmm, observations; ...) -> AbstractHMM
 
-Estimate the HMM parameters using the EM (Baum-Welch) algorithm.
+Estimate the HMM parameters using the EM (Baum-Welch) algorithm, with `hmm` as the initial state.
 
 **Keyword Arguments**
 - `display::Symbol = :none`: when to display convergence logs, can be set to `:iter` or `:final`.
