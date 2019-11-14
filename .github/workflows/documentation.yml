@@ -26,5 +26,7 @@ jobs:
       - name: Build and deploy
         env:
           DOCUMENTER_DEBUG: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # https://github.com/JuliaDocs/Documenter.jl/issues/1177
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DOCUMENTER_TOKEN }}
         run: julia --project=docs/ docs/make.jl

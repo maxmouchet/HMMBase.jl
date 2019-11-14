@@ -32,7 +32,8 @@ HMMBase provides a lightweight and efficient abstraction for hidden Markov model
 See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](https://discourse.julialang.org/t/ann-hmmbase-jl-a-lightweight-and-efficient-hidden-markov-model-abstraction/21604) for more details on the motivation behind this package.
 
 <p align="center">
-<img src="/benchmark/benchmark_summary.png" width="640">
+  <img src="/benchmark/benchmark_summary.png" width="640"><br/>
+  <a href="/benchmark">Benchmark</a> of HMMBase against <a href="https://github.com/hmmlearn/hmmlearn">hmmlearn</a> and <a href="https://github.com/mattjj/pyhsmm">pyhsmm</a>.<br/>(log) stands for "using log-likelihoods".
 </p>
 
 **Features:**
