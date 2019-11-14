@@ -3,10 +3,10 @@
 
 Return the likelihood per-state and per-observation.
 
-# Output
+**Output**
 - `Matrix{Float64}`: a TxK likelihoods matrix.
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])

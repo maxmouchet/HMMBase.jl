@@ -13,7 +13,7 @@ pkg> dev git@github.com:USERNAME/HMMBase.jl.git
 ```
 
 3. From now on, `using HMMBase` will use your fork in `~/.julia/dev/HMMBase/`.  
-(To re-install the main version, use `pkg> add HMMBase` in the Julia REPL.
+(To re-install the main version, use `pkg> add HMMBase` in the Julia REPL.)
 
 4. Make changes as desired, and ensure that the tests are passing:
 ```bash

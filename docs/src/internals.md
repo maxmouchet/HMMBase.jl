@@ -14,7 +14,7 @@ Overview of the repository structure:
 ├── src
 │   ├── HMMBase.jl      # Main module file
 │   ├── hmm.jl          # HMM type, rand, size, ...
-│   ├── *_api.jl        # Public interface
+│   ├── *_api.jl        # Public interfaces
 │   ├── *.jl            # Internal in-place implementations
 └── test
     ├── integration.jl  # Integration tests

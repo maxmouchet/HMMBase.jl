@@ -12,7 +12,7 @@ for f in (:forward, :backward)
         Compute $($f) probabilities using samples likelihoods.
         See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
         
-        # Output
+        **Output**
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
         """
@@ -41,11 +41,11 @@ for f in (:forward, :backward)
 
         Compute $($f) probabilities of the `observations` given the `hmm` model.
 
-        # Output
+        **Output**
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
 
-        # Example
+        **Example**
         ```julia
         using Distributions, HMMBase
         hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -68,7 +68,7 @@ end
 
 Compute posterior probabilities from `α` and `β`.
 
-# Arguments
+**Arguments**
 - `α::AbstractVector`: forward probabilities.
 - `β::AbstractVector`: backward probabilities.
 """
@@ -94,7 +94,7 @@ end
 
 Compute posterior probabilities using samples likelihoods.
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -115,14 +115,10 @@ end
 Compute the log-likelihood of the observations under the model.  
 This is defined as the sum of the log of the normalization coefficients in the forward filter.
 
-# Arguments
-- `observations`: see [common options](@ref common_options).
-- `logl`, `robust`: see [common options](@ref common_options).
-
-# Output
+**Output**
 - `Float64`: log-likelihood of the observations sequence under the model.
 
-# Example
+**Example**
 ```jldoctest
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])

@@ -22,12 +22,12 @@ If the initial state distribution `a` is not specified, a uniform distribution i
 Observations distributions can be of different types (for example `Normal` and `Exponential`).  
 However they must be of the same dimension (all scalars or all multivariates).
 
-# Arguments
+**Arguments**
 - `a::AbstractVector{T}`: initial probabilities vector.
 - `A::AbstractMatrix{T}`: transition matrix.
 - `B::AbstractVector{<:Distribution{F}}`: observations distributions.
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -80,15 +80,15 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 
 Sample a trajectory of `T` timesteps from `hmm`.
 
-# Keyword Arguments:
-- `init::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
-- `seq::Bool` (`false` by default): whether to return the hidden state sequence.
+**Keyword Arguments**
+- `init::Integer = rand(Categorical(hmm.a))`: initial state.
+- `seq::Bool = false`: whether to return the hidden state sequence or not.
 
-# Output
-- `Vector{Int}` (if `seq` is true): hidden state sequence.
-- `Matrix{Float64}`: observations (T x dim(obs)).
+**Output**
+- `Vector{Int}` (if `seq == true`): hidden state sequence.
+- `Matrix{Float64}`: observations (`T x dim(obs)`).
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -119,10 +119,10 @@ rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs.
 
 Sample observations from `hmm` according to trajectory `z`.
 
-# Output
-- `Matrix{Float64}`: observations (T x dim(obs)).
+**Output**
+- `Matrix{Float64}`: observations (`T x dim(obs)`).
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -136,9 +136,9 @@ rand(hmm::AbstractHMM, z::AbstractVector{Int}) = rand(GLOBAL_RNG, hmm, z)
 """
     size(hmm, [dim]) -> Int | Tuple
 
-Returns the number of states in the HMM and the dimension of the observations.
+Return the number of states in `hmm` and the dimension of the observations.
 
-# Example
+**Example**
 ```jldoctest
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -153,7 +153,7 @@ size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
 
     copy(hmm) -> HMM
 
-Returns a copy of `hmm`.
+Return a copy of `hmm`.
 """
 copy(hmm::HMM) = HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
 
@@ -162,11 +162,11 @@ copy(hmm::HMM) = HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
 
 Permute the states of `hmm` according to `perm`.
 
-# Arguments
+**Arguments**
 
 - `perm::Vector{<:Integer}`: permutation of the states.
 
-# Example
+**Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.8 0.2; 0.1 0.9], [Normal(0,1), Normal(10,1)])
@@ -191,7 +191,7 @@ end
 Return the number of _free_ parameters in `hmm`, without counting the
 observations distributions parameters.
 
-# Example
+**Example**
 ```jldoctest
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])

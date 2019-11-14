@@ -4,14 +4,14 @@
 Return the transition matrix associated to the label sequence `seq`.  
 The labels must be positive integer.  
 
-# Arguments
+**Arguments**
 - `seq::Vector{<:Integer}`: positive label sequence.
 
-# Keyword Arguments
+**Keyword Arguments**
 - `relabel::Bool` (false by default): if set to true the sequence
   will be made contiguous. E.g. `[7,7,9,9,1,1]` will become `[2,2,3,3,1,1]`.
 
-# Output
+**Output**
 - `Dict{Integer,Integer}`: the mapping between the original and the new labels.
 - `Matrix{Float64}`: the transition matrix.
 """
@@ -45,12 +45,12 @@ Generate a transition matrix where each row is sampled from `prior`.
 The prior must be a multivariate probability distribution, such as a
 Dirichlet distribution.
 
-# Arguments
+**Arguments**
 
 - `rng`: see [common options](@ref common_options).
 - `prior::MultivariateDistribution`: TODO
 
-# Example
+**Example**
 ```julia
 A = randtransmat(Dirichlet([0.1, 0.1, 0.1]))
 ```
@@ -73,13 +73,13 @@ Generate a transition matrix where each row is sampled from
 a Dirichlet distribution of dimension `K` and concentration
 parameter `α`.
 
-# Arguments
+**Arguments**
 
 - `rng`: see [common options](@ref common_options).
 - `K::Integer`: number of states.
 - `α::Float64` (`1.0` by default): concentration parameter of the Dirichlet distribution.
 
-# Example
+**Example**
 ```julia
 A = randtransmat(4)
 ```
