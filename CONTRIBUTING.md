@@ -30,3 +30,7 @@ Compiler calls: JULIA_DEBUG=loading
 julia --project=@. benchmark/make.jl
 julia --project=@. docs/make.jl
 ```
+
+### Internals
+
+See [Internals](https://maxmouchet.github.io/HMMBase.jl/dev/internals/) in the documentation.
