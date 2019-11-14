@@ -12,10 +12,6 @@ for f in (:forward, :backward)
         Compute $($f) probabilities using samples likelihoods.
         See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
         
-        # Arguments
-        - `a`, `A`, `L`: see [common options](@ref common_options).
-        - `logl`: see [common options](@ref common_options).
-
         # Output
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
@@ -45,10 +41,6 @@ for f in (:forward, :backward)
 
         Compute $($f) probabilities of the `observations` given the `hmm` model.
 
-        # Arguments
-        - `hmm`, `observations`: see [common options](@ref common_options).
-        - `logl`, `robust`: see [common options](@ref common_options).
-
         # Output
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
@@ -61,9 +53,9 @@ for f in (:forward, :backward)
         probs, tot = $($f)(hmm, y)
         ```
         """
-        function $(f)(hmm::AbstractHMM, observations; logl = false, robust = false)
-            L = likelihoods(hmm, observations, logl = logl, robust = robust)
-            $(f)(hmm.a, hmm.A, L, logl = logl)
+        function $(f)(hmm::AbstractHMM, observations; robust = false, kwargs...)
+            L = likelihoods(hmm, observations; robust = robust, kwargs...)
+            $(f)(hmm.a, hmm.A, L; kwargs...)
         end
     end
 end
@@ -90,10 +82,6 @@ end
     posteriors(a, A, L; logl) -> Vector
 
 Compute posterior probabilities using samples likelihoods.
-
-# Arguments
-- `a`, `A`, `L`: see [common options](@ref common_options).
-- `logl`: see [common options](@ref common_options).
 """
 function posteriors(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; kwargs...)
     α, _ = forward(a, A, L; kwargs...)
@@ -105,10 +93,6 @@ end
     posteriors(hmm, observations; logl, robust) -> Vector
 
 Compute posterior probabilities using samples likelihoods.
-
-# Arguments
-- `hmm`, `observations`: see [common options](@ref common_options).
-- `logl`, `robust`: see [common options](@ref common_options).
 
 # Example
 ```julia
@@ -132,7 +116,7 @@ Compute the log-likelihood of the observations under the model.
 This is defined as the sum of the log of the normalization coefficients in the forward filter.
 
 # Arguments
-- `hmm`, `observations`: see [common options](@ref common_options).
+- `observations`: see [common options](@ref common_options).
 - `logl`, `robust`: see [common options](@ref common_options).
 
 # Output

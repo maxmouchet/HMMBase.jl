@@ -80,9 +80,6 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 
 Sample a trajectory of `T` timesteps from `hmm`.
 
-# Arguments
-- `rng`: see [common options](@ref common_options).
-
 # Keyword Arguments:
 - `init::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
 - `seq::Bool` (`false` by default): whether to return the hidden state sequence.
@@ -95,13 +92,8 @@ Sample a trajectory of `T` timesteps from `hmm`.
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, 10)
-```
-
-```julia
-using Distributions, HMMBase
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 10, seq = true)
+y = rand(hmm, 1000)
+z, y = rand(hmm, 1000, seq = true)
 ```
 """
 function rand(rng::AbstractRNG, hmm::AbstractHMM, T::Integer; init = rand(rng, Categorical(hmm.a)), seq = false)
@@ -126,9 +118,6 @@ rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs.
     rand([rng, ]hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
 
 Sample observations from `hmm` according to trajectory `z`.
-
-# Arguments
-- `rng`: see [common options](@ref common_options).
 
 # Output
 - `Matrix{Float64}`: observations (T x dim(obs)).
@@ -169,9 +158,13 @@ Returns a copy of `hmm`.
 copy(hmm::HMM) = HMM(copy(hmm.a), copy(hmm.A), copy(hmm.B))
 
 """
-    permute(hmm) -> HMM
+    permute(hmm, perm) -> HMM
 
 Permute the states of `hmm` according to `perm`.
+
+# Arguments
+
+- `perm::Vector{<:Integer}`: permutation of the states.
 
 # Example
 ```julia
@@ -182,7 +175,7 @@ hmm.A # [0.9 0.1; 0.2 0.8]
 hmm.B # [Normal(10,1), Normal(0,1)]
 ```
 """
-function permute(hmm::HMM, perm::Vector{<:Integer})
+function permute(hmm::AbstractHMM, perm::Vector{<:Integer})
     a = hmm.a[perm]
     B = hmm.B[perm]
     A = zeros(size(hmm.A))

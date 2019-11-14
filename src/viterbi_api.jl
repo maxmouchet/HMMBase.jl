@@ -5,7 +5,7 @@
 # viterbi(hmm, observations)    -> z
 
 """
-    viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix) -> Vector
+    viterbi(a, A, L; logl) -> Vector
 
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
@@ -23,9 +23,17 @@ function viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl =
 end
 
 """
-    viterbi(hmm, observations) -> Vector
+    viterbi(hmm, observations; logl, robust) -> Vector
+
+# Example
+```julia
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, 1000)
+zv = viterbi(hmm, y)
+```
 """
-function viterbi(hmm::AbstractHMM, observations; logl = false, robust = false)
-    L = likelihoods(hmm, observations, logl = logl, robust = robust)
-    viterbi(hmm.a, hmm.A, L, logl = logl)
+function viterbi(hmm::AbstractHMM, observations; robust = false, kwargs...)
+    L = likelihoods(hmm, observations; robust = robust, kwargs...)
+    viterbi(hmm.a, hmm.A, L; kwargs...)
 end
