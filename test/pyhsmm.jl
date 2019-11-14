@@ -18,7 +18,7 @@ end
 
 @testset "Messages #$k" for k in 2:10
     hmm = rand_hmm(k)
-    z, y = rand(hmm, 2500)
+    y = rand(hmm, 2500)
     LL = likelihoods(hmm, y, logl = true)
 
     ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(hmm.A, hmm.a, LL)
@@ -36,7 +36,7 @@ end
 
 @testset "Viterbi #$k" for k in 2:10
     hmm = rand_hmm(k)
-    z, y = rand(hmm, 2500)
+    y = rand(hmm, 2500)
 
     L = likelihoods(hmm, y)
     LL = likelihoods(hmm, y, logl = true)
