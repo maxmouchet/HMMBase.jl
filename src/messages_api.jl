@@ -66,11 +66,11 @@ end
 """
     posteriors(α, β) -> Vector
 
+Compute posterior probabilities from `α` and `β`.
+
 # Arguments
 - `α::AbstractVector`: forward probabilities.
 - `β::AbstractVector`: backward probabilities.
-
-Compute posterior probabilities from `α` and `β`.
 """
 function posteriors(α::AbstractMatrix, β::AbstractMatrix)
     γ = Matrix{Float64}(undef, size(α))
