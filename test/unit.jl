@@ -45,14 +45,6 @@ end
     @test hmmp != hmm
     @test hmmp.B == hmm.B[perm]
     @test diag(hmmp.A) == diag(hmm.A)[perm]
-
-    z1, y1 = rand(MersenneTwister(0), hmm, 1000, seq = true)
-    z2, y2 = rand(MersenneTwister(0), hmm, 1000, seq = true)
-    z3, y3 = rand(hmm, 1000, seq = true)
-    @test z1 == z2
-    @test y1 == y1
-    @test z1 != z3
-    @test z3 != y3
 end
 
 @testset "Constructors" begin
@@ -237,4 +229,24 @@ end
 
     @test_logs (:warn, r".+") warn_logl(rand(10, 2) .- 10)
     @test_nowarn warn_logl(rand(10, 2))
+end
+
+@testset "Reproducibility" begin
+    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
+
+    z1, y1 = rand(MersenneTwister(0), hmm, 1000, seq = true)
+    z2, y2 = rand(MersenneTwister(0), hmm, 1000, seq = true)
+    z3, y3 = rand(hmm, 1000, seq = true)
+    @test z1 == z2 != z3
+    @test y1 == y2 != y3
+
+    A1 = randtransmat(MersenneTwister(0), Dirichlet(4, 1.0))
+    A2 = randtransmat(MersenneTwister(0), Dirichlet(4, 1.0))
+    A3 = randtransmat(Dirichlet(4, 1.0))
+    @test A1 == A2 != A3
+
+    A4 = randtransmat(MersenneTwister(0), 4)
+    A5 = randtransmat(MersenneTwister(0), 4)
+    A6 = randtransmat(4)
+    @test A4 == A5 != A6
 end

@@ -36,7 +36,7 @@ function gettransmat(seq::Vector{<:Integer}; relabel = false)
 end
 
 """
-    randtransmat(prior) -> Matrix{Float64}
+    randtransmat([rng,] prior) -> Matrix{Float64}
 
 Generate a transition matrix where each row is sampled from `prior`.  
 The prior must be a multivariate probability distribution, such as a
@@ -47,17 +47,19 @@ Dirichlet distribution.
 A = randtransmat(Dirichlet([0.1, 0.1, 0.1]))
 ```
 """
-function randtransmat(prior::MultivariateDistribution)
+function randtransmat(rng::AbstractRNG, prior::MultivariateDistribution)
     K = length(prior)
     A = Matrix{Float64}(undef, K, K)
     for i in OneTo(K)
-        A[i,:] = rand(prior)
+        A[i,:] = rand(rng, prior)
     end
     A
 end
 
+randtransmat(prior::MultivariateDistribution) = randtransmat(GLOBAL_RNG, prior)
+
 """
-    randtransmat(K, α = 1.0) -> Matrix{Float64}
+    randtransmat([rng, ]K, α = 1.0) -> Matrix{Float64}
 
 Generate a transition matrix where each row is sampled from
 a Dirichlet distribution of dimension `K` and concentration
@@ -68,7 +70,9 @@ parameter `α`.
 A = randtransmat(4)
 ```
 """
-randtransmat(K::Integer, α = 1.0) = randtransmat(Dirichlet(K, α))
+randtransmat(rng::AbstractRNG, K::Integer, α = 1.0) = randtransmat(rng, Dirichlet(K, α))
+
+randtransmat(K::Integer, args...) = randtransmat(GLOBAL_RNG, K, args...)
 
 # function rand(::Type{HMM}, D::Type{Distribution}, K::Integer, fn::Function)
 
