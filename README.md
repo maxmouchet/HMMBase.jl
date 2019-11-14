@@ -31,6 +31,10 @@ HMMBase = "0.0.14"
 HMMBase provides a lightweight and efficient abstraction for hidden Markov models in Julia. Most HMMs libraries only support discrete (e.g. categorical) or normal distributions. In contrast HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to support arbitrary univariate and multivariate distributions.  
 See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](https://discourse.julialang.org/t/ann-hmmbase-jl-a-lightweight-and-efficient-hidden-markov-model-abstraction/21604) for more details on the motivation behind this package.
 
+<p align="center">
+<img src="/benchmark/benchmark_summary.png" width="640">
+</p>
+
 **Features:**
 - Supports any observation distributions conforming to the [Distribution](https://juliastats.org/Distributions.jl/latest/types/) interface.
 - Fast and stable implementations of the forward/backward, EM (Baum-Welch) and Viterbi algorithms.
@@ -39,8 +43,6 @@ See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](h
 - Multi-sequences HMMs, see [MS_HMMBase](https://github.com/mmattocks/MS_HMMBase.jl)
 - Bayesian models, probabilistic programming, see [Turing](https://github.com/TuringLang/Turing.jl)
 - Nonparametric models (HDP-H(S)MM, ...)
-
-<img src="/benchmark/benchmark_summary.png" width="480">
 
 ## Installation
 
