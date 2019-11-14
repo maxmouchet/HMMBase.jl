@@ -1,5 +1,3 @@
-Base.eval(:(have_color = true))
-
 using Documenter
 using Glob
 using Literate
@@ -13,13 +11,15 @@ ENV["GKSwstype"] = "nul"
 
 Random.seed!(2019)
 
+if "SKIP_EXAMPLES" in keys(ENV)
+    find_examples() = []
+else
 find_examples() = map(x -> joinpath("examples/", split(basename(x), ".")[1]), glob("*.jl", "examples/"))
+end
 
-if !("SKIP_EXAMPLES" in keys(ENV))
     for example in find_examples()
         Literate.markdown("$(example).jl", "docs/src/examples", documenter=true)
     end
-end
 
 makedocs(
     sitename="HMMBase",
