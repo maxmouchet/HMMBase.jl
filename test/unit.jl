@@ -15,10 +15,8 @@ Random.seed!(2019)
     @test size(hmm1) == (2, 1)
     @test size(hmm2) == (2, 2)
 
-    @test nparams(hmm1) == 6
-    # 2 free parameters for the transition matrix, 2x4 for the covariance matrices,
-    # and 2x2 for the means vectors.
-    @test_broken nparams(hmm2) == 14
+    @test nparams(hmm1) == 3
+    @test nparams(hmm2) == 3
 end
 
 @testset "Base (2)" begin

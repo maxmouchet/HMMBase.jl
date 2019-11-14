@@ -195,19 +195,20 @@ end
 """
     nparams(hmm) -> Int
 
-Return the number of _free_ parameters in `hmm`.
-
-!!! warning
-    Does not work, currently, for observations distributions with non-scalar parameters.
+Return the number of _free_ parameters in `hmm`, without counting the
+observations distributions parameters.
 
 # Example
-```julia
+```jldoctest
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-nparams(hmm) # 6
+nparams(hmm)
+# output
+3
 ```
 """
 function nparams(hmm::AbstractHMM)
-    length(hmm.A) - size(hmm.A)[1] + sum(d -> length(params(d)), hmm.B)
+    (length(hmm.a) - 1) + (length(hmm.A) - size(hmm.A, 1))
 end
 
 """
