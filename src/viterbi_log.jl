@@ -48,7 +48,7 @@ function viterbilog!(T1::AbstractMatrix, T2::AbstractMatrix, z::AbstractVector, 
     end
 
     z[T] = argmax(T1[T,:])
-    @inbounds for t in T-1:-1:1
+    for t in T-1:-1:1
         z[t] = T2[t+1,z[t+1]]
     end
 end
