@@ -7,15 +7,13 @@ for f in (:forward, :backward)
 
     @eval begin
         """
-            $($f)(a, A, L; ...) -> (Vector, Float)
+            $($f)(a, A, L; logl) -> (Vector, Float)
 
         Compute $($f) probabilities using samples likelihoods.
         See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
         
         # Arguments
-        - `a::AbstractVector`: initial probabilities vector.
-        - `A::AbstractMatrix`: transition matrix.
-        - `L::AbstractMatrix`: (log-)likelihoods.
+        - `a`, `A`, `L`: see [common options](@ref common_options).
         - `logl`: see [common options](@ref common_options).
 
         # Output
@@ -43,12 +41,13 @@ for f in (:forward, :backward)
 
     @eval begin
         """
-            $($f)(hmm, observations; ...) -> (Vector, Float)
+            $($f)(hmm, observations; logl, robust) -> (Vector, Float)
 
         Compute $($f) probabilities of the `observations` given the `hmm` model.
 
         # Arguments
-        - `logl`: see [common options](@ref common_options).
+        - `hmm`, `observations`: see [common options](@ref common_options).
+        - `logl`, `robust`: see [common options](@ref common_options).
 
         # Output
         - `Vector{Float64}`: $($f) probabilities.
@@ -56,8 +55,9 @@ for f in (:forward, :backward)
 
         # Example
         ```julia
+        using Distributions, HMMBase
         hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-        z, y = rand(hmm, 1000)
+        y = rand(hmm, 1000)
         probs, tot = $($f)(hmm, y)
         ```
         """
@@ -72,7 +72,11 @@ end
 # Posteriors
 
 """
-    posteriors(α, β)
+    posteriors(α, β) -> Vector
+
+# Arguments
+- `α::AbstractVector`: forward probabilities.
+- `β::AbstractVector`: backward probabilities.
 
 Compute posterior probabilities from `α` and `β`.
 """
@@ -83,9 +87,13 @@ function posteriors(α::AbstractMatrix, β::AbstractMatrix)
 end
 
 """
-    posteriors(a, A, L)
+    posteriors(a, A, L; logl) -> Vector
 
 Compute posterior probabilities using samples likelihoods.
+
+# Arguments
+- `a`, `A`, `L`: see [common options](@ref common_options).
+- `logl`: see [common options](@ref common_options).
 """
 function posteriors(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; kwargs...)
     α, _ = forward(a, A, L; kwargs...)
@@ -94,32 +102,50 @@ function posteriors(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; kwa
 end
 
 """
-    posteriors(hmm, observations)
+    posteriors(hmm, observations; logl, robust) -> Vector
 
 Compute posterior probabilities using samples likelihoods.
 
+# Arguments
+- `hmm`, `observations`: see [common options](@ref common_options).
+- `logl`, `robust`: see [common options](@ref common_options).
+
 # Example
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000)
+y = rand(hmm, 1000)
 γ = posteriors(hmm, y)
 ```
 """
-function posteriors(hmm::AbstractHMM, observations; logl = false, robust = false)
-    L = likelihoods(hmm, observations, logl = logl, robust = robust)
-    posteriors(hmm.a, hmm.A, L, logl = logl)
+function posteriors(hmm::AbstractHMM, observations; robust = false, kwargs...)
+    L = likelihoods(hmm, observations; robust = robust, kwargs...)
+    posteriors(hmm.a, hmm.A, L; kwargs...)
 end
 
 # Likelihood
 
 """
-    likelihood(hmm, observations; ...)
+    loglikelihood(hmm, observations; logl, robust) -> Float64
 
-Compute the likelihood of the observations under the model.  
+Compute the log-likelihood of the observations under the model.  
 This is defined as the sum of the log of the normalization coefficients in the forward filter.
 
 # Arguments
+- `hmm`, `observations`: see [common options](@ref common_options).
 - `logl`, `robust`: see [common options](@ref common_options).
+
+# Output
+- `Float64`: log-likelihood of the observations sequence under the model.
+
+# Example
+```jldoctest
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+loglikelihood(hmm, [0.15, 0.10, 1.35])
+# output
+-4.588183811489616
+```
 """
 function loglikelihood(hmm::AbstractHMM, observations; logl = false, robust = false)
     forward(hmm, observations, logl = logl, robust = robust)[2]

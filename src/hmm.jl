@@ -29,6 +29,7 @@ However they must be of the same dimension (all scalars or all multivariates).
 
 # Example
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 ```
 """
@@ -75,28 +76,32 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand([rng, ]hmm, T; ...) -> Matrix | (Vector, Matrix)
+    rand([rng, ]hmm, T; init, seq) -> Matrix | (Vector, Matrix)
 
-Generate a random trajectory of `hmm` for `T` timesteps.
+Sample a trajectory of `T` timesteps from `hmm`.
 
 # Arguments
-- `rng::AbstractRNG` (`GLOBAL_RNG` by default): random number generator to use.
+- `rng`: see [common options](@ref common_options).
+
+# Keyword Arguments:
 - `init::Integer` (`rand(Categorical(hmm.a))` by default): initial state.
-- `seq::Bool` (false by default): whether to return the hidden state sequence.
+- `seq::Bool` (`false` by default): whether to return the hidden state sequence.
 
 # Output
-- `Vector{Int}`: hidden state sequence.
-- `Matrix{Float64}` (if `seq` is true): observations (T x dim(obs)).
+- `Vector{Int}` (if `seq` is true): hidden state sequence.
+- `Matrix{Float64}`: observations (T x dim(obs)).
 
 # Example
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, 1000)
+y = rand(hmm, 10)
 ```
 
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-z, y = rand(hmm, 1000, seq = true)
+z, y = rand(hmm, 10, seq = true)
 ```
 """
 function rand(rng::AbstractRNG, hmm::AbstractHMM, T::Integer; init = rand(rng, Categorical(hmm.a)), seq = false)
@@ -120,10 +125,17 @@ rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs.
 """
     rand([rng, ]hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
 
-Generate observations from `hmm` according to trajectory `z`.
+Sample observations from `hmm` according to trajectory `z`.
+
+# Arguments
+- `rng`: see [common options](@ref common_options).
+
+# Output
+- `Matrix{Float64}`: observations (T x dim(obs)).
 
 # Example
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
@@ -138,14 +150,18 @@ rand(hmm::AbstractHMM, z::AbstractVector{Int}) = rand(GLOBAL_RNG, hmm, z)
 Returns the number of states in the HMM and the dimension of the observations.
 
 # Example
-```julia
+```jldoctest
+using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-size(hmm) # (2,1)
+size(hmm)
+# output
+(2, 1)
 ```
 """
 size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
 
 """
+
     copy(hmm) -> HMM
 
 Returns a copy of `hmm`.
@@ -159,6 +175,7 @@ Permute the states of `hmm` according to `perm`.
 
 # Example
 ```julia
+using Distributions, HMMBase
 hmm = HMM([0.8 0.2; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 hmm = permute(hmm, [2, 1])
 hmm.A # [0.9 0.1; 0.2 0.8]
@@ -194,7 +211,7 @@ function nparams(hmm::AbstractHMM)
 end
 
 """
-    statdists(hmm)
+    statdists(hmm) -> Vector{Vector}
 
 Return the stationnary distribution(s) of `hmm`.  
 That is, the eigenvectors of transpose(hmm.A) with eigenvalues 1.

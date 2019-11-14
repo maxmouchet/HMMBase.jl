@@ -10,7 +10,7 @@ B = [MvNormal([0.0,5.0],[1.0,1.0]), MvNormal([5.0,10.0],[1.0,1.0])]
 hmm = HMM(a, A, B)
 #-
 
-z, y = rand(hmm, 250)
+z, y = rand(hmm, 250, seq = true)
 z_viterbi = viterbi(hmm, y);
 #-
 

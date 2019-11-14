@@ -2,6 +2,7 @@
 
 HMMBase v1.0 introduces the following breaking changes:
 - `HMM` struct renaming: `π0, π, D` become `a, A, B`
+- Removal of `StaticHMM` and `StaticArrays` dependency
 - Methods renaming, see below for a full list
 - Forward/Backward algorithms uses likelihood by default (instead of log-likelihoods), use the `logl` option to use log-likelihoods
 - Baum-Welch algorithm returns `hmm, history` instead of `hmm, logtot`

@@ -1,4 +1,4 @@
-# Index                                                                                                                        
-                                                                                                                                
-```@index                                                                                                                       
+# Index
+
+```@index
 ```

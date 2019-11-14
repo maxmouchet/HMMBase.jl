@@ -1,10 +1,10 @@
 """
-    likelihoods(hmm, observations) -> Matrix
+    likelihoods(hmm, observations; logl) -> Matrix
 
 Return the likelihood per-state and per-observation.
 
-# Arguments
-- `logl::Bool`: see common options (TODO).
+# Keyword Arguments
+- `logl`: see [common options](@ref common_options).
 
 # Output
 - `Matrix{Float64}`: a TxK likelihoods matrix.

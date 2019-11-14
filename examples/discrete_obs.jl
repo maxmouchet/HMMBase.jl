@@ -12,7 +12,7 @@ B = [Categorical([0.5, 0.4, 0.1]), Categorical([0.1, 0.3, 0.6])]
 hmm = HMM(a, A, B)
 #-
 
-z, y = rand(hmm, 250)
+z, y = rand(hmm, 250, seq = true)
 z_viterbi = viterbi(hmm, y);
 #-
 

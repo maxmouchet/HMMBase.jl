@@ -1,29 +1,31 @@
 # Models
 
+## HMM
+
 ```@docs
 HMM
 rand
+size
+nparams
 permute
 istransmat
-nparams
 copy
-size
 ```
 
-## Likelihoods
+## Observations Likelihoods
 
 ```@docs
 likelihoods
 loglikelihood
 ```
 
-## Stationnary Distributions
+## Stationnary Distribution
 
 ```@docs
 statdists
 ```
 
-## Custom Types
+## Abstract Type
 
 ```@docs
 AbstractHMM

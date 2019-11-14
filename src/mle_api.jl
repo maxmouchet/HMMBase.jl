@@ -1,9 +1,13 @@
 """
-    fit_mle(hmm, observations; kwargs...) -> AbstractHMM
+    fit_mle(hmm, observations; ...) -> AbstractHMM
 
 Estimate the HMM parameters using the EM (Baum-Welch) algorithm.
 
 # Arguments
+
+- `hmm`, `observations`: see [common options](@ref common_options).
+
+# Keyword Arguments
 - `display::Symbol` (`:none` by default): when to display convergence logs, can be set to `:iter` or `:final`.
 - `init::Symbol` (`:none` by default): if set to `:kmeans` the HMM parameters will be initialized using a K-means clustering.
 - `maxiter::Integer` (100 by default): maximum number of iterations to perform.
