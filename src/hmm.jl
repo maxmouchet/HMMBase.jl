@@ -76,7 +76,7 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand([rng, ]hmm, T; init, seq) -> Matrix | (Vector, Matrix)
+    rand([rng, ]hmm, T; init, seq) -> Array | (Vector, Array)
 
 Sample a trajectory of `T` timesteps from `hmm`.
 
@@ -86,41 +86,44 @@ Sample a trajectory of `T` timesteps from `hmm`.
 
 **Output**
 - `Vector{Int}` (if `seq == true`): hidden state sequence.
-- `Matrix{Float64}`: observations (`T x dim(obs)`).
+- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
+- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
 
-**Example**
+**Examples**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, 1000)
+y = rand(hmm, 1000) # or
 z, y = rand(hmm, 1000, seq = true)
+size(y) # (1000,)
+```
+
+```julia
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
+y = rand(hmm, 1000) # or
+z, y = rand(hmm, 1000, seq = true)
+size(y) # (1000, 2)
 ```
 """
 function rand(rng::AbstractRNG, hmm::AbstractHMM, T::Integer; init = rand(rng, Categorical(hmm.a)), seq = false)
     z = Vector{Int}(undef, T)
-    y = Matrix{Float64}(undef, T, size(hmm, 2))
-    (T < 1) && return z, y
-
-    z[1] = init
-    y[1,:] = rand(rng, hmm.B[z[1]], 1)
-
-    for t = 2:T
+    (T >= 1) && (z[1] = init)
+    for t in 2:T
         z[t] = rand(rng, Categorical(hmm.A[z[t-1],:]))
-        y[t,:] = rand(rng, hmm.B[z[t]], 1)
     end
-
+    y = rand(rng, hmm, z)
     seq ? (z, y) : y
 end
 
-rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
-
 """
-    rand([rng, ]hmm::AbstractHMM, z::AbstractVector{Int}) -> Matrix
+    rand([rng, ]hmm, z) -> Array
 
 Sample observations from `hmm` according to trajectory `z`.
 
 **Output**
-- `Matrix{Float64}`: observations (`T x dim(obs)`).
+- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
+- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
 
 **Example**
 ```julia
@@ -129,9 +132,25 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-rand(rng::AbstractRNG, hmm::AbstractHMM, z::AbstractVector{Int}) = hcat(transpose(map(x -> rand(rng, hmm.B[x], 1), z))...)
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{<:Integer})
+    y = Vector{Float64}(undef, length(z))
+    for t in eachindex(z)
+        y[t] = rand(rng, hmm.B[z[t]])
+    end
+    y
+end
 
-rand(hmm::AbstractHMM, z::AbstractVector{Int}) = rand(GLOBAL_RNG, hmm, z)
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractVector{<:Integer})
+    y = Matrix{Float64}(undef, length(z), size(hmm, 1))
+    for t in eachindex(z)
+        y[t,:] = rand(rng, hmm.B[z[t]])
+    end
+    y
+end
+
+rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
+
+rand(hmm::AbstractHMM, z::AbstractVector{<:Integer}) = rand(GLOBAL_RNG, hmm, z)
 
 """
     size(hmm, [dim]) -> Int | Tuple

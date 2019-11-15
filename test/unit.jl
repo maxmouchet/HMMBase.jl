@@ -45,6 +45,36 @@ end
     @test diag(hmmp.A) == diag(hmm.A)[perm]
 end
 
+@testset "Base (4)" begin
+    hmm1 = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
+    hmm2 = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
+
+    # Univariate HMMs should return observations vectors
+    # (consistent with Distributions.jl)
+    z1, y1 = rand(hmm1, 1000, seq = true)
+    y11 = rand(hmm1, z1)
+    
+    @test size(z1) == (1000,)
+    @test size(y1) == (1000,)
+    @test size(y11) == size(y1)
+
+    # Multivariate HMMs should return a `TxK` matrix
+    # (different from Distributions.jl which returns `KxT`)
+    z2, y2 = rand(hmm2, 1000, seq = true)
+    y22 = rand(hmm2, z2)
+
+    @test size(z2) == (1000,)
+    @test size(y2) == (1000,2)
+    @test size(y22) == size(y2)
+
+    # Rand called with T < 1 should return empty arrays
+    z3, y3 = rand(hmm2, 0, seq = true)
+    y33 = rand(hmm2, z3)
+    @test size(z3) == (0,)
+    @test size(y3) == (0,2)
+    @test size(y33) == size(y3)
+end
+
 @testset "Constructors" begin
     # Test that errors are raised
     # Wrong trans. matrix
