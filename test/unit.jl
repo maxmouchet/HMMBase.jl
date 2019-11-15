@@ -195,7 +195,8 @@ end
 
     # See comment in viterbi.jl
     @test_broken @test_throws BoundsError viterbi(hmm, y)
-    @test_broken @test_throws BoundsError viterbi(hmm, y, logl = true)
+    # Works in log implementation
+    @test_nowarn viterbi(hmm, y, logl = true)
 
     _, logtot5 = forward(hmm, y, robust = true)
     _, logtot6 = forward(hmm, y, logl = true, robust = true)
