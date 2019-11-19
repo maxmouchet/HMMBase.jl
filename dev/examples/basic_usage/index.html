@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Basic Usage · HMMBase</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="HMMBase logo"/></a><div class="docs-package-name"><span class="docs-autofit">HMMBase</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../../basics/">Basics</a></li><li><a class="tocitem" href="../../models/">Model</a></li><li><a class="tocitem" href="../../algorithms/">Algorithms</a></li><li><a class="tocitem" href="../../utilities/">Utilities</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li class="is-active"><a class="tocitem" href>Basic Usage</a></li></ul></li><li><a class="tocitem" href="../../internals/">Internals</a></li><li><a class="tocitem" href="../../migration/">Migrating to v1.0</a></li><li><a class="tocitem" href="../../_index/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Basic Usage</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Basic Usage</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/basic_usage.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Basic-Usage-1">Basic Usage<a class="docs-heading-anchor" href="#Basic-Usage-1" title="Permalink"></a></h1><pre><code class="language-">using Distributions
+using HMMBase
+using PyPlot
+using Seaborn
+
+rc(&quot;axes&quot;, xmargin = 0) # hide
+set_style(&quot;whitegrid&quot;)  # hide</code></pre><h3 id="Model-Specification-1">Model Specification<a class="docs-heading-anchor" href="#Model-Specification-1" title="Permalink"></a></h3><p>B can contains any probability distribution from the <code>Distributions</code> package</p><pre><code class="language-julia">a = [0.6, 0.4]
+A = [0.9 0.1; 0.1 0.9]
+B = [MvNormal([0.0, 5.0], ones(2)*1), MvNormal([0.0, 5.0], ones(2)*3)]
+hmm = HMM(a, A, B)
+size(hmm) # (number of states, observations dimension)</code></pre><pre><code class="language-none">(2, 2)</code></pre><h3 id="Sampling-1">Sampling<a class="docs-heading-anchor" href="#Sampling-1" title="Permalink"></a></h3><pre><code class="language-julia">z, y = rand(hmm, 500, seq = true)</code></pre><pre><code class="language-none">([1, 2, 2, 2, 1, 1, 1, 1, 1, 1  …  2, 2, 2, 2, 2, 2, 2, 2, 2, 2], [-0.493490750379989 5.31524987805863; 0.6422657268664405 5.830559001317976; … ; 4.013288778027721 1.6921191920569503; 0.4884112876031232 2.361287879046037])</code></pre><p>Let&#39;s plot the observations and the hidden state sequence:</p><pre><code class="language-">_, axes = subplots(nrows = 2, figsize = (9,3))
+axes[1].plot(y)
+axes[2].plot(z, linestyle = :steps)
+gcf() # hide</code></pre><p>We can also drop the time dimension and plot the data in the plane:</p><pre><code class="language-">_, axes = subplots(ncols = 2, figsize = (9,3))
+axes[1].scatter(y[:,1], y[:,2], s = 3.0)
+axes[2].scatter(y[:,1], y[:,2], s = 3.0, c = z, cmap = &quot;tab10&quot;)
+axes[1].set_title(&quot;Observations&quot;)
+axes[2].set_title(&quot;Observations and hidden states&quot;)
+gcf() # hide</code></pre><h3 id="Inference-1">Inference<a class="docs-heading-anchor" href="#Inference-1" title="Permalink"></a></h3><pre><code class="language-julia">α, logtot = forward(hmm, y)
+β, logtot = backward(hmm, y)
+
+γ = posteriors(hmm, y) # or
+γ = posteriors(α, β)
+
+size(α), size(β), size(γ)</code></pre><pre><code class="language-none">((500, 2), (500, 2), (500, 2))</code></pre><pre><code class="language-">figure(figsize = (9,2)) # hide
+plot([α[:,1] β[:,1] γ[:,1]])
+legend([&quot;Forward&quot;, &quot;Backward&quot;, &quot;Posteriors&quot;], loc = &quot;upper right&quot;)
+gcf() # hide</code></pre><pre><code class="language-">_, axes = subplots(ncols = 3, figsize = (9,3))
+for (ax, probs, title) in zip(axes, [α, β, γ], [&quot;Forward&quot;, &quot;Backward&quot;, &quot;Posteriors&quot;])
+    ax.scatter(y[:,1], y[:,2], s = 3.0, c = probs[:,1], cmap = &quot;Reds&quot;)
+    ax.set_title(title)
+end
+gcf() # hide</code></pre><pre><code class="language-">z_map = [z.I[2] for z in argmax(γ, dims = 2)][:]
+z_viterbi = viterbi(hmm, y)
+
+figure(figsize = (9,2)) # hide
+plot([z z_map z_viterbi])
+legend([&quot;True sequence&quot;, &quot;MAP&quot;, &quot;Viterbi&quot;], loc = &quot;upper right&quot;)
+gcf() # hide</code></pre><pre><code class="language-">_, axes = subplots(ncols = 2, figsize = (9,3))
+for (ax, seq, title) in zip(axes, [z_map, z_viterbi], [&quot;MAP&quot;, &quot;Viterbi&quot;])
+    ax.scatter(y[:,1], y[:,2], s = 3.0, c = seq, cmap = &quot;Reds_r&quot;)
+    ax.set_title(title)
+end
+gcf() # hide</code></pre><h3 id="Parameters-Estimation-1">Parameters Estimation<a class="docs-heading-anchor" href="#Parameters-Estimation-1" title="Permalink"></a></h3><pre><code class="language-julia">hmm = HMM(randtransmat(2), [MvNormal(rand(2), ones(2)), MvNormal(rand(2), ones(2))])
+hmm, hist = fit_mle(hmm, y, display = :iter, init = :kmeans)
+hmm</code></pre><pre><code class="language-none">HMM{Multivariate,Float64}([0.9999999999778088, 2.2191275774011035e-11], [0.9113885698572843 0.08861143014271573; 0.09312194175699402 0.906878058243006], Distribution{Multivariate,S} where S&lt;:ValueSupport[DiagNormal(
+dim: 2
+μ: [-0.003902597013415687, 5.075488294844385]
+Σ: [0.9564920337388865 0.0; 0.0 0.8669369297511921]
+)
+, DiagNormal(
+dim: 2
+μ: [0.3250229295166717, 4.582562848769691]
+Σ: [8.380672324361251 0.0; 0.0 8.541357225102098]
+)
+])</code></pre><pre><code class="language-">figure(figsize = (4,3)) # hide
+plot(hist.logtots)
+gcf() # hide</code></pre><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../utilities/">« Utilities</a><a class="docs-footer-nextpage" href="../../internals/">Internals »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 19 November 2019 22:59">Tuesday 19 November 2019</span>. Using Julia version 1.2.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
