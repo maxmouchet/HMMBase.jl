@@ -59,7 +59,7 @@ function randtransmat(rng::AbstractRNG, prior::MultivariateDistribution)
     for i in OneTo(K)
         A[i,:] = rand(rng, prior)
     end
-    A
+    @check istransmat(A); A
 end
 
 randtransmat(prior::MultivariateDistribution) = randtransmat(GLOBAL_RNG, prior)
