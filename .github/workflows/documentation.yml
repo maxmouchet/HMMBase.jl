@@ -18,11 +18,15 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
       - name: Install dependencies
         # TODO: Remove temporary install of Documenter from master (for v0.24)
         run: |
           julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(url="https://github.com/JuliaDocs/Documenter.jl.git"))'
           julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+          pip install matplotlib
       - name: Build and deploy
         env:
           DOCUMENTER_DEBUG: true
