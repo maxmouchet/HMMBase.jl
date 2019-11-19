@@ -4,7 +4,8 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Glob = "c27321d9-0574-5035-807b-f59d2c89b15c"
 HMMBase = "b2b3ca75-8444-5ffa-85e6-af70e2b64fe7"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+Seaborn = "d2ef9438-c967-53ab-8060-373fdd9e13eb"
 
 [compat]
 Documenter = "~0.24"

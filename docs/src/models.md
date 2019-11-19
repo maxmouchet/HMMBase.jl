@@ -1,4 +1,4 @@
-# Models
+# Model
 
 See [common options](@ref common_options) for the documentation of `a`, `A`, `L`, ...
 
