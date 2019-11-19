@@ -7,7 +7,7 @@ struct CustomHMM{F,T} <: AbstractHMM{F}
     a::AbstractVector{T}               # Initial state distribution
     A::AbstractMatrix{T}               # Transition matrix
     B::AbstractVector{Distribution{F}} # Observations distributions
-    # Custom fields ....
+    # Optional, custom, fields ....
 end
 ```
 """
@@ -16,11 +16,11 @@ abstract type AbstractHMM{F<:VariateForm} end
 """
     HMM([a, ]A, B) -> HMM
 
-Build an HMM with transition matrix `A` and observations distributions `B`.  
+Build an HMM with transition matrix `A` and observation distributions `B`.  
 If the initial state distribution `a` is not specified, a uniform distribution is assumed. 
 
-Observations distributions can be of different types (for example `Normal` and `Exponential`).  
-However they must be of the same dimension (all scalars or all multivariates).
+Observations distributions can be of different types (for example `Normal` and `Exponential`),  
+but they must be of the same dimension.
 
 **Arguments**
 - `a::AbstractVector{T}`: initial probabilities vector.
@@ -47,7 +47,7 @@ HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HM
     assert_hmm(a, A, B)
 
 Throw an `ArgumentError` if the initial state distribution and the transition matrix rows does not sum to 1,
-and if the observations distributions does not have the same dimensions.
+and if the observation distributions do not have the same dimensions.
 """
 function assert_hmm(a::AbstractVector, 
                     A::AbstractMatrix, 
@@ -208,7 +208,7 @@ end
     nparams(hmm) -> Int
 
 Return the number of _free_ parameters in `hmm`, without counting the
-observations distributions parameters.
+observation distributions parameters.
 
 **Example**
 ```jldoctest

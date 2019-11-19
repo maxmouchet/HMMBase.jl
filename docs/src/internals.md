@@ -31,4 +31,4 @@ Internally HMMBase uses in-place implementations for most of the algorithms.
 Public interfaces are defined in `_api.jl` files, and are responsible for copying
 user provided data.
 
-**TODO:** Add table with in-place / generated correspondance.
+**TODO:** Add table with in-place / generated correspondence.
