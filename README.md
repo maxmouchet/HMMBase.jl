@@ -16,7 +16,7 @@
 
 *(Not yet released)*
 
-HMMBase v1.0 comes with many new features and performance improvements (see the [release notes](TODO)), thanks to [@nantonel PR#6](https://github.com/maxmouchet/HMMBase.jl/pull/6).
+HMMBase v1.0 comes with many new features and performance improvements (see the [release notes](https://github.com/maxmouchet/HMMBase.jl/releases/tag/v1.0.0)), thanks to [@nantonel PR#6](https://github.com/maxmouchet/HMMBase.jl/pull/6).
 It also introduces breaking API changes (method and fields renaming), see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) for details on migrating your code to the new version.
 
 To temporarily keep the old (and unmaintained) version, add the following in your `Project.toml`:
