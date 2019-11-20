@@ -16,9 +16,14 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
       - name: Install dependencies
         run: |
           julia --project=benchmark/ -e "using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()"
+          pip install future numpy 'scipy==0.19.1'
+          pip install hmmlearn pyhsmm
       - name: Benchmark
         # TODO: Save/upload result/md files
         run: |
