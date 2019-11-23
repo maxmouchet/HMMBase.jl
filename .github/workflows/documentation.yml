@@ -22,9 +22,7 @@ jobs:
         with:
           python-version: '3.6'
       - name: Install dependencies
-        # TODO: Remove temporary install of Documenter from master (for v0.24)
         run: |
-          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(url="https://github.com/JuliaDocs/Documenter.jl.git"))'
           julia --project=docs/ -e 'using Pkg; Pkg.add(PackageSpec(path=pwd())); Pkg.instantiate()'
           pip install matplotlib seaborn
       - name: Build and deploy
