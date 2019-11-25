@@ -12,8 +12,8 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 ArgCheck = "1.0"
-Clustering = "0.13"
-Distributions = "0.20"
+Clustering = ">= 0.13, < 1.0"
+Distributions = ">= 0.20, < 1.0"
 julia = "1.0"
 
 [extras]

@@ -12,17 +12,12 @@
   </a>
 </p>
 
-## Migrating to v1.0
+## News
 
-HMMBase v1.0 comes with many new features and performance improvements (see the [release notes](https://github.com/maxmouchet/HMMBase.jl/releases/tag/v1.0.0)), thanks to [@nantonel PR#6](https://github.com/maxmouchet/HMMBase.jl/pull/6).
+- _v1.1 (dev) :_ add integration with [MLJ.jl](https://github.com/alan-turing-institute/MLJ.jl).
+- _**v1.0 (stable) :**_ HMMBase v1.0 comes with many new features and performance improvements (see the [release notes](https://github.com/maxmouchet/HMMBase.jl/releases/tag/v1.0.0)), thanks to [@nantonel PR#6](https://github.com/maxmouchet/HMMBase.jl/pull/6).
 It also introduces breaking API changes (method and fields renaming), see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) for details on migrating your code to the new version.
-
-To temporarily keep the old (and unmaintained) version, add the following in your `Project.toml`:
-
-```toml
-[compat]
-HMMBase = "0.0.14"
-```
+- _v0.0.14 :_ latest pre-release version.
 
 ## Introduction
 
