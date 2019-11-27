@@ -28,7 +28,7 @@ Symbol |  Size  |             Description              |          Definition
 K      | -      | Number of states in an HMM           | _                            
 T      | -      | Number of observations               | _                            
 a      | K      | Initial state distribution           | $\sum_i a_i = 1$                            
-A      | (K, K) | Transition matrix                    | $\sum_j a_{i,j} = 1, \forall i$                            
+A      | (K, K) | Transition matrix                    | $\sum_j A_{i,j} = 1, \forall i$                            
 B      | K      | Vector of observation distributions  | _
 z      | T      | Hidden states vector                 | $z_1 \sim a$, $z_t \sim A_{z_{t-1}\bullet}$
 y      | (T, .) | Observations vector                  | $y_t \sim B_{z_t}$       

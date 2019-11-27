@@ -19,6 +19,8 @@
 It also introduces breaking API changes (method and fields renaming), see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) for details on migrating your code to the new version.
 - _v0.0.14 :_ latest pre-release version.
 
+Are you using HMMBase in a particular domain (Biology, NLP, ...) ? Feel free to open an issue to discuss you workflow/needs and see how we can improve HMMBase.
+
 ## Introduction
 
 HMMBase provides a lightweight and efficient abstraction for hidden Markov models in Julia. Most HMMs libraries only support discrete (e.g. categorical) or Normal distributions. In contrast HMMBase builds upon [Distributions.jl](https://github.com/JuliaStats/Distributions.jl) to support arbitrary univariate and multivariate distributions.  
