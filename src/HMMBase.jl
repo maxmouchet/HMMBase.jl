@@ -51,6 +51,7 @@ include("viterbi_api.jl")
 include("likelihoods.jl")
 include("likelihoods_api.jl")
 include("utilities.jl")
+include("experimental.jl")
 
 # To be removed in a future version
 # ---------------------------------
