@@ -11,7 +11,7 @@ struct CustomHMM{F,T} <: AbstractHMM{F}
 end
 ```
 """
-abstract type AbstractHMM{F<:VariateForm} end
+abstract type AbstractHMM{F<:VariateForm,S<:ValueSupport} end
 
 """
     HMM([a, ]A, B) -> HMM
@@ -33,15 +33,15 @@ using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 ```
 """
-struct HMM{F,T} <: AbstractHMM{F}
+struct HMM{F,S,T} <: AbstractHMM{F,S}
     a::Vector{T}
     A::Matrix{T}
-    B::Vector{Distribution{F}}
-    HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B) 
+    B::Vector{Distribution{F,S}}
+    HMM{F,S,T}(a, A, B) where {F,S,T} = assert_hmm(a, A, B) && new(a, A, B) 
 end
 
-HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(a, A, B)
-HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(ones(size(A)[1])/size(A)[1], A, B)
+HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F,S}}) where {F,S,T} = HMM{F,S,T}(a, A, B)
+HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F,S}}) where {F,S,T} = HMM{F,S,T}(ones(size(A)[1])/size(A)[1], A, B)
 
 """
     assert_hmm(a, A, B)
