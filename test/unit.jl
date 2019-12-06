@@ -76,6 +76,7 @@ end
     @test size(y33) == size(y3)
 
     # Multivariate HMM should work with more observations than states:
+    # related to the issue: https://github.com/maxmouchet/HMMBase.jl/issues/12
     y = rand(hmm3, 1000)
     @test size(y) == (1000, 3)
 end
