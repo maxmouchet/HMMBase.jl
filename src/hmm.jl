@@ -141,7 +141,7 @@ function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{
 end
 
 function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractVector{<:Integer})
-    y = Matrix{Float64}(undef, length(z), size(hmm, 1))
+    y = Matrix{Float64}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
         y[t,:] = rand(rng, hmm.B[z[t]])
     end

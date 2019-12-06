@@ -48,6 +48,7 @@ end
 @testset "Base (4)" begin
     hmm1 = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
     hmm2 = HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0,0.0], [1.0,1.0]), MvNormal([10.0,10.0], [1.0,1.0])])
+    hmm3 = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(3)), MvNormal(ones(3))])
 
     # Univariate HMMs should return observations vectors
     # (consistent with Distributions.jl)
@@ -73,6 +74,11 @@ end
     @test size(z3) == (0,)
     @test size(y3) == (0,2)
     @test size(y33) == size(y3)
+
+    # Multivariate HMM should work with more observations than states:
+    # related to the issue: https://github.com/maxmouchet/HMMBase.jl/issues/12
+    y = rand(hmm3, 1000)
+    @test size(y) == (1000, 3)
 end
 
 @testset "Constructors" begin
