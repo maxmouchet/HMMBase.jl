@@ -19,7 +19,7 @@
 It also introduces breaking API changes (method and fields renaming), see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) for details on migrating your code to the new version.
 - _v0.0.14 :_ latest pre-release version.
 
-Are you using HMMBase in a particular domain (Biology, NLP, ...) ? Feel free to open an issue to discuss you workflow/needs and see how we can improve HMMBase.
+Are you using HMMBase in a particular domain (Biology, NLP, ...) ? Feel free to open an issue to discuss your workflow/needs and see how we can improve HMMBase.
 
 ## Introduction
 
