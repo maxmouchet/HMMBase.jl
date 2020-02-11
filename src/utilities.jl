@@ -84,13 +84,38 @@ randtransmat(rng::AbstractRNG, K::Integer, α = 1.0) = randtransmat(rng, Dirichl
 
 randtransmat(K::Integer, args...) = randtransmat(GLOBAL_RNG, K, args...)
 
-# function rand(::Type{HMM}, D::Type{Distribution}, K::Integer, fn::Function)
+"""
+    remapseq(seq, ref) -> Vector{Integer}
 
-# end
+Find the permutations of `seq` indices that maximize the overlap with `ref`.
 
-# function rand(::HMM, K::Integer; A_prior = Dirichlet(K, 1.0), B_prior = )
+**Arguments**
+- `seq::Vector{Integer}`: sequence to be remapped.
+- `ref::Vector{Integer}`: reference sequence.
 
-# Align sequences (hungarian)
+**Example**
+```julia
+ref = [1,1,2,2,3,3]
+seq = [2,2,3,3,1,1]
+remapseq(seq, ref)
+# [1,1,2,2,3,3]
+```
+"""
+function remapseq(seq::Vector{<:Integer}, ref::Vector{<:Integer})
+    seqlabels, reflabels = unique(seq), unique(ref)
+    @argcheck all(seqlabels .> 0) && all(reflabels .> 0)
+
+    # C[i,j]: cost of assigning seq. label `i` to ref. label `j`
+    C = zeros(maximum(seqlabels), maximum(reflabels))
+    for i in seqlabels, j in reflabels
+        C[i,j] = - sum((seq .== i) .& (ref .== j))
+    end
+
+    # TODO: Own implementation of the hungarian alg.,
+    # to avoid pulling another dependency ?
+    assignment, _ = hungarian(C)
+    [assignment[x] for x in seq]
+end
 
 
 function warn_logl(L::AbstractMatrix)

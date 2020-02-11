@@ -3,4 +3,5 @@
 ```@docs
 gettransmat
 randtransmat
+remapseq
 ```

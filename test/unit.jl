@@ -246,7 +246,7 @@ end
     @test !hist.converged
 end
 
-@testset "Utilities" begin
+@testset "Utilities (1)" begin
     # Make sure that we do not relabel the states if they are in 1...K
     mapping, _  = gettransmat([3,3,1,1,2,2], relabel = true)
     for (k, v) in mapping
@@ -264,6 +264,15 @@ end
 
     @test_logs (:warn, r".+") warn_logl(rand(10, 2) .- 10)
     @test_nowarn warn_logl(rand(10, 2))
+end
+
+@testset "Utilities (2)" begin
+    ref  = [1,1,2,2,3,3]
+    seq1 = [2,2,3,3,1,1]
+    seq2 = [1,1,1,1,2,2]
+
+    @test remapseq(seq1, ref) == ref
+    @test remapseq(seq2, ref) == [1,1,1,1,3,3]
 end
 
 @testset "Reproducibility" begin

@@ -9,6 +9,7 @@ module HMMBase
 using ArgCheck
 using Clustering
 using Distributions
+using Hungarian
 using LinearAlgebra
 
 import Base: ==, copy, rand, size, OneTo
@@ -38,7 +39,8 @@ export
     viterbi,
     # utilities.jl,
     gettransmat,
-    randtransmat
+    randtransmat,
+    remapseq
 
 include("hmm.jl")
 include("mle.jl")
