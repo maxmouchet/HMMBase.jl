@@ -1,7 +1,7 @@
 name = "HMMBase"
 uuid = "b2b3ca75-8444-5ffa-85e6-af70e2b64fe7"
 authors = ["Maxime Mouchet <maxime.mouchet@imt-atlantique.fr>"]
-version = "1.0.3"
+version = "1.0.4"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
@@ -14,7 +14,8 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 [compat]
 ArgCheck = "1.0"
 Clustering = "0.13"
-Distributions = "0.20,0.21, 0.22"
+Distributions = "0.20, 0.21, 0.22"
+Hungarian = "0.5"
 julia = "1.0"
 
 [extras]
