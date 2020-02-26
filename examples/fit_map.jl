@@ -16,7 +16,7 @@ plot(y)
 gcf() # hide
 #-
 
-# An MLE approach to observations distributions parameters
+# An MLE approach for the observations distributions parameters
 # may fail with a singularity (variance = 0) if an outlier
 # becomes the only observation associated to some state:
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(5,1)])
@@ -41,5 +41,12 @@ function fit_map(::Type{<:Normal}, observations, responsibilities)
     Normal(μ, sqrt(σ2))
 end
 
-hmm, _ = fit_mle(hmm, y, estimator=fit_map, display=:iter);
+hmm, hist = fit_mle(hmm, y, estimator=fit_map, display=:iter)
+figure(figsize = (4,3)) # hide
+plot(hist.logtots)
+xlabel("Iteration") # hide
+ylabel("Log-likelihood") # hide
+gcf() # hide
+#-
+
 hmm.B
