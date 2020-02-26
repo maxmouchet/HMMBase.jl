@@ -56,18 +56,18 @@ function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β:
 end
 
 # In-place update of the observations distributions.
-function update_B!(B::AbstractVector, γ::AbstractMatrix, observations)
+function update_B!(B::AbstractVector, γ::AbstractMatrix, observations, estimator)
     @argcheck size(γ, 1) == size(observations, 1)
     @argcheck size(γ, 2) == size(B, 1)
     K = length(B)
     for i in OneTo(K)
         if sum(γ[:,i]) > 0
-            B[i] = fit_mle(typeof(B[i]), permutedims(observations), γ[:,i])
+            B[i] = estimator(typeof(B[i]), permutedims(observations), γ[:,i])
         end
     end
 end
 
-function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100, tol=1e-3, robust = false)
+function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100, tol=1e-3, robust = false, estimator=fit_mle)
     @argcheck display in [:none, :iter, :final]
     @argcheck maxiter >= 0
 
@@ -95,7 +95,7 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
     for it in 1:maxiter
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
-        update_B!(hmm.B, γ, observations)
+        update_B!(hmm.B, γ, observations, estimator)
 
         # Ensure the "connected-ness" of the states,
         # this prevents case where there is no transitions
