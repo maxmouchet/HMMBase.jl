@@ -17,8 +17,8 @@ gcf() # hide
 #-
 
 # An MLE approach to observations distributions parameters
-# may fail with a singularity (variance = 0) if the outlier
-# is the single observation associated to some state:
+# may fail with a singularity (variance = 0) if an outlier
+# becomes the only observation associated to some state:
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(5,1)])
 try
     fit_mle(hmm, y, display=:iter);
