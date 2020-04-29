@@ -16,11 +16,17 @@ pkg> dev git@github.com:USERNAME/HMMBase.jl.git
 (To re-install the main version, use `pkg> add HMMBase` in the Julia REPL.)
 
 4. Make changes as desired, and ensure that the tests are passing:
-```bash
+```julia
 pkg> test HMMBase
 ```
 
-5. Commit your changes and submit the PR!
+5. Format the code using [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl):
+```julia
+julia> using JuliaFormatter
+julia> format(".", margin=100)
+```
+
+6. Commit your changes and submit the PR!
 
 ### Benchmarks and documentation
 

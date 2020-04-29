@@ -12,7 +12,7 @@ Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.w
 function viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl = false)
     T1 = Matrix{Float64}(undef, size(L))
     T2 = Matrix{Int}(undef, size(L))
-    z = Vector{Int}(undef, size(L,1))
+    z = Vector{Int}(undef, size(L, 1))
     if logl
         viterbilog!(T1, T2, z, a, A, L)
     else

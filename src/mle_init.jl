@@ -5,7 +5,7 @@ function kmeans_init!(hmm::AbstractHMM, observations; kwargs...)
 
     res = kmeans(permutedims(observations), size(hmm, 1); kwargs...)
     seq = res.assignments
-    
+
     # Initialize A
     copyto!(hmm.A, gettransmat(seq)[2])
     @check istransmat(hmm.A)

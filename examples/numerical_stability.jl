@@ -18,7 +18,7 @@ hmm = HMM(A, B)
 #-
 
 y = rand(hmm, 500)
-figure(figsize = (9,2)) # hide
+figure(figsize = (9, 2)) # hide
 plot(y)
 gcf() # hide
 #-

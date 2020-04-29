@@ -11,7 +11,7 @@ set_style("whitegrid")  # hide
 # Let's consider a simple time series with one outlier:
 y = rand(1000)
 y[100] = 10000
-figure(figsize = (9,2)) # hide
+figure(figsize = (9, 2)) # hide
 plot(y)
 gcf() # hide
 #-
@@ -19,9 +19,9 @@ gcf() # hide
 # An MLE approach for the observations distributions parameters
 # may fail with a singularity (variance = 0) if an outlier
 # becomes the only observation associated to some state:
-hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(5,1)])
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(5, 1)])
 try
-    fit_mle(hmm, y, display=:iter);
+    fit_mle(hmm, y, display = :iter)
 catch e
     println(e)
 end
@@ -34,15 +34,15 @@ function fit_map(::Type{<:Normal}, observations, responsibilities)
     μ = mean(observations, Weights(responsibilities))
 
     ss = suffstats(NormalKnownMu(μ), observations, responsibilities)
-    prior = InverseGamma(2,1)
+    prior = InverseGamma(2, 1)
     posterior = posterior_canon(prior, ss)
     σ2 = mode(posterior)
 
     Normal(μ, sqrt(σ2))
 end
 
-hmm, hist = fit_mle(hmm, y, estimator=fit_map, display=:iter)
-figure(figsize = (4,3)) # hide
+hmm, hist = fit_mle(hmm, y, estimator = fit_map, display = :iter)
+figure(figsize = (4, 3)) # hide
 plot(hist.logtots)
 xlabel("Iteration") # hide
 ylabel("Log-likelihood") # hide

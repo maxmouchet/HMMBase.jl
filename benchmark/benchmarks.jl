@@ -29,11 +29,11 @@ end
 
 function randhmm(K)
     A = randtransmat(K)
-    B = [Normal(rand() * 100, rand() * 10) for _ in 1:K]
+    B = [Normal(rand() * 100, rand() * 10) for _ = 1:K]
     HMM(A, B)
 end
 
-HMMs = Dict([K => randhmm(K) for K in 2:2:10])
+HMMs = Dict([K => randhmm(K) for K = 2:2:10])
 Ys = Dict([K => rand(HMMs[K], 5000) for K in keys(HMMs)])
 
 # Suite
@@ -60,7 +60,7 @@ pyhsmmi = pyimport("pyhsmm.internals.hmm_messages_interface")
 
 fs = [
     pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized,
-    pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized
+    pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized,
 ]
 
 for f in fs, (K, hmm) in HMMs

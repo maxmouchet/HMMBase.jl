@@ -7,7 +7,7 @@ function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
     c = 0.0
 
     for i in OneTo(K)
-        a[i] = α[1,i] * β[1,i]
+        a[i] = α[1, i] * β[1, i]
         c += a[i]
     end
 
@@ -17,23 +17,35 @@ function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
 end
 
 # In-place update of the transition matrix.
-function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β::AbstractMatrix, LL::AbstractMatrix)
+function update_A!(
+    A::AbstractMatrix,
+    ξ::AbstractArray,
+    α::AbstractMatrix,
+    β::AbstractMatrix,
+    LL::AbstractMatrix,
+)
     @argcheck size(α, 1) == size(β, 1) == size(LL, 1) == size(ξ, 1)
-    @argcheck size(α, 2) == size(β, 2) == size(LL, 2) == size(A, 1) == size(A, 2) == size(ξ, 2) == size(ξ, 3)
+    @argcheck size(α, 2) ==
+              size(β, 2) ==
+              size(LL, 2) ==
+              size(A, 1) ==
+              size(A, 2) ==
+              size(ξ, 2) ==
+              size(ξ, 3)
 
     T, K = size(LL)
 
     @inbounds for t in OneTo(T - 1)
-        m = vec_maximum(view(LL, t+1, :))
+        m = vec_maximum(view(LL, t + 1, :))
         c = 0.0
 
         for i in OneTo(K), j in OneTo(K)
-            ξ[t,i,j] = α[t,i] * A[i,j] * exp(LL[t + 1,j] - m) * β[t + 1,j]
-            c += ξ[t,i,j]
+            ξ[t, i, j] = α[t, i] * A[i, j] * exp(LL[t+1, j] - m) * β[t+1, j]
+            c += ξ[t, i, j]
         end
 
         for i in OneTo(K), j in OneTo(K)
-            ξ[t,i,j] /= c
+            ξ[t, i, j] /= c
         end
     end
 
@@ -44,13 +56,13 @@ function update_A!(A::AbstractMatrix, ξ::AbstractArray, α::AbstractMatrix, β:
 
         for j in OneTo(K)
             for t in OneTo(T - 1)
-                A[i,j] += ξ[t,i,j]
+                A[i, j] += ξ[t, i, j]
             end
-            c += A[i,j]
+            c += A[i, j]
         end
-        
+
         for j in OneTo(K)
-            A[i,j] /= c
+            A[i, j] /= c
         end
     end
 end
@@ -61,13 +73,21 @@ function update_B!(B::AbstractVector, γ::AbstractMatrix, observations, estimato
     @argcheck size(γ, 2) == size(B, 1)
     K = length(B)
     for i in OneTo(K)
-        if sum(γ[:,i]) > 0
-            B[i] = estimator(typeof(B[i]), permutedims(observations), γ[:,i])
+        if sum(γ[:, i]) > 0
+            B[i] = estimator(typeof(B[i]), permutedims(observations), γ[:, i])
         end
     end
 end
 
-function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100, tol=1e-3, robust = false, estimator=fit_mle)
+function fit_mle!(
+    hmm::AbstractHMM,
+    observations;
+    display = :none,
+    maxiter = 100,
+    tol = 1e-3,
+    robust = false,
+    estimator = fit_mle,
+)
     @argcheck display in [:none, :iter, :final]
     @argcheck maxiter >= 0
 
@@ -92,7 +112,7 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
     logtot = sum(log.(c))
     (display == :iter) && println("Iteration 0: logtot = $logtot")
 
-    for it in 1:maxiter
+    for it = 1:maxiter
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations, estimator)
@@ -107,7 +127,7 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
 
         loglikelihoods!(LL, hmm, observations)
         robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
-    
+
         forwardlog!(α, c, hmm.a, hmm.A, LL)
         backwardlog!(β, c, hmm.a, hmm.A, LL)
         posteriors!(γ, α, β)
@@ -119,7 +139,8 @@ function fit_mle!(hmm::AbstractHMM, observations; display = :none, maxiter = 100
         history.iterations += 1
 
         if abs(logtotp - logtot) < tol
-            (display in [:iter, :final]) && println("EM converged in $it iterations, logtot = $logtotp")
+            (display in [:iter, :final]) &&
+                println("EM converged in $it iterations, logtot = $logtotp")
             history.converged = true
             break
         end

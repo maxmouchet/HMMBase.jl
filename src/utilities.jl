@@ -29,10 +29,10 @@ function gettransmat(seq::Vector{<:Integer}; relabel = false)
     K = maximum(values(mapping))
 
     transmat = zeros(K, K)
-    for i in 1:length(seq)-1
+    for i = 1:length(seq)-1
         transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
     end
-    transmat = transmat ./ sum(transmat, dims=2)
+    transmat = transmat ./ sum(transmat, dims = 2)
     transmat[isnan.(transmat)] .= 0.0
 
     mapping, transmat
@@ -57,9 +57,10 @@ function randtransmat(rng::AbstractRNG, prior::MultivariateDistribution)
     K = length(prior)
     A = Matrix{Float64}(undef, K, K)
     for i in OneTo(K)
-        A[i,:] = rand(rng, prior)
+        A[i, :] = rand(rng, prior)
     end
-    @check istransmat(A); A
+    @check istransmat(A)
+    A
 end
 
 randtransmat(prior::MultivariateDistribution) = randtransmat(GLOBAL_RNG, prior)
@@ -108,7 +109,7 @@ function remapseq(seq::Vector{<:Integer}, ref::Vector{<:Integer})
     # C[i,j]: cost of assigning seq. label `i` to ref. label `j`
     C = zeros(maximum(seqlabels), maximum(reflabels))
     for i in seqlabels, j in reflabels
-        C[i,j] = - sum((seq .== i) .& (ref .== j))
+        C[i, j] = -sum((seq .== i) .& (ref .== j))
     end
 
     # TODO: Own implementation of the hungarian alg.,
@@ -132,7 +133,7 @@ end
 #   30.307 ns (1 allocation: 16 bytes)
 function vec_maximum(v::AbstractVector)
     m = v[1]
-    @inbounds for i = OneTo(length(v))
+    @inbounds for i in OneTo(length(v))
         if v[i] > m
             m = v[i]
         end

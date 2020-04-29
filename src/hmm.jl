@@ -37,11 +37,14 @@ struct HMM{F,T} <: AbstractHMM{F}
     a::Vector{T}
     A::Matrix{T}
     B::Vector{Distribution{F}}
-    HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B) 
+    HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B)
 end
 
-HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(a, A, B)
-HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HMM{F,T}(ones(size(A)[1])/size(A)[1], A, B)
+HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
+    HMM{F,T}(a, A, B)
+
+HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
+    HMM{F,T}(ones(size(A)[1]) / size(A)[1], A, B)
 
 """
     assert_hmm(a, A, B)
@@ -49,13 +52,11 @@ HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} = HM
 Throw an `ArgumentError` if the initial state distribution and the transition matrix rows does not sum to 1,
 and if the observation distributions do not have the same dimensions.
 """
-function assert_hmm(a::AbstractVector, 
-                    A::AbstractMatrix, 
-                    B::AbstractVector{<:Distribution})
+function assert_hmm(a::AbstractVector, A::AbstractMatrix, B::AbstractVector{<:Distribution})
     @argcheck isprobvec(a)
     @argcheck istransmat(A)
     @argcheck all(length.(B) .== length(B[1])) ArgumentError("All distributions must have the same dimensions")
-    @argcheck length(a) == size(A,1) == length(B)
+    @argcheck length(a) == size(A, 1) == length(B)
     return true
 end
 
@@ -64,14 +65,14 @@ end
 
 Return true if `A` is a square matrix.
 """
-issquare(A::AbstractMatrix) = size(A,1) == size(A,2)
+issquare(A::AbstractMatrix) = size(A, 1) == size(A, 2)
 
 """
     istransmat(A) -> Bool
 
 Return true if `A` is square and its rows sums to 1.
 """
-istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i,:]) for i in 1:size(A,1)])
+istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i, :]) for i = 1:size(A, 1)])
 
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
@@ -106,11 +107,17 @@ z, y = rand(hmm, 1000, seq = true)
 size(y) # (1000, 2)
 ```
 """
-function rand(rng::AbstractRNG, hmm::AbstractHMM, T::Integer; init = rand(rng, Categorical(hmm.a)), seq = false)
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM,
+    T::Integer;
+    init = rand(rng, Categorical(hmm.a)),
+    seq = false,
+)
     z = Vector{Int}(undef, T)
     (T >= 1) && (z[1] = init)
-    for t in 2:T
-        z[t] = rand(rng, Categorical(hmm.A[z[t-1],:]))
+    for t = 2:T
+        z[t] = rand(rng, Categorical(hmm.A[z[t-1], :]))
     end
     y = rand(rng, hmm, z)
     seq ? (z, y) : y
@@ -143,7 +150,7 @@ end
 function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractVector{<:Integer})
     y = Matrix{Float64}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
-        y[t,:] = rand(rng, hmm.B[z[t]])
+        y[t, :] = rand(rng, hmm.B[z[t]])
     end
     y
 end
@@ -166,7 +173,7 @@ size(hmm)
 (2, 1)
 ```
 """
-size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
+size(hmm::AbstractHMM, dim = :) = (length(hmm.B), length(hmm.B[1]))[dim]
 
 """
 
@@ -198,8 +205,8 @@ function permute(hmm::AbstractHMM, perm::Vector{<:Integer})
     a = hmm.a[perm]
     B = hmm.B[perm]
     A = zeros(size(hmm.A))
-    for i in 1:size(A,1), j in 1:size(A,2)
-        A[i,j] = hmm.A[perm[i],perm[j]]
+    for i = 1:size(A, 1), j = 1:size(A, 2)
+        A[i, j] = hmm.A[perm[i], perm[j]]
     end
     HMM(a, A, B)
 end
@@ -234,7 +241,7 @@ function statdists(hmm::AbstractHMM)
     dists = []
     for (i, val) in enumerate(eig.values)
         if val == 1.0
-            dist = eig.vectors[:,i]
+            dist = eig.vectors[:, i]
             dist /= sum(dist)
             push!(dists, dist)
         end

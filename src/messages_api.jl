@@ -2,7 +2,7 @@
 
 # {forward,backward}(a, A, L)
 for f in (:forward, :backward)
-    f!  = Symbol("$(f)!")    # forward!
+    f! = Symbol("$(f)!")    # forward!
     fl! = Symbol("$(f)log!") # forwardlog!
 
     @eval begin
@@ -11,7 +11,7 @@ for f in (:forward, :backward)
 
         Compute $($f) probabilities using samples likelihoods.
         See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
-        
+
         **Output**
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
@@ -32,7 +32,7 @@ end
 
 # {forward,backward}(hmm, observations)
 for f in (:forward, :backward)
-    f!  = Symbol("$(f)!")    # forward!
+    f! = Symbol("$(f)!")    # forward!
     fl! = Symbol("$(f)log!") # forwardlog!
 
     @eval begin
