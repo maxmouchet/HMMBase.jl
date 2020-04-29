@@ -12,9 +12,12 @@ using Distributions
 using Hungarian
 using LinearAlgebra
 
-import Base: ==, copy, rand, size, OneTo
+using Base: OneTo
+using Random: AbstractRNG, GLOBAL_RNG
+
+# Extended functions
+import Base: ==, copy, rand, size
 import Distributions: fit_mle, loglikelihood
-import Random: AbstractRNG, GLOBAL_RNG
 
 export
     # hmm.jl
