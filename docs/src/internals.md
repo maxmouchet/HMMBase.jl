@@ -31,4 +31,11 @@ Internally HMMBase uses in-place implementations for most of the algorithms.
 Public interfaces are defined in `_api.jl` files, and are responsible for copying
 user provided data.
 
-**TODO:** Add table with in-place / generated correspondence.
+In-place                          | Public interface
+:---------------------------------|:----------------
+`likelihoods!`, `loglikelihoods!` | `likelihoods`
+`forward!`, `forwardlog!`         | `forward`
+`backward!`, `backwardlog!`       | `backward`
+`posteriors!`                     | `posteriors`
+`viterbi!`, `viterbilog!`         | `viterbi`
+`fit_mle!`                        | `fit_mle`
