@@ -56,7 +56,7 @@ pkg> add HMMBase
 
 ## Project Status
 
-The package is tested against Julia 1.0 and Julia 1.2.  
+The package is tested against Julia 1.0 and Julia 1.4.  
 
 Starting with v1.0, we follow [semantic versioning]():
 
