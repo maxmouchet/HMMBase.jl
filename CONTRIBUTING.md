@@ -12,7 +12,7 @@ Please try to submit short pull requests with a well-defined scope.
 pkg> dev git@github.com:USERNAME/HMMBase.jl.git
 ```
 
-3. From now on, `using HMMBase` will use your fork in `~/.julia/dev/HMMBase/`.  
+3. From now on, `using HMMBase` will use your fork.  
 (To re-install the main version, use `pkg> add HMMBase` in the Julia REPL.)
 
 4. Make changes as desired, and ensure that the tests are passing:
