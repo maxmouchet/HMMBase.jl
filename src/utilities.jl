@@ -20,9 +20,9 @@ function gettransmat(seq::Vector{<:Integer}; relabel = false)
 
     if relabel
         # /!\ Sort is important here, so that we don't relabel already contiguous states.
-        mapping = Dict([(x[2], x[1]) for x in enumerate(sort(unique(seq)))])
+        mapping = Dict(old => new for (new, old) in enumerate(sort(unique(seq))))
     else
-        mapping = Dict([(x, x) for x in unique(seq)])
+        mapping = Dict(old => old for old in unique(seq))
     end
 
     (length(mapping) == 0) && return mapping, Float64[]
