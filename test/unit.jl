@@ -1,10 +1,11 @@
-using Test
-using HMMBase
 using Distributions
+using JSON
+using HMMBase
 using LinearAlgebra
+using Test
 using Random
 
-import HMMBase: issquare, warn_logl
+using HMMBase: from_dict, issquare, warn_logl
 
 Random.seed!(2019)
 
@@ -306,4 +307,18 @@ end
     A5 = randtransmat(MersenneTwister(0), 4)
     A6 = randtransmat(4)
     @test A4 == A5 != A6
+end
+
+@testset "Experimental" begin
+    # from_dict(...)
+    hmm1 = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
+    d = JSON.parse(json(hmm1))
+    @test from_dict(HMM{Univariate,Float64}, Normal, d) == hmm1
+
+    hmm2 = HMM(
+        [0.9 0.1; 0.1 0.9],
+        [MvNormal([0.0, 0.0], [1.0, 1.0]), MvNormal([10.0, 10.0], [1.0, 1.0])],
+    )
+    d = JSON.parse(json(hmm2))
+    @test_broken from_dict(HMM{Multivariate,Float64}, MvNormal, d) == hmm2
 end
