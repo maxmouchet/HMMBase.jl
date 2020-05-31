@@ -321,4 +321,8 @@ end
     )
     d = JSON.parse(json(hmm2))
     @test_broken from_dict(HMM{Multivariate,Float64}, MvNormal, d) == hmm2
+
+    hmm3 = HMM([0.9 0.1; 0.1 0.9], [MixtureModel([Normal(0, 1)]), MixtureModel([Normal(5, 2), Normal(10, 1)], [0.25, 0.75])])
+    d = JSON.parse(json(hmm3))
+    @test_broken from_dict(HMM{Univariate,Float64}, MixtureModel{Univariate,Continuous,Normal,Float64}, d) == hmm3
 end
