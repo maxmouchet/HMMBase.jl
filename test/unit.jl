@@ -337,4 +337,14 @@ end
     hmm3 = HMM([0.9 0.1; 0.1 0.9], [MixtureModel([Normal(0, 1)]), MixtureModel([Normal(5, 2), Normal(10, 1)], [0.25, 0.75])])
     d = JSON.parse(json(hmm3))
     @test_broken from_dict(HMM{Univariate,Float64}, MixtureModel{Univariate,Continuous,Normal,Float64}, d) == hmm3
+
+    # MixtureModel <-> HMM (stationnary distribution)
+    a = [0.4, 0.6]
+    B = [Normal(0, 1), Exponential(2)]
+    m = MixtureModel(B, a)
+
+    @test MixtureModel(HMM(m)).prior == m.prior
+    @test MixtureModel(HMM(m)).components == m.components
+
+    # TODO: Assert error if #distns != 1
 end

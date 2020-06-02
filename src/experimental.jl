@@ -26,7 +26,21 @@ function from_dict(::Type{HMM{F,T}}, D::Type, d::AbstractDict) where {F,T}
 end
 
 # function parsefile(::Type{HMM{F,T}}, D, filename) where {F,T}
-    # from_dict(HMM{F,T}, D, parsefile)
+# from_dict(HMM{F,T}, D, parsefile)
 # end
 
 # HMM{F,T}(D, d::AbstractDict) where {F,T} = from_dict(HMM{F,T}, D, d)
+
+function MixtureModel(hmm::AbstractHMM)
+    sdists = statdists(hmm)
+    @check length(sdists) == 1
+    MixtureModel([hmm.B...], sdists[1])
+end
+
+function HMM(m::MixtureModel)
+    K = length(m.prior.p)
+    a = m.prior.p
+    A = repeat(permutedims(m.prior.p), K, 1)
+    B = m.components
+    HMM(a, A, B)
+end

@@ -17,7 +17,7 @@ using Random: AbstractRNG, GLOBAL_RNG
 
 # Extended functions
 import Base: ==, copy, rand, size
-import Distributions: fit_mle, loglikelihood
+import Distributions: MixtureModel, fit_mle, loglikelihood
 
 export
     # hmm.jl
