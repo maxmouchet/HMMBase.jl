@@ -114,15 +114,20 @@ end
 @testset "Stationnary Distributions" begin
     hmm1 = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
     hmm2 = HMM([1.0 0.0; 0.0 1.0], [Normal(0, 1), Normal(10, 1)])
+    hmm3 = HMM([0.0 0.8 0.2; 0.6 0.0 0.4; 0.0 1.0 0.0], [Normal(), Normal(), Normal()])
 
     dists1 = statdists(hmm1)
     dists2 = statdists(hmm2)
+    dists3 = statdists(hmm3)
 
     @test length(dists1) == 1
     @test length(dists2) == 2
+    @test length(dists3) == 1
 
     @test permutedims(dists2[1]) ≈ [1.0 0.0] * (hmm2.A^1000)
     @test permutedims(dists2[2]) ≈ [0.0 1.0] * (hmm2.A^1000)
+
+    @test dists3[1] ≈ [15/53, 25/53, 13/53]
 end
 
 @testset "Messages (1)" begin
