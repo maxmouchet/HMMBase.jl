@@ -91,6 +91,13 @@ end
     @test size(y) == (1000, 3)
 end
 
+@testset "Base (5)" begin
+    # Emission matrix constructor
+    hmm1 = HMM([0.9 0.1; 0.1 0.9], [0. 0.5 0.5; 0.25 0.25 0.5])
+    hmm2 = HMM([0.9 0.1; 0.1 0.9], [Categorical([0., 0.5, 0.5]), Categorical([0.25, 0.25, 0.5])])
+    @test hmm1 == hmm2
+end
+
 @testset "Constructors" begin
     # Test that errors are raised
     # Wrong trans. matrix

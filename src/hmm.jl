@@ -22,15 +22,21 @@ If the initial state distribution `a` is not specified, a uniform distribution i
 Observations distributions can be of different types (for example `Normal` and `Exponential`),  
 but they must be of the same dimension.
 
+Alternatively, `B` can be an emission matrix where `B[i,j]` is the probability of observing symbol `j` in state `i`.
+
 **Arguments**
 - `a::AbstractVector{T}`: initial probabilities vector.
 - `A::AbstractMatrix{T}`: transition matrix.
 - `B::AbstractVector{<:Distribution{F}}`: observations distributions.
+- or `B::AbstractMatrix`: emission matrix.
 
 **Example**
 ```julia
 using Distributions, HMMBase
+# from distributions
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+# from an emission matrix
+hmm = HMM([0.9 0.1; 0.1 0.9], [0. 0.5 0.5; 0.25 0.25 0.5])
 ```
 """
 struct HMM{F,T} <: AbstractHMM{F}
@@ -45,6 +51,15 @@ HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution
 
 HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
     HMM{F,T}(ones(size(A)[1]) / size(A)[1], A, B)
+
+function HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractMatrix) where {T}
+    B = map(i -> Categorical(B[i,:]), 1:size(B,1))
+    HMM{Univariate,T}(a, A, B)
+end
+
+HMM(A::AbstractMatrix{T}, B::AbstractMatrix) where {T} =
+    HMM(ones(size(A)[1]) / size(A)[1], A, B)
+
 
 """
     assert_hmm(a, A, B)
