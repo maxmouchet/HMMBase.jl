@@ -1,13 +1,13 @@
 # Forward/Backward
+# TODO: Rename L -> LL
 
 # {forward,backward}(a, A, L)
 for f in (:forward, :backward)
-    f! = Symbol("$(f)!")    # forward!
     fl! = Symbol("$(f)log!") # forwardlog!
 
     @eval begin
         """
-            $($f)(a, A, L; logl) -> (Vector, Float)
+            $($f)(a, A, L) -> (Vector, Float)
 
         Compute $($f) probabilities using samples likelihoods.
         See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
@@ -16,15 +16,11 @@ for f in (:forward, :backward)
         - `Vector{Float64}`: $($f) probabilities.
         - `Float64`: log-likelihood of the observed sequence.
         """
-        function $(f)(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl = false)
+        function $(f)(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl = nothing)
+            !isnothing(logl) && deprecate_kwargs("logl")
             m = Matrix{Float64}(undef, size(L))
             c = Vector{Float64}(undef, size(L)[1])
-            if logl
-                $(fl!)(m, c, a, A, L)
-            else
-                warn_logl(L)
-                $(f!)(m, c, a, A, L)
-            end
+            $(fl!)(m, c, a, A, L)
             m, sum(log.(c))
         end
     end
@@ -32,12 +28,11 @@ end
 
 # {forward,backward}(hmm, observations)
 for f in (:forward, :backward)
-    f! = Symbol("$(f)!")    # forward!
     fl! = Symbol("$(f)log!") # forwardlog!
 
     @eval begin
         """
-            $($f)(hmm, observations; logl, robust) -> (Vector, Float)
+            $($f)(hmm, observations; robust) -> (Vector, Float)
 
         Compute $($f) probabilities of the `observations` given the `hmm` model.
 
@@ -53,9 +48,10 @@ for f in (:forward, :backward)
         probs, tot = $($f)(hmm, y)
         ```
         """
-        function $(f)(hmm::AbstractHMM, observations; robust = false, kwargs...)
-            L = likelihoods(hmm, observations; robust = robust, kwargs...)
-            $(f)(hmm.a, hmm.A, L; kwargs...)
+        function $(f)(hmm::AbstractHMM, observations; logl = nothing, robust = false)
+            !isnothing(logl) && deprecate_kwargs("logl")
+            LL = loglikelihoods(hmm, observations; robust = robust)
+            $(f)(hmm.a, hmm.A, LL)
         end
     end
 end
@@ -103,7 +99,7 @@ y = rand(hmm, 1000)
 ```
 """
 function posteriors(hmm::AbstractHMM, observations; robust = false, kwargs...)
-    L = likelihoods(hmm, observations; robust = robust, kwargs...)
+    L = loglikelihoods(hmm, observations; robust = robust, kwargs...)
     posteriors(hmm.a, hmm.A, L; kwargs...)
 end
 
@@ -127,6 +123,6 @@ loglikelihood(hmm, [0.15, 0.10, 1.35])
 -4.588183811489616
 ```
 """
-function loglikelihood(hmm::AbstractHMM, observations; logl = false, robust = false)
-    forward(hmm, observations, logl = logl, robust = robust)[2]
+function loglikelihood(hmm::AbstractHMM, observations; robust = false)
+    forward(hmm, observations, robust = robust)[2]
 end

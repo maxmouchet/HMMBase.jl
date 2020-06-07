@@ -5,7 +5,7 @@ using LinearAlgebra
 using Test
 using Random
 
-using HMMBase: from_dict, issquare, warn_logl
+using HMMBase: from_dict, issquare
 
 Random.seed!(2019)
 
@@ -225,9 +225,6 @@ end
     @test_broken !isnan(logtot3)
     @test_broken !isnan(logtot4)
 
-    # See comment in viterbi.jl
-    @test_broken @test_throws BoundsError viterbi(hmm, y)
-    # Works in log implementation
     @test_nowarn viterbi(hmm, y, logl = true)
 
     _, logtot5 = forward(hmm, y, robust = true)
@@ -287,9 +284,6 @@ end
     transmat = randtransmat(10)
     @test issquare(transmat)
     @test istransmat(transmat)
-
-    @test_logs (:warn, r".+") warn_logl(rand(10, 2) .- 10)
-    @test_nowarn warn_logl(rand(10, 2))
 end
 
 @testset "Utilities (2)" begin

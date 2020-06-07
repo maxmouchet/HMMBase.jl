@@ -36,9 +36,11 @@ export
     backward,
     posteriors,
     loglikelihood,
+    # likelihoods.jl
+    loglikelihoods,
     # mle_api.jl
     fit_mle,
-    # viterbi_api.jl
+    # viterbi.jl
     viterbi,
     # utilities.jl,
     gettransmat,
@@ -52,15 +54,28 @@ include("mle_init.jl")
 include("messages.jl")
 include("messages_api.jl")
 include("viterbi.jl")
-include("viterbi_api.jl")
 include("likelihoods.jl")
-include("likelihoods_api.jl")
 include("utilities.jl")
 include("experimental.jl")
 
 # To be removed in a future version
 # ---------------------------------
 #!format: off
+
+# < v1.1
+
+export likelihoods
+
+function likelihoods(args...; logl = false, kwargs...)
+    @warn "`likelihoods(...)` is deprecated, use `loglikelihoods(...)` or `exp.(loglikelihoods(...))` instead."
+    logl ? loglikelihoods(args...; kwargs...) : exp.(loglikelihoods(args...; kwargs...))
+end
+
+function deprecate_kwargs(name)
+    @warn "`$(name)` keyword argument is deprecated."
+end
+
+# < v1.0
 
 export n_parameters,
     log_likelihoods,
