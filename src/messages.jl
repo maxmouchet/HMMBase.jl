@@ -29,7 +29,7 @@ function forwardlog!(
         α[1, j] /= c[1]
     end
 
-    c[1] *= exp(m) + eps()
+    c[1] = log(c[1]) + m
 
     @inbounds for t = 2:T
         m = vec_maximum(view(LL, t, :))
@@ -46,7 +46,7 @@ function forwardlog!(
             α[t, j] /= c[t]
         end
 
-        c[t] *= exp(m) + eps()
+        c[t] = log(c[t]) + m
     end
 end
 
@@ -90,7 +90,7 @@ function backwardlog!(
             β[t, j] /= c[t+1]
         end
 
-        c[t+1] *= exp(m) + eps()
+        c[t+1] = log(c[t+1]) + m
     end
 
     m = vec_maximum(view(LL, 1, :))
@@ -99,7 +99,7 @@ function backwardlog!(
         c[1] += a[j] * exp(LL[1, j] - m) * β[1, j]
     end
 
-    c[1] *= exp(m) + eps()
+    c[1] = log(c[1]) + m
 end
 
 # In-place posterior computation, where γ is allocated beforehand.

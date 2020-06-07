@@ -109,7 +109,7 @@ function fit_mle!(
     backwardlog!(β, c, hmm.a, hmm.A, LL)
     posteriors!(γ, α, β)
 
-    logtot = sum(log.(c))
+    logtot = sum(c)
     (display == :iter) && println("Iteration 0: logtot = $logtot")
 
     for it = 1:maxiter
@@ -132,7 +132,7 @@ function fit_mle!(
         backwardlog!(β, c, hmm.a, hmm.A, LL)
         posteriors!(γ, α, β)
 
-        logtotp = sum(log.(c))
+        logtotp = sum(c)
         (display == :iter) && println("Iteration $it: logtot = $logtotp")
 
         push!(history.logtots, logtotp)

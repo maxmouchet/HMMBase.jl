@@ -21,7 +21,7 @@ for f in (:forward, :backward)
             m = Matrix{Float64}(undef, size(L))
             c = Vector{Float64}(undef, size(L)[1])
             $(fl!)(m, c, a, A, L)
-            m, sum(log.(c))
+            m, sum(c)
         end
     end
 end
