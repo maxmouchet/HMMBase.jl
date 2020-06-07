@@ -52,7 +52,7 @@ end
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
 function viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix, logl = nothing)
-    !isnothing(logl) && deprecate_kwargs("logl")
+    (logl !== nothing) && deprecate_kwargs("logl")
     T1 = Matrix{Float64}(undef, size(L))
     T2 = Matrix{Int}(undef, size(L))
     z = Vector{Int}(undef, size(L, 1))
@@ -72,7 +72,7 @@ zv = viterbi(hmm, y)
 ```
 """
 function viterbi(hmm::AbstractHMM, observations; logl = nothing, robust = false)
-    !isnothing(logl) && deprecate_kwargs("logl")
+    (logl !== nothing) && deprecate_kwargs("logl")
     LL = loglikelihoods(hmm, observations; robust = robust)
     viterbi(hmm.a, hmm.A, LL)
 end

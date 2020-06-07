@@ -31,7 +31,7 @@ LL = likelihoods(hmm, y)
 ```
 """
 function loglikelihoods(hmm::AbstractHMM, observations; logl = nothing, robust = false)
-    !isnothing(logl) && deprecate_kwargs("logl")
+    (logl !== nothing) && deprecate_kwargs("logl")
     T, K = size(observations, 1), size(hmm, 1)
     LL = Matrix{Float64}(undef, T, K)
 

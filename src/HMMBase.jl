@@ -38,7 +38,7 @@ export
     loglikelihood,
     # likelihoods.jl
     loglikelihoods,
-    # mle_api.jl
+    # mle.jl
     fit_mle,
     # viterbi.jl
     viterbi,
@@ -49,7 +49,6 @@ export
 
 include("hmm.jl")
 include("mle.jl")
-include("mle_api.jl")
 include("mle_init.jl")
 include("messages.jl")
 include("messages_api.jl")

@@ -17,7 +17,7 @@ for f in (:forward, :backward)
         - `Float64`: log-likelihood of the observed sequence.
         """
         function $(f)(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl = nothing)
-            !isnothing(logl) && deprecate_kwargs("logl")
+            (logl !== nothing) && deprecate_kwargs("logl")
             m = Matrix{Float64}(undef, size(L))
             c = Vector{Float64}(undef, size(L)[1])
             $(fl!)(m, c, a, A, L)
@@ -49,7 +49,7 @@ for f in (:forward, :backward)
         ```
         """
         function $(f)(hmm::AbstractHMM, observations; logl = nothing, robust = false)
-            !isnothing(logl) && deprecate_kwargs("logl")
+            (logl !== nothing) && deprecate_kwargs("logl")
             LL = loglikelihoods(hmm, observations; robust = robust)
             $(f)(hmm.a, hmm.A, LL)
         end
