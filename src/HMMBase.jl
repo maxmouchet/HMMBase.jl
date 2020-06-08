@@ -31,7 +31,7 @@ export
     statdists,
     istransmat,
     likelihoods,
-    # messages_api.jl
+    # messages.jl
     forward,
     backward,
     posteriors,
@@ -51,7 +51,6 @@ include("hmm.jl")
 include("mle.jl")
 include("mle_init.jl")
 include("messages.jl")
-include("messages_api.jl")
 include("viterbi.jl")
 include("likelihoods.jl")
 include("utilities.jl")

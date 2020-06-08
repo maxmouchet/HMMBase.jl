@@ -118,3 +118,153 @@ function posteriors!(γ::AbstractMatrix, α::AbstractMatrix, β::AbstractMatrix)
         end
     end
 end
+
+"""
+    forward(a, A, LL) -> (Vector, Float)
+
+Compute forward probabilities using samples likelihoods.
+See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
+
+**Output**
+- `Vector{Float64}`: forward probabilities.
+- `Float64`: log-likelihood of the observed sequence.
+"""
+function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    m = Matrix{Float64}(undef, size(LL))
+    c = Vector{Float64}(undef, size(LL, 1))
+    forwardlog!(m, c, a, A, LL)
+    m, sum(c)
+end
+
+"""
+    backward(a, A, LL) -> (Vector, Float)
+
+Compute backward probabilities using samples likelihoods.
+See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
+
+**Output**
+- `Vector{Float64}`: backward probabilities.
+- `Float64`: log-likelihood of the observed sequence.
+"""
+function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    m = Matrix{Float64}(undef, size(LL))
+    c = Vector{Float64}(undef, size(LL, 1))
+    backwardlog!(m, c, a, A, LL)
+    m, sum(c)
+end
+ 
+"""
+    forward(hmm, observations; robust) -> (Vector, Float)
+
+Compute forward probabilities of the `observations` given the `hmm` model.
+
+**Output**
+- `Vector{Float64}`: forward probabilities.
+- `Float64`: log-likelihood of the observed sequence.
+
+**Example**
+```julia
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, 1000)
+probs, tot = forward(hmm, y)
+```
+"""
+function forward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    LL = loglikelihoods(hmm, observations; robust = robust)
+    forward(hmm.a, hmm.A, LL)
+end
+
+"""
+    backward(hmm, observations; robust) -> (Vector, Float)
+
+Compute forward probabilities of the `observations` given the `hmm` model.
+
+**Output**
+- `Vector{Float64}`: backward probabilities.
+- `Float64`: log-likelihood of the observed sequence.
+
+**Example**
+```julia
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, 1000)
+probs, tot = forward(hmm, y)
+```
+"""
+function backward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    LL = loglikelihoods(hmm, observations; robust = robust)
+    backward(hmm.a, hmm.A, LL)
+end
+
+"""
+    posteriors(α, β) -> Vector
+
+Compute posterior probabilities from `α` and `β`.
+
+**Arguments**
+- `α::AbstractVector`: forward probabilities.
+- `β::AbstractVector`: backward probabilities.
+"""
+function posteriors(α::AbstractMatrix, β::AbstractMatrix)
+    γ = Matrix{Float64}(undef, size(α))
+    posteriors!(γ, α, β)
+    γ
+end
+
+"""
+    posteriors(a, A, LL; kwargs...) -> Vector
+
+Compute posterior probabilities using samples likelihoods.
+"""
+function posteriors(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; kwargs...)
+    α, _ = forward(a, A, LL; kwargs...)
+    β, _ = backward(a, A, LL; kwargs...)
+    posteriors(α, β)
+end
+
+"""
+    posteriors(hmm, observations; robust) -> Vector
+
+Compute posterior probabilities using samples likelihoods.
+
+**Example**
+```julia
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, 1000)
+γ = posteriors(hmm, y)
+```
+"""
+function posteriors(hmm::AbstractHMM, observations; logl = nothing, robust = false)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    LL = loglikelihoods(hmm, observations; robust = robust)
+    posteriors(hmm.a, hmm.A, LL)
+end
+
+"""
+    loglikelihood(hmm, observations; robust) -> Float64
+
+Compute the log-likelihood of the observations under the model.  
+This is defined as the sum of the log of the normalization coefficients in the forward filter.
+
+**Output**
+- `Float64`: log-likelihood of the observations sequence under the model.
+
+**Example**
+```jldoctest
+using Distributions, HMMBase
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+loglikelihood(hmm, [0.15, 0.10, 1.35])
+# output
+-4.588183811489616
+```
+"""
+function loglikelihood(hmm::AbstractHMM, observations; logl = nothing, robust = false)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    forward(hmm, observations, robust = robust)[2]
+end
