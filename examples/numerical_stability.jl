@@ -25,16 +25,11 @@ gcf() # hide
 
 # The likelihood of a Normal distribution with null variance goes to infinity for `y = μ`,
 # as there is a division by zero in the density function:
-println(extrema(likelihoods(hmm, y)))
-println(extrema(likelihoods(hmm, y, logl = true)))
+println(extrema(loglikelihoods(hmm, y)))
 
 # To avoid propagating these non-finite quantities (for example in the forward-backward algorithm),
 # you can use the `robust` option:
-println(extrema(likelihoods(hmm, y, robust = true)))
-println(extrema(likelihoods(hmm, y, logl = true, robust = true)))
+println(extrema(loglikelihoods(hmm, y, robust = true)))
 
 # This truncates `+Inf` to the largest Float64, and `-Inf` to the smallest Float64:
-prevfloat(Inf), nextfloat(-Inf)
-
-# In the log. case we use `log(prevfloat(Inf))` to avoid overflows when taking
-# the exp. of the log-likelihood.
+log(prevfloat(Inf)), nextfloat(-Inf)

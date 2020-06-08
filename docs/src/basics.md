@@ -17,7 +17,6 @@ observations | `AbstractVector` or `AbstractMatrix` | -            | `T` or `T x
 
 Name   |  Type  | Default |                                             Description
 :----- | :----- | :------ | :--------------------------------------------------------------------------------------------------
-logl   | `Bool` | `false` | Use log-likelihoods instead of likelihoods, if set to true
 robust | `Bool` | `false` | Truncate `-Inf` to `eps()` and `+Inf` to `prevfloat(Inf)` (`log(prevfloat(Inf))` in the log. case)
 
 
