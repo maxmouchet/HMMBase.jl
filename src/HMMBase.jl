@@ -76,18 +76,8 @@ end
 
 # < v1.0
 
-export n_parameters,
-    log_likelihoods,
-    forward_backward,
-    messages_backwards,
-    messages_backwards_log,
-    messages_forwards,
-    messages_forwards_log,
-    compute_transition_matrix,
-    rand_transition_matrix
-
 @deprecate n_parameters(hmm) nparams(hmm)
-@deprecate log_likelihoods(hmm, observations) likelihoods(hmm, observations, logl = true)
+@deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
 
 @deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriors(init_distn, trans_matrix, log_likelihoods, logl = true)
 @deprecate messages_forwards(init_distn, trans_matrix, log_likelihoods) forward(init_distn, trans_matrix, log_likelihoods, logl = true)
