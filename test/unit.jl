@@ -181,31 +181,6 @@ end
     @test logtot1 ≈ logtot2
 end
 
-@testset "Messages (2)" begin
-    hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
-    y = rand(hmm, 1000)
-
-    α1, logtot1 = forward(hmm, y)
-    α2, logtot2 = forward(hmm, y, logl = true)
-
-    @test logtot1 ≈ logtot2
-    @test α1 ≈ α2
-
-    β1, logtot3 = backward(hmm, y)
-    β2, logtot4 = backward(hmm, y, logl = true)
-
-    @test logtot3 ≈ logtot4
-    @test β1 ≈ β2
-
-    @test size(α1) == size(α2) == size(β1) == size(β2)
-    @test logtot1 ≈ logtot2 ≈ logtot3 ≈ logtot4
-
-    γ1 = posteriors(hmm, y)
-    γ2 = posteriors(hmm, y, logl = true)
-
-    @test γ1 ≈ γ2
-end
-
 @testset "Messages (3)" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 0), Normal(10, 0)])
     y = rand(hmm, 1000)
@@ -216,41 +191,26 @@ end
     # We mark the tests as broken, since I don't know if this can be fixed.
     # The workaround is to set `robust = true`.
     _, logtot1 = forward(hmm, y)
-    _, logtot2 = forward(hmm, y, logl = true)
-    _, logtot3 = backward(hmm, y)
-    _, logtot4 = backward(hmm, y, logl = true)
+    _, logtot2 = backward(hmm, y)
 
     @test_broken !isnan(logtot1)
     @test_broken !isnan(logtot2)
-    @test_broken !isnan(logtot3)
-    @test_broken !isnan(logtot4)
 
-    @test_nowarn viterbi(hmm, y, logl = true)
+    @test_nowarn viterbi(hmm, y)
 
-    _, logtot5 = forward(hmm, y, robust = true)
-    _, logtot6 = forward(hmm, y, logl = true, robust = true)
-    _, logtot7 = backward(hmm, y, robust = true)
-    _, logtot8 = backward(hmm, y, logl = true, robust = true)
+    _, logtot3 = forward(hmm, y, robust = true)
+    _, logtot4 = backward(hmm, y, robust = true)
 
-    @test !isnan(logtot5)
-    @test !isnan(logtot6)
-    @test !isnan(logtot7)
-    @test !isnan(logtot8)
+    @test !isnan(logtot3)
+    @test !isnan(logtot4)
 
-    @test logtot5 ≈ logtot6 ≈ logtot7 ≈ logtot8
-
-    @test viterbi(hmm, y, robust = true) == viterbi(hmm, y, logl = true, robust = true)
+    @test logtot3 ≈ logtot4
 end
 
 @testset "Viterbi" begin
     hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(100, 1)])
     z, y = rand(hmm, 1000, seq = true)
-
-    zv1 = viterbi(hmm, y)
-    zv2 = viterbi(hmm, y, logl = true)
-
-    @test zv1 == z
-    @test zv1 == zv2
+    @test viterbi(hmm, y) == z
 end
 
 @testset "MLE" begin
