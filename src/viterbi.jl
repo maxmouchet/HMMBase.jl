@@ -47,16 +47,19 @@ function viterbilog!(
 end
 
 """
-    viterbi(a, A, L) -> Vector
+    viterbi(a, A, LL) -> Vector
 
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
-function viterbi(a::AbstractVector, A::AbstractMatrix, L::AbstractMatrix; logl = nothing)
+function viterbi(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+    ## < v1.1 compatibility
     (logl !== nothing) && deprecate_kwargs("logl")
-    T1 = Matrix{Float64}(undef, size(L))
-    T2 = Matrix{Int}(undef, size(L))
-    z = Vector{Int}(undef, size(L, 1))
-    viterbilog!(T1, T2, z, a, A, L)
+    (logl == false) && (LL = log.(LL))
+    ## --------------------
+    T1 = Matrix{Float64}(undef, size(LL))
+    T2 = Matrix{Int}(undef, size(LL))
+    z = Vector{Int}(undef, size(LL, 1))
+    viterbilog!(T1, T2, z, a, A, LL)
     z
 end
 
