@@ -31,14 +31,16 @@ export
     statdists,
     istransmat,
     likelihoods,
-    # messages_api.jl
+    # messages.jl
     forward,
     backward,
     posteriors,
     loglikelihood,
-    # mle_api.jl
+    # likelihoods.jl
+    loglikelihoods,
+    # mle.jl
     fit_mle,
-    # viterbi_api.jl
+    # viterbi.jl
     viterbi,
     # utilities.jl,
     gettransmat,
@@ -47,14 +49,10 @@ export
 
 include("hmm.jl")
 include("mle.jl")
-include("mle_api.jl")
 include("mle_init.jl")
 include("messages.jl")
-include("messages_api.jl")
 include("viterbi.jl")
-include("viterbi_api.jl")
 include("likelihoods.jl")
-include("likelihoods_api.jl")
 include("utilities.jl")
 include("experimental.jl")
 
@@ -62,18 +60,23 @@ include("experimental.jl")
 # ---------------------------------
 #!format: off
 
-export n_parameters,
-    log_likelihoods,
-    forward_backward,
-    messages_backwards,
-    messages_backwards_log,
-    messages_forwards,
-    messages_forwards_log,
-    compute_transition_matrix,
-    rand_transition_matrix
+# < v1.1
+
+export likelihoods
+
+function likelihoods(args...; logl = false, kwargs...)
+    @warn "`likelihoods(...)` is deprecated, use `loglikelihoods(...)` or `exp.(loglikelihoods(...))` instead."
+    logl ? loglikelihoods(args...; kwargs...) : exp.(loglikelihoods(args...; kwargs...))
+end
+
+function deprecate_kwargs(name)
+    @warn "`$(name)` keyword argument is deprecated."
+end
+
+# < v1.0
 
 @deprecate n_parameters(hmm) nparams(hmm)
-@deprecate log_likelihoods(hmm, observations) likelihoods(hmm, observations, logl = true)
+@deprecate log_likelihoods(hmm, observations) loglikelihoods(hmm, observations)
 
 @deprecate forward_backward(init_distn, trans_matrix, log_likelihoods) posteriors(init_distn, trans_matrix, log_likelihoods, logl = true)
 @deprecate messages_forwards(init_distn, trans_matrix, log_likelihoods) forward(init_distn, trans_matrix, log_likelihoods, logl = true)

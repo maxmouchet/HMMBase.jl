@@ -50,8 +50,8 @@ end
         zeros(Int32, size(LL, 1)),
     )
 
-    res1 = viterbi(hmm.a, hmm.A, L)
-    res2 = viterbi(hmm.a, hmm.A, LL, logl = true)
+    res1 = viterbi(hmm.a, hmm.A, L, logl = false)
+    res2 = viterbi(hmm.a, hmm.A, LL)
 
     # Python indices are off by 1
     @test res1 == (ref .+ 1)

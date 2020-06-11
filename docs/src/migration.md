@@ -1,4 +1,11 @@
-# Migrating to v1.0
+# Migrating from older versions
+
+## 1.0 -> 1.1
+
+HMMBase v1.1 introduces the following breaking changes:
+- `viterbi(a, A, L)` -> `viterbi(a, A, LL)` or (temporarily) `viterbi(a, A, L, logl = false)`
+
+## 0.0.14 -> 1.0
 
 HMMBase v1.0 introduces the following breaking changes:
 - `HMM` struct renaming: `π0, π, D` become `a, A, B`
@@ -8,7 +15,7 @@ HMMBase v1.0 introduces the following breaking changes:
 - Baum-Welch algorithm returns `hmm, history` instead of `hmm, logtot`
 - `rand(hmm, T)` returns `y` instead of `z, y` by default, use `seq = true` to get `z, y`
 
-## Deprecated/renamed methods
+### Deprecated/renamed methods
 
 ```julia
 # @deprecate old new

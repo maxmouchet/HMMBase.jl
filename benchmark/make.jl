@@ -1,7 +1,10 @@
 using PkgBenchmark
 using HMMBase
 
-# TODO: Add timestamp to result files
-# results = benchmarkpkg(parent(pathof(HMMBase)))
-results = benchmarkpkg(pwd(), resultfile = "benchmark.json")
-export_markdown("benchmark.md", results)
+# path = dirname(dirname(pathof(HMMBase)))
+path = pwd()
+println("Benchmarking $path...")
+
+timestamp = Int64(time() * 1e9)
+results = benchmarkpkg(path, resultfile = "benchmark_$timestamp.json")
+export_markdown("benchmark_$timestamp.md", results)
