@@ -1,4 +1,4 @@
-window.goatcounter = {endpoint: 'https://hmmbasejl.goatcounter.com/count'}
+window.goatcounter = {endpoint: 'https://hmmbasejl.goatcounter.com/count'};
 
 // GoatCounter: https://www.goatcounter.com
 (function() {
