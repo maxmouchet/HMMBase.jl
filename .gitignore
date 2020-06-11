@@ -1,11 +1,7 @@
 .ipynb_checkpoints/
-build.log
-*.so
 Manifest.toml
 docs/build/
-docs/Manifest.toml
 docs/src/examples
-benchmark/**/*.csv
 tune.json
-benchmark.md
-benchmark.json
+benchmark*.md
+benchmark*.json
