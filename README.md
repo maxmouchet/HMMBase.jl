@@ -28,7 +28,7 @@ See [HMMBase.jl - A lightweight and efficient Hidden Markov Model abstraction](h
 
 <p align="center">
   <img src="/benchmark/benchmark_summary.png" width="640"><br/>
-  <a href="/benchmark">Benchmark</a> of HMMBase against <a href="https://github.com/hmmlearn/hmmlearn">hmmlearn</a> and <a href="https://github.com/mattjj/pyhsmm">pyhsmm</a>.<br/>(log) stands for "using log-likelihoods".
+  <a href="/benchmark">Benchmark</a> of HMMBase against <a href="https://github.com/hmmlearn/hmmlearn">hmmlearn</a> and <a href="https://github.com/mattjj/pyhsmm">pyhsmm</a>.
 </p>
 
 **Features:**
@@ -56,7 +56,7 @@ pkg> add HMMBase
 
 ## Project Status
 
-The package is tested against Julia 1.0 and Julia 1.4.  
+The package is tested against Julia 1.0 and the latest Julia 1.x.  
 
 Starting with v1.0, we follow [semantic versioning]():
 
