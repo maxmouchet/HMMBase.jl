@@ -33,8 +33,8 @@ julia> format(".", margin=100)
 Compiler calls: JULIA_DEBUG=loading
 
 ```bash
-julia --project=@. benchmark/make.jl
-julia --project=@. docs/make.jl
+julia --project=benchmark/ benchmark/make.jl
+julia --project=docs/ docs/make.jl
 ```
 
 ### Internals
