@@ -14,9 +14,9 @@ Overview of the repository structure:
 ├── src
 │   ├── HMMBase.jl      # Main module file
 │   ├── hmm.jl          # HMM type, rand, size, ...
-│   ├── *_api.jl        # Public interfaces
-│   ├── *.jl            # Internal in-place implementations
+│   ├── *.jl            # Public interface and internal in-place implementations
 └── test
+    ├── deprecated.jl   # Deprecation tests
     ├── integration.jl  # Integration tests
     ├── pyhsmm.jl       # Python tests
     ├── runtests.jl     # Integration+Unit tests runner
@@ -28,14 +28,11 @@ Overview of the repository structure:
 
 Internally HMMBase uses in-place implementations for most of the algorithms.
 
-Public interfaces are defined in `_api.jl` files, and are responsible for copying
-user provided data.
-
 In-place                          | Public interface
 :---------------------------------|:----------------
-`likelihoods!`, `loglikelihoods!` | `likelihoods`
-`forward!`, `forwardlog!`         | `forward`
-`backward!`, `backwardlog!`       | `backward`
+`loglikelihoods!`                 | `loglikelihoods`
+`forwardlog!`                     | `forward`
+`backwardlog!`                    | `backward`
 `posteriors!`                     | `posteriors`
-`viterbi!`, `viterbilog!`         | `viterbi`
+`viterbilog!`                     | `viterbi`
 `fit_mle!`                        | `fit_mle`
