@@ -137,7 +137,7 @@ function rand(
             z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
         end
     end
-    y = rand(rng, hmm, z, T, N)
+    y = rand(rng, hmm, z)
     seq ? (z, y) : y
 end
 
