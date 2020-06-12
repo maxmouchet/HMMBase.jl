@@ -92,49 +92,52 @@ istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i, :]) for i = 1
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
 """
-    rand([rng, ]hmm, T; init, seq) -> Array | (Vector, Array)
+    rand([rng, ]hmm, T, N; init, seq) -> Array | (Vector, Array)
 
 Sample a trajectory of `T` timesteps from `hmm`.
 
 **Keyword Arguments**
-- `init::Integer = rand(Categorical(hmm.a))`: initial state.
+- `init::Integer = rand(Categorical(hmm.a), N)`: initial state.
 - `seq::Bool = false`: whether to return the hidden state sequence or not.
 
 **Output**
-- `Vector{Int}` (if `seq == true`): hidden state sequence.
-- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
-- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
+- `Array{Int}` (if `seq == true`): hidden state sequence.
+- `Array{Float64}` (for `Univariate` HMMs): observations (`T x N`).
+- `Array{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs) x N`).
 
 **Examples**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, 1000) # or
-z, y = rand(hmm, 1000, seq = true)
-size(y) # (1000,)
+z, y = rand(hmm, 1000, 2, seq = true)
+size(y) # (1000, 2)
 ```
 
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
 y = rand(hmm, 1000) # or
-z, y = rand(hmm, 1000, seq = true)
-size(y) # (1000, 2)
+z, y = rand(hmm, 1000, 3, seq = true)
+size(y) # (1000, 2, 3)
 ```
 """
 function rand(
     rng::AbstractRNG,
     hmm::AbstractHMM,
-    T::Integer;
-    init = rand(rng, Categorical(hmm.a)),
+    T::Integer,
+    N::Integer;
+    init = rand(rng, Categorical(hmm.a), N),
     seq = false,
 )
-    z = Vector{Int}(undef, T)
-    (T >= 1) && (z[1] = init)
-    for t = 2:T
-        z[t] = rand(rng, Categorical(hmm.A[z[t-1], :]))
+    z = Matrix{Int}(undef, T, N)
+    (T >= 1) && (z[1, :] = init)
+    for n = 1:N
+        for t = 2:T
+            z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+        end
     end
-    y = rand(rng, hmm, z)
+    y = rand(rng, hmm, z, T, N)
     seq ? (z, y) : y
 end
 
@@ -144,35 +147,97 @@ end
 Sample observations from `hmm` according to trajectory `z`.
 
 **Output**
-- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
-- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
+- `Array{Float64}` (for `Univariate` HMMs): observations (`T x N`).
+- `Array{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs) x N`).
 
-**Example**
+**Examples**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{<:Integer})
-    y = Vector{Float64}(undef, length(z))
-    for t in eachindex(z)
-        y[t] = rand(rng, hmm.B[z[t]])
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Univariate},
+    z::AbstractArray{<:Integer},
+    )
+    T, N = size(z, 1), size(z, 2)
+    y = Array{Float64}(undef, T, N)
+    for n in 1:N
+        for t in 1:T
+            y[t, n] = rand(rng, hmm.B[z[t, n]])
+        end
     end
     y
 end
 
-function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractVector{<:Integer})
-    y = Matrix{Float64}(undef, length(z), size(hmm, 2))
-    for t in eachindex(z)
-        y[t, :] = rand(rng, hmm.B[z[t]])
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Multivariate},
+    z::AbstractArray{<:Integer},
+    )
+    T, N = size(z, 1), size(z, 2)
+    dimension = size(hmm, 2)
+    y = Array{Float64}(undef, size(z, 1), dimension, size(z, 2))
+    for n in 1:N
+        for t in 1:T
+            y[t, :, n] = rand(rng, hmm.B[z[t, n]])
+        end
     end
     y
 end
 
-rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
+"""
+    rand([rng, ]hmm, d, N; seq) -> Array
 
-rand(hmm::AbstractHMM, z::AbstractVector{<:Integer}) = rand(GLOBAL_RNG, hmm, z)
+Sample observations from `hmm` according to random trajectory sampled from `d`.
+
+**Output**
+- `Array{Float64}` (for `Univariate` HMMs): observations (`maximun(rand(d, N)) x N`).
+
+**Examples**
+```julia
+using Distributions, HMMBase, Random
+Random.seed!(1234)
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, Poisson(10), 2) # or
+z, y = rand(hmm, Poisson(10), 2, seq = true)
+size(y) #(12, 2)
+```
+"""
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Univariate},
+    d::DiscreteUnivariateDistribution,
+    N::Integer;
+    seq = false,
+    )
+    length_observations = generate_random_lengths(d, N)
+    T = maximum(length_observations)
+    z = Matrix{Union{Nothing, Int}}(nothing, T, N)
+    y = Matrix{Union{Nothing, Float64}}(nothing, T, N)
+    for n = 1:N
+        z[1, n] = rand(rng, Categorical(hmm.a))
+        y[1, n] = rand(rng, hmm.B[z[1, n]])
+        for t = 2:T
+            if t <= length_observations[n]
+                z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+                y[t, n] = rand(rng, hmm.B[z[t-1, n]])
+            end
+        end
+    end
+    seq ? (z, y) : y
+end
+
+Base.rand(hmm::AbstractHMM, T::Integer, N::Integer; kwargs...) =
+    rand(GLOBAL_RNG, hmm, T, N; kwargs...)
+
+Base.rand(hmm::AbstractHMM, z::AbstractArray{<:Integer}) =
+    rand(GLOBAL_RNG, hmm, size(z, 1), size(z, 2))
+
+Base.rand(hmm::AbstractHMM, d::DiscreteUnivariateDistribution, N::Integer; kwargs...) =
+    rand(GLOBAL_RNG, hmm, d, N; kwargs...)
 
 """
     size(hmm, [dim]) -> Int | Tuple
@@ -248,18 +313,25 @@ end
 """
     statdists(hmm) -> Vector{Vector}
 
-Return the stationnary distribution(s) of `hmm`.  
+Return the stationnary distribution(s) of `hmm`.
 That is, the eigenvectors of transpose(hmm.A) with eigenvalues 1.
 """
 function statdists(hmm::AbstractHMM)
     eig = eigen(collect(transpose(hmm.A)))
     dists = []
     for (i, val) in enumerate(eig.values)
-        if val ≈ 1.0
+        if val ? 1.0
             dist = eig.vectors[:, i]
             dist /= sum(dist)
             push!(dists, dist)
         end
     end
     dists
+end
+
+function generate_random_lengths(d, N)(
+    d::DiscreteUnivariateDistribution,
+    N::Integer
+    )
+    observations_length = rand(d, N)
 end
