@@ -4,21 +4,23 @@
 # In-place forward pass, where α and c are allocated beforehand.
 function forwardlog!(
     α::AbstractArray,
-    c::AbstractMatirx,
+    c::AbstractMatrix,
     a::AbstractVector,
     A::AbstractMatrix,
-    LL::AbstractArray,
-    observations_length::AbstractVector
+    LL::AbstractArray
 )
-    @argcheck size(α, 1) == size(L, 1) == size(c, 1)
-    @argcheck size(α, 2) == size(L, 2) == size(a, 1) == size(A, 1) == size(A, 2)
-    @argcheck size(α, 3) == size(L, 3) == size(c, 2) == length(observations_length)
+    @argcheck size(α, 1) == size(LL, 1) == size(c, 1)
+    @argcheck size(α, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+    @argcheck size(α, 3) == size(LL, 3) == size(c, 2)
 
-    _, K, N = size(LL)
+    T, K, N = size(LL)
     ((T == 0)||(N == 0)) && return
 
+    fill!(α, 0.0)
+    fill!(c, 0.0)
+
     for n in OneTo(N)
-        T = observations_length[n]
+        T = length(filter(!isnothing, LL[:, 1, n]))
         m = vec_maximum(view(LL, 1, :, n))
         for j in OneTo(K)
             α[1, j, n] = a[j] * exp(LL[1, j] - m)
@@ -43,7 +45,7 @@ function forwardlog!(
             end
 
             for j in OneTo(K)
-                α[t, j. n] /= c[t, n]
+                α[t, j, n] /= c[t, n]
             end
 
             c[t, n] = log(c[t, n]) + m
@@ -57,19 +59,18 @@ function backwardlog!(
     c::AbstractMatrix,
     a::AbstractVector,
     A::AbstractMatrix,
-    LL::AbstractArray,
-    observations_length::AbstractVector
+    LL::AbstractArray
 )
     @argcheck size(β, 1) == size(LL, 1) == size(c, 1)
     @argcheck size(β, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
-    @argcheck size(β, 3) == size(LL, 3) == size(c, 2) == length(observations_length)
+    @argcheck size(β, 3) == size(LL, 3) == size(c, 2)
 
     _, K, N = size(LL)
     L = zeros(K)
     ((T == 0)||(N == 0)) && return
 
     for n in OneTo(N)
-        T = observations_length[n]
+        T = length(filter(!isnothing, LL[:, 1, n]))
         for j in OneTo(K)
             β[T, j, n] = 1.0
         end
@@ -96,59 +97,58 @@ end
 
 # In-place posterior computation, where γ is allocated beforehand.
 function posteriors!(
-        γ::AbstractArray,
-        α::AbstractArray,
-        β::AbstractArray,
-        observations_length::AbstractVector
-    )
-    @argcheck size(γ) == size(α) == size(β)
-    T, K, N = size(α)
-    for n in OneTo(N)
-        T = observations_length[n]
-        for t in OneTo(T)
-            for i in OneTo(K)
-                γ[t, i, n] = α[t, i, n] * β[t, i, n]
-            end
+    γ::AbstractArray,
+    α::AbstractArray,
+    β::AbstractArray
+)
+@argcheck size(γ) == size(α) == size(β)
+T, K, N = size(α)
+for n in OneTo(N)
+    T = length(filter(!isnothing, α[:, 1, n]))
+    for t in OneTo(T)
+        for i in OneTo(K)
+            γ[t, i, n] = α[t, i, n] * β[t, i, n]
+        end
 
-            for i in OneTo(K)
-                γ[t, i, n] /= c[t, n]
-            end
+        for i in OneTo(K)
+            γ[t, i, n] /= c[t, n]
         end
     end
 end
+end
 
 """
-    forward(a, A, LL) -> (Vector, Float)
+    forward(a, A, LL) -> (Array, Float)
 
 Compute forward probabilities using samples likelihoods.
 See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
 
 **Output**
-- `Vector{Float64}`: forward probabilities.
+- `Array{Float64}`: forward probabilities.
 - `Float64`: log-likelihood of the observed sequence.
 """
-function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
-    (logl !== nothing) && deprecate_kwargs("logl")
-    m = Matrix{Float64}(undef, size(LL))
-    c = Vector{Float64}(undef, size(LL, 1))
+function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
+#     (logl !== nothing) && deprecate_kwargs("logl")
+    m = Array{Float64}(undef, size(LL))
+    c = Matrix{Float64}(undef, size(LL, 1), size(LL, 3))
     forwardlog!(m, c, a, A, LL)
     m, sum(c)
 end
 
 """
-    backward(a, A, LL) -> (Vector, Float)
+    backward(a, A, LL) -> (Array, Float)
 
 Compute backward probabilities using samples likelihoods.
 See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backward_algorithm).
 
 **Output**
-- `Vector{Float64}`: backward probabilities.
+- `Array{Float64}`: backward probabilities.
 - `Float64`: log-likelihood of the observed sequence.
 """
-function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
     (logl !== nothing) && deprecate_kwargs("logl")
-    m = Matrix{Float64}(undef, size(LL))
-    c = Vector{Float64}(undef, size(LL, 1))
+    m = Array{Float64}(undef, size(LL))
+    c = Matirx{Float64}(undef, size(LL, 1), size(LL, 3))
     backwardlog!(m, c, a, A, LL)
     m, sum(c)
 end
@@ -159,14 +159,14 @@ end
 Compute forward probabilities of the `observations` given the `hmm` model.
 
 **Output**
-- `Vector{Float64}`: forward probabilities.
+- `Array{Float64}`: forward probabilities.
 - `Float64`: log-likelihood of the observed sequence.
 
 **Example**
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, 1000)
+y = rand(hmm, 1000, 2)
 probs, tot = forward(hmm, y)
 ```
 """
@@ -247,7 +247,7 @@ end
 """
     loglikelihood(hmm, observations; robust) -> Float64
 
-Compute the log-likelihood of the observations under the model.  
+Compute the log-likelihood of the observations under the model.
 This is defined as the sum of the log of the normalization coefficients in the forward filter.
 
 **Output**
