@@ -205,6 +205,15 @@ y = rand(hmm, Poisson(10), 2) # or
 z, y = rand(hmm, Poisson(10), 2, seq = true)
 size(y) #(12, 2)
 ```
+
+```julia
+using Distributions, HMMBase, Random
+Random.seed!(1234)
+hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
+y = rand(hmm, Poisson(10), 3) # or
+z, y = rand(hmm, Poisson(10), 3, seq = true)
+size(y) #(10, 2, 3)
+```
 """
 function rand(
     rng::AbstractRNG,
@@ -224,6 +233,31 @@ function rand(
             if t <= length_observations[n]
                 z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
                 y[t, n] = rand(rng, hmm.B[z[t-1, n]])
+            end
+        end
+    end
+    seq ? (z, y) : y
+end
+
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Multivariate},
+    d::DiscreteUnivariateDistribution,
+    N::Integer;
+    seq = false,
+    )
+    length_observations = generate_random_lengths(d, N)
+    T = maximum(length_observations)
+    z = Matrix{Union{Nothing, Int}}(nothing, T, N)
+    dimension = size(hmm, 2)
+    y = Array{Union{Nothing, Float64}}(nothing, T, dimension, N)
+    for n = 1:N
+        z[1, n] = rand(rng, Categorical(hmm.a))
+        y[1, :, n] = rand(rng, hmm.B[z[1, n]])
+        for t = 2:T
+            if t <= length_observations[n]
+                z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+                y[t, :, n] = rand(rng, hmm.B[z[t-1, n]])
             end
         end
     end
