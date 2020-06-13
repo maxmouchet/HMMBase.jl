@@ -131,6 +131,7 @@ function rand(
     seq = false,
 )
     z = Matrix{Int}(undef, T, N)
+    (N == 1) && (z = vec(z))
     (T >= 1) && (z[1, :] = init)
     for n = 1:N
         for t = 2:T
@@ -264,13 +265,15 @@ function rand(
     seq ? (z, y) : y
 end
 
-Base.rand(hmm::AbstractHMM, T::Integer, N::Integer; kwargs...) =
+rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
+
+rand(hmm::AbstractHMM, T::Integer, N::Integer; kwargs...) =
     rand(GLOBAL_RNG, hmm, T, N; kwargs...)
 
-Base.rand(hmm::AbstractHMM, z::AbstractArray{<:Integer}) =
+rand(hmm::AbstractHMM, z::AbstractArray{<:Integer}) =
     rand(GLOBAL_RNG, hmm, size(z, 1), size(z, 2))
 
-Base.rand(hmm::AbstractHMM, d::DiscreteUnivariateDistribution, N::Integer; kwargs...) =
+rand(hmm::AbstractHMM, d::DiscreteUnivariateDistribution, N::Integer; kwargs...) =
     rand(GLOBAL_RNG, hmm, d, N; kwargs...)
 
 """
