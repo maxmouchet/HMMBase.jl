@@ -23,7 +23,7 @@ function forwardlog!(
         T = length(filter(!isnothing, LL[:, 1, n]))
         m = vec_maximum(view(LL, 1, :, n))
         for j in OneTo(K)
-            α[1, j, n] = a[j] * exp(LL[1, j] - m)
+            α[1, j, n] = a[j] * exp(LL[1, j, n] - m)
             c[1, n] += α[1, j, n]
         end
 
@@ -52,7 +52,7 @@ function forwardlog!(
         end
     end
 end
-
+# In-place backward pass, where β and c are allocated beforehand.
 # In-place backward pass, where β and c are allocated beforehand.
 function backwardlog!(
     β::AbstractArray,
@@ -65,9 +65,12 @@ function backwardlog!(
     @argcheck size(β, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
     @argcheck size(β, 3) == size(LL, 3) == size(c, 2)
 
-    _, K, N = size(LL)
+    T, K, N = size(LL)
     L = zeros(K)
     ((T == 0)||(N == 0)) && return
+
+    fill!(β, 0.0)
+    fill!(c, 0.0)
 
     for n in OneTo(N)
         T = length(filter(!isnothing, LL[:, 1, n]))
@@ -75,22 +78,27 @@ function backwardlog!(
             β[T, j, n] = 1.0
         end
 
-        @inbounds for t = T-1:-1:1
-            m = vec_maximum(view(LL, t + 1, :, n))
-
+        for t = T-1:-1:1
+            m = vec_maximum(view(LL, t+1, :, n))
             for i in OneTo(K)
-                L[i, n] = exp(LL[t+1, i, n] - m)
+                L[i] = exp(LL[t+1, i, n] - m)
             end
 
             for j in OneTo(K)
                 for i in OneTo(K)
-                    β[t, j, n] += β[t+1, i, n] * A[j, i] * L[i, n]
+                    β[t, j, n] += β[t+1, i, n] * A[j, i] * L[i]
                 end
+                c[t+1, n] += β[t, j, n]
             end
 
             for j in OneTo(K)
                 β[t, j, n] /= c[t+1, n]
             end
+            c[t+1, n] = log(c[t+1, n]) + m
+        end
+        m = vec_maximum(view(LL, 1, :, n))
+        for j in OneTo(K)
+            c[1, n] += a[j] * exp(LL[1, j, n] - m) * β[1, j, n]
         end
     end
 end
@@ -101,20 +109,22 @@ function posteriors!(
     α::AbstractArray,
     β::AbstractArray
 )
-@argcheck size(γ) == size(α) == size(β)
-T, K, N = size(α)
-for n in OneTo(N)
-    T = length(filter(!isnothing, α[:, 1, n]))
-    for t in OneTo(T)
-        for i in OneTo(K)
-            γ[t, i, n] = α[t, i, n] * β[t, i, n]
-        end
+    @argcheck size(γ) == size(α) == size(β)
+    T, K, N = size(α)
+    for n in OneTo(N)
+        T = length(filter(!isnothing, α[:, 1, n]))
+        for t in OneTo(T)
+            c = 0.0
+            for i in OneTo(K)
+                γ[t, i, n] = α[t, i, n] * β[t, i, n]
+                c += γ[t, i, n]
+            end
 
-        for i in OneTo(K)
-            γ[t, i, n] /= c[t, n]
+            for i in OneTo(K)
+                γ[t, i, n] /= c
+            end
         end
     end
-end
 end
 
 """
@@ -128,7 +138,7 @@ See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backwar
 - `Float64`: log-likelihood of the observed sequence.
 """
 function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
-#     (logl !== nothing) && deprecate_kwargs("logl")
+    (logl !== nothing) && deprecate_kwargs("logl")
     m = Array{Float64}(undef, size(LL))
     c = Matrix{Float64}(undef, size(LL, 1), size(LL, 3))
     forwardlog!(m, c, a, A, LL)
@@ -148,7 +158,7 @@ See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backwar
 function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
     (logl !== nothing) && deprecate_kwargs("logl")
     m = Array{Float64}(undef, size(LL))
-    c = Matirx{Float64}(undef, size(LL, 1), size(LL, 3))
+    c = Matrix{Float64}(undef, size(LL, 1), size(LL, 3))
     backwardlog!(m, c, a, A, LL)
     m, sum(c)
 end
@@ -208,8 +218,8 @@ Compute posterior probabilities from `α` and `β`.
 - `α::AbstractVector`: forward probabilities.
 - `β::AbstractVector`: backward probabilities.
 """
-function posteriors(α::AbstractMatrix, β::AbstractMatrix)
-    γ = Matrix{Float64}(undef, size(α))
+function posteriors(α::AbstractArray, β::AbstractArray)
+    γ = Array{Float64}(undef, size(α))
     posteriors!(γ, α, β)
     γ
 end
@@ -219,7 +229,7 @@ end
 
 Compute posterior probabilities using samples likelihoods.
 """
-function posteriors(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; kwargs...)
+function posteriors(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; kwargs...)
     α, _ = forward(a, A, LL; kwargs...)
     β, _ = backward(a, A, LL; kwargs...)
     posteriors(α, β)
