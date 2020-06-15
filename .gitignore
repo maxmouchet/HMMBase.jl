@@ -1,7 +1,6 @@
 .ipynb_checkpoints/
 Manifest.toml
 docs/build/
-docs/src/examples
 tune.json
 benchmark*.md
 benchmark*.json

@@ -34,6 +34,7 @@ Compiler calls: JULIA_DEBUG=loading
 
 ```bash
 julia --project=benchmark/ benchmark/make.jl
+julia --project=docs/ docs/literate.jl
 julia --project=docs/ docs/make.jl
 ```
 

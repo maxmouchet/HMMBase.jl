@@ -17,8 +17,8 @@ copy
 ## Observations Likelihoods
 
 ```@docs
-likelihoods
 loglikelihood
+loglikelihoods
 ```
 
 ## Stationnary Distribution
