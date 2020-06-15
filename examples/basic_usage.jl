@@ -1,4 +1,5 @@
 # # Basic Usage
+# [![Binder](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/examples/basic_usage.ipynb)
 
 using Distributions
 using HMMBase

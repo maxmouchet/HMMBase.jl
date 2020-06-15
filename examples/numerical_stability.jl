@@ -1,4 +1,5 @@
 # # Numerical Stability
+# [![Binder](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/examples/numerical_stability.ipynb)
 
 using Distributions
 using HMMBase

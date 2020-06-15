@@ -1,4 +1,5 @@
 # # Maximum a Posteriori
+# [![Binder](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__/examples/fit_map.ipynb)
 
 using Distributions
 using HMMBase
