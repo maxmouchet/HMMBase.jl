@@ -10,9 +10,6 @@
   <a href="https://maxmouchet.github.io/HMMBase.jl/stable">
     <img src="https://img.shields.io/badge/docs-stable-blue.svg?style=flat">
   </a>
-  <a href="https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=examples">
-    <img src="https://mybinder.org/badge_logo.svg">
-  </a>
 </p>
 
 ## News
