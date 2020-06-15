@@ -3,6 +3,7 @@ EditURL = "https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/fit_map
 ```
 
 # Maximum a Posteriori
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=/examples/fit_map.ipynb)
 
 ```@example fit_map
 using Distributions

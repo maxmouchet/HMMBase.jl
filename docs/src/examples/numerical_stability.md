@@ -3,6 +3,7 @@ EditURL = "https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/numeric
 ```
 
 # Numerical Stability
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=/examples/numerical_stability.ipynb)
 
 ```@example numerical_stability
 using Distributions

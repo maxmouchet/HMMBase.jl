@@ -3,7 +3,7 @@ EditURL = "https://github.com/maxmouchet/HMMBase.jl/blob/master/examples/basic_u
 ```
 
 # Basic Usage
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=/examples/basic_usage.inpynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=/examples/basic_usage.ipynb)
 
 ```@example basic_usage
 using Distributions
