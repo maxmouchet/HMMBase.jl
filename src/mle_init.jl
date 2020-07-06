@@ -1,7 +1,7 @@
 # Functions for initializing HMM parameters from the observations
 function kmeans_init!(hmm::AbstractHMM{Univariate}, observations; kwargs...)
     K = size(hmm, 1)
-    N = last(size(y))
+    N = last(size(observations))
     seq = Array{Union{Nothing, Int}}(nothing, size(observations))
 
     for n in OneTo(N)
