@@ -21,20 +21,18 @@ function forwardlog!(
 
     for n in OneTo(N)
         T = length(filter(!isnothing, LL[:, 1, n]))
-        m = vec_maximum(view(LL, 1, :, n))
+        m = maximum(view(LL, 1, :, n))
+
         for j in OneTo(K)
             α[1, j, n] = a[j] * exp(LL[1, j, n] - m)
             c[1, n] += α[1, j, n]
         end
-
         for j in OneTo(K)
             α[1, j, n] /= c[1, n]
         end
-
         c[1, n] = log(c[1, n]) + m
-
         @inbounds for t = 2:T
-            m = vec_maximum(view(LL, t, :, n))
+            m = maximum(view(LL, t, :, n))
 
             for j in OneTo(K)
                 for i in OneTo(K)
@@ -49,10 +47,15 @@ function forwardlog!(
             end
 
             c[t, n] = log(c[t, n]) + m
+            for t = T+1:size(LL, 1)
+                for j in OneTo(K)
+                    α[t, j, n] = nothing
+                end
+            end
         end
     end
 end
-# In-place backward pass, where β and c are allocated beforehand.
+
 # In-place backward pass, where β and c are allocated beforehand.
 function backwardlog!(
     β::AbstractArray,
@@ -99,6 +102,12 @@ function backwardlog!(
         m = vec_maximum(view(LL, 1, :, n))
         for j in OneTo(K)
             c[1, n] += a[j] * exp(LL[1, j, n] - m) * β[1, j, n]
+        end
+        c[1, n] = log(c[1, n]) + m
+        for t = T+1:size(LL, 1)
+            for j in OneTo(K)
+            β[t, j, n] = nothing
+            end
         end
     end
 end
