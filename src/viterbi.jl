@@ -40,7 +40,6 @@ function viterbilog!(
         end
 
         z[T, n] = argmax(T1[T, :, n])
-        println(T)
         for t = T-1:-1:1
             z[t, n] = T2[t+1, z[t+1, n], n]
         end
