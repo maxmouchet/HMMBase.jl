@@ -15,21 +15,22 @@ The labels must be positive integer.
 - `Dict{Integer,Integer}`: the mapping between the original and the new labels.
 - `Matrix{Float64}`: the transition matrix.
 """
-function gettransmat(seq::Vector{<:Integer}; relabel = false)
-    @argcheck all(seq .>= 0)
+function gettransmat(seq::Array; relabel = false)
+    @argcheck all(filter(!isnothing, seq) .>= 0)
 
     if relabel
         # /!\ Sort is important here, so that we don't relabel already contiguous states.
         mapping = Dict(old => new for (new, old) in enumerate(sort(unique(seq))))
     else
         mapping = Dict(old => old for old in unique(seq))
+        delete!(mapping, nothing)
     end
 
     (length(mapping) == 0) && return mapping, Float64[]
     K = maximum(values(mapping))
 
     transmat = zeros(K, K)
-    for i = 1:length(seq)-1
+    for i = 1:length(filter(!isnothing, seq))-1
         transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
     end
     transmat = transmat ./ sum(transmat, dims = 2)
