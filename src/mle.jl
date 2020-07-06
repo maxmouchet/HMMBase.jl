@@ -6,7 +6,7 @@ function update_a!(a::AbstractVector, α, β)
 
     K = length(a)
     c = 0.0
-    _, K, N = size(γ)
+    _, K, N = size(α)
     fill!(a, 0.0)
     for n in OneTo(N)
         for i in OneTo(K)
