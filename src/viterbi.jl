@@ -1,48 +1,49 @@
 # Original implementations by @nantonel
 # https://github.com/maxmouchet/HMMBase.jl/pull/6
-
 function viterbilog!(
-    T1::AbstractMatrix,
-    T2::AbstractMatrix,
-    z::AbstractVector,
+    T1::AbstractArray,
+    T2::AbstractArray,
+    z::AbstractMatrix,
     a::AbstractVector,
     A::AbstractMatrix,
-    LL::AbstractMatrix,
+    LL::AbstractArray,
 )
-    T, K = size(LL)
-    (T == 0) && return
+    T, K, N = size(LL)
+    ((T == 0)||(N == 0)) && return
 
     fill!(T1, 0.0)
     fill!(T2, 0)
 
     al = log.(a)
     Al = log.(A)
-
-    for i in OneTo(K)
-        T1[1, i] = al[i] + LL[1, i]
-    end
-
-    @inbounds for t = 2:T
-        for j in OneTo(K)
-            amax = 0
-            vmax = -Inf
-
-            for i in OneTo(K)
-                v = T1[t-1, i] + Al[i, j]
-                if v > vmax
-                    amax = i
-                    vmax = v
-                end
-            end
-
-            T1[t, j] = vmax + LL[t, j]
-            T2[t, j] = amax
+    for n in OneTo(N)
+        T = length(filter(!isnothing, LL[:, 1, n]))
+        for i in OneTo(K)
+            T1[1, i, n] = al[i] + LL[1, i, n]
         end
-    end
+        @inbounds for t = 2:T
+            for j in OneTo(K)
+                amax = 0
+                vmax = -Inf
 
-    z[T] = argmax(T1[T, :])
-    for t = T-1:-1:1
-        z[t] = T2[t+1, z[t+1]]
+                for i in OneTo(K)
+                    v = T1[t-1, i, n] + Al[i, j]
+                    if v > vmax
+                        amax = i
+                        vmax = v
+                    end
+                end
+
+                T1[t, j, n] = vmax + LL[t, j, n]
+                T2[t, j, n] = amax
+            end
+        end
+
+        z[T, n] = argmax(T1[T, :, n])
+        println(T)
+        for t = T-1:-1:1
+            z[t, n] = T2[t+1, z[t+1, n], n]
+        end
     end
 end
 
@@ -51,16 +52,16 @@ end
 
 Find the most likely hidden state sequence, see [Viterbi algorithm](https://en.wikipedia.org/wiki/Viterbi_algorithm).
 """
-function viterbi(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+function viterbi(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
     ## < v1.1 compatibility
     (logl !== nothing) && deprecate_kwargs("logl")
     (logl == false) && (LL = log.(LL))
     ## --------------------
-    T1 = Matrix{Float64}(undef, size(LL))
-    T2 = Matrix{Int}(undef, size(LL))
-    z = Vector{Int}(undef, size(LL, 1))
+    T1 = Array{Float64}(undef, size(LL))
+    T2 = Array{Int}(undef, size(LL))
+    z = Matrix{Union{Int,Nothing}}(nothing, size(LL, 1), size(LL, 3))
     viterbilog!(T1, T2, z, a, A, LL)
-    z
+    z, LL
 end
 
 """
