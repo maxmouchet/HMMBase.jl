@@ -148,7 +148,7 @@ See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backwar
 """
 function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
     (logl !== nothing) && deprecate_kwargs("logl")
-    m = Array{Float64}(undef, size(LL))
+    m = Array{Union{Nothing,Float64}}(nothing, size(LL))
     c = Matrix{Float64}(undef, size(LL, 1), size(LL, 3))
     forwardlog!(m, c, a, A, LL)
     m, sum(c)
@@ -166,7 +166,7 @@ See [Forward-backward algorithm](https://en.wikipedia.org/wiki/Forward–backwar
 """
 function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl = nothing)
     (logl !== nothing) && deprecate_kwargs("logl")
-    m = Array{Float64}(undef, size(LL))
+    m = Array{Union{Nothing,Float64}}(nothing, size(LL))
     c = Matrix{Float64}(undef, size(LL, 1), size(LL, 3))
     backwardlog!(m, c, a, A, LL)
     m, sum(c)
@@ -228,7 +228,7 @@ Compute posterior probabilities from `α` and `β`.
 - `β::AbstractVector`: backward probabilities.
 """
 function posteriors(α::AbstractArray, β::AbstractArray)
-    γ = Array{Float64}(undef, size(α))
+    γ = Array{Union{Nothing,Float64}}(nothing, size(α))
     posteriors!(γ, α, β)
     γ
 end
