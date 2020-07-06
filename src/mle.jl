@@ -100,7 +100,7 @@ function update_B!(B::AbstractVector, γ::AbstractArray, observations, estimator
     for i in OneTo(K)
         if sum(γ[:, i, :]) > 0
             responsibility = vcat(γ[:, i, :] .* total_γ[i] ./ total_γ[i]...)
-            B[i] = estimator(typeof(B[i]), permutedims(vcat(y...)), responsibility)
+            B[i] = estimator(typeof(B[i]), permutedims(vcat(observations...)), responsibility)
         end
     end
 end
