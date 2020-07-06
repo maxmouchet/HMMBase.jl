@@ -407,7 +407,7 @@ function statdists(hmm::AbstractHMM)
     dists
 end
 
-function generate_random_lengths(d, N)(
+function generate_random_lengths(
     d::DiscreteUnivariateDistribution,
     N::Integer
     )
