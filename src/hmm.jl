@@ -273,7 +273,7 @@ function rand(
         y[1, n] = rand(rng, hmm.B[z[1, n]])
         for t = 2:T
             if t <= length_observations[n]
-                z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+                z[t, n] = rand(rng, Categorical(hmm.A[z[t, n], :]))
                 y[t, n] = rand(rng, hmm.B[z[t-1, n]])
             end
         end
@@ -299,7 +299,7 @@ function rand(
         for t = 2:T
             if t <= length_observations[n]
                 z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
-                y[t, :, n] = rand(rng, hmm.B[z[t-1, n]])
+                y[t, :, n] = rand(rng, hmm.B[z[t, n]])
             end
         end
     end
