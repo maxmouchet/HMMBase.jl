@@ -25,7 +25,7 @@ end
 
 function kmeans_init!(hmm::AbstractHMM{Multivariate}, observations; kwargs...)
     K = size(hmm, 1)
-    N = last(size(y))
+    N = last(size(observations))
     seq = Array{Union{Nothing, Int}}(nothing, size(observations, 1), last(size(observations)))
 
     for n in OneTo(N)
