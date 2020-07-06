@@ -126,7 +126,7 @@ end
 # @btime vec_maximum(v)
 #   63.909 ns (1 allocation: 16 bytes)
 #   30.307 ns (1 allocation: 16 bytes)
-function vec_maximum(v::AbstractVector)
+function vec_maximum(v::AbstractArray)
     m = v[1]
     @inbounds for i in OneTo(length(v))
         if v[i] > m
