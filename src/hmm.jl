@@ -398,7 +398,7 @@ function statdists(hmm::AbstractHMM)
     eig = eigen(collect(transpose(hmm.A)))
     dists = []
     for (i, val) in enumerate(eig.values)
-        if val ? 1.0
+        if val ≈ 1.0
             dist = eig.vectors[:, i]
             dist /= sum(dist)
             push!(dists, dist)
