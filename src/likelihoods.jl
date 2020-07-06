@@ -1,17 +1,22 @@
 function loglikelihoods!(LL::AbstractArray, hmm::AbstractHMM{Univariate}, observations)
     T, K, N = size(observations, 1), size(hmm, 1), size(observations, 2)
     @argcheck size(LL) == (T, K, N)
-    @inbounds for i in OneTo(K), t in OneTo(T), n in OneTo(N)
-        LL[t, i, n] = logpdf(hmm.B[i], observations[t, n])
+    @inbounds for n in OneTo(N)
+        T = length(filter(!isnothing, observations[:, n]))
+        for i in OneTo(K), t in OneTo(T)
+            LL[t, i, n] = logpdf(hmm.B[i], observations[t, n])
+        end
     end
 end
 
-# haven't changed this yet.
-function loglikelihoods!(LL::AbstractMatrix, hmm::AbstractHMM{Multivariate}, observations)
-    T, K = size(observations, 1), size(hmm, 1)
-    @argcheck size(LL) == (T, K)
-    @inbounds for i in OneTo(K), t in OneTo(T)
-        LL[t, i] = logpdf(hmm.B[i], view(observations, t, :))
+function loglikelihoods!(LL::AbstractArray, hmm::AbstractHMM{Multivariate}, observations)
+    T, K, N = size(observations, 1), size(hmm, 1), size(observations, 3)
+    @argcheck size(LL) == (T, K, N)
+    @inbounds for n in OneTo(N)
+        T = length(filter(!isnothing, observations[:, n]))
+        for i in OneTo(K), t in OneTo(T)
+            LL[t, i, n] = logpdf(hmm.B[i], view(observations, t, :, n))
+        end
     end
 end
 
@@ -33,8 +38,8 @@ LL = likelihoods(hmm, y)
 """
 function loglikelihoods(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
-    T, K, N = size(observations, 1), size(hmm, 1), size(observations, 2)
-    LL = Array{Float64}(undef, T, K, N)
+    T, K, N = size(observations, 1), size(hmm, 1), last(size(y))
+    LL = Array{Union{Float64,Nothing}}(nothing, T, K, N)
 
     loglikelihoods!(LL, hmm, observations)
     if robust
