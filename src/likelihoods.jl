@@ -38,7 +38,7 @@ LL = likelihoods(hmm, y)
 """
 function loglikelihoods(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
-    T, K, N = size(observations, 1), size(hmm, 1), last(size(y))
+    T, K, N = size(observations, 1), size(hmm, 1), last(size(observations))
     LL = Array{Union{Float64,Nothing}}(nothing, T, K, N)
 
     loglikelihoods!(LL, hmm, observations)
