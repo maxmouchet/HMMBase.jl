@@ -29,8 +29,9 @@ function kmeans_init!(hmm::AbstractHMM{Multivariate}, observations; kwargs...)
     seq = Array{Union{Nothing, Int}}(nothing, size(observations, 1), last(size(observations)))
 
     for n in OneTo(N)
-        res = kmeans(filter(!isnothing, observations[:, :, n])', size(hmm, 1))
-        T = length(filter(!isnothing, observations[:, :, n]))
+        y_ = getnotnothing(observations[:, :, n])
+        res = kmeans(y_', size(hmm, 1))
+        T = size(y_, 1)
         seq[1:T, n] .= res.assignments
     end
 
@@ -40,7 +41,9 @@ function kmeans_init!(hmm::AbstractHMM{Multivariate}, observations; kwargs...)
 
     # # Initialize B
     for i in OneTo(K)
-        y_ = vcat(view(observations, seq .== i)...)
+        x1 = vcat(view(view(observations, :, 1, :), seq .== i)...)
+        x2 = vcat(view(view(observations, :, 2, :), seq .== i)...)
+        y_ = hcat(x1, x2)
         if length(y_) > 0
             hmm.B[i] = fit_mle(typeof(hmm.B[i]), permutedims(y_))
         end
