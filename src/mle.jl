@@ -80,7 +80,7 @@ function update_A!(
 end
 
 # In-place update of the observations distributions.
-function update_B!(B::AbstractVector, γ::AbstractArray, observations, estimator)
+function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArray, observations, estimator)
     @argcheck size(γ, 1) == size(observations, 1)
     @argcheck size(γ, 2) == size(B, 1)
     @argcheck size(γ, 3) == size(observations, 2)
@@ -96,14 +96,48 @@ function update_B!(B::AbstractVector, γ::AbstractArray, observations, estimator
             end
         end
     end
-
     for i in OneTo(K)
         if sum(filter(!isnothing, γ[:, i, :])) > 0
             responsibility = vcat(filter(!isnothing, γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
             B[i] = estimator(typeof(B[i]), vcat(filter(!isnothing, observations)...), responsibility)
         end
     end
+    # for i in OneTo(K)
+    #     if sum(getnotnothing(γ[:, i, :])) > 0
+    #         responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
+    #         B[i] = estimator(typeof(B[i]), vcat(getnotnothing(observations)...), responsibility)
+    #     end
+    # end
 end
+
+function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractArray, observations, estimator)
+        @argcheck size(γ, 1) == size(observations, 1)
+        @argcheck size(γ, 2) == size(B, 1)
+        @argcheck size(γ, 3) == size(observations, 2)
+
+        _, K, N = size(γ)
+        # TODO: change "total_γ" to more suitable name
+        total_γ = Vector{Float64}(undef, K)
+        for n in OneTo(N)
+            T = length(filter(!isnothing, γ[:, 1, n]))
+            for t in OneTo(T)
+                for i in OneTo(K)
+                    total_γ[i] +=  γ[t, i, n]
+                end
+            end
+        end
+
+        for i in OneTo(K)
+            if sum(getnotnothing(γ[:, :, i])) > 0
+                responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
+                B[i] = estimator(
+                    typeof(B[i]),
+                    reshape(hcat(permutedims(observations, [2,1,3])...), (2, size(observations, 1) * size(observations, 2))),
+                    responsibility
+                    )
+            end
+        end
+    end
 
 function fit_mle!(
     hmm::AbstractHMM,
