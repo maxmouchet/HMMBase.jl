@@ -102,12 +102,6 @@ function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArra
             B[i] = estimator(typeof(B[i]), vcat(filter(!isnothing, observations)...), responsibility)
         end
     end
-    # for i in OneTo(K)
-    #     if sum(getnotnothing(γ[:, i, :])) > 0
-    #         responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
-    #         B[i] = estimator(typeof(B[i]), vcat(getnotnothing(observations)...), responsibility)
-    #     end
-    # end
 end
 
 function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractArray, observations, estimator)
