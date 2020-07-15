@@ -107,7 +107,7 @@ end
 function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractArray, observations, estimator)
         @argcheck size(γ, 1) == size(observations, 1)
         @argcheck size(γ, 2) == size(B, 1)
-        @argcheck size(γ, 3) == size(observations, 2)
+        @argcheck size(γ, 3) == last(size(observations))
 
         _, K, N = size(γ)
         # TODO: change "total_γ" to more suitable name
@@ -126,7 +126,7 @@ function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractAr
                 responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
                 B[i] = estimator(
                     typeof(B[i]),
-                    reshape(hcat(permutedims(observations, [2,1,3])...), (2, size(observations, 1) * size(observations, 2))),
+                    reshape(hcat(permutedims(observations, [2,1,3])...), (2, size(observations, 1) * size(observations, 3))),
                     responsibility
                     )
             end
@@ -145,7 +145,7 @@ function fit_mle!(
     @argcheck display in [:none, :iter, :final]
     @argcheck maxiter >= 0
 
-    T, K, N = size(observations, 1), size(hmm, 1), size(observations, 2)
+    T, K, N = size(observations, 1), size(hmm, 1), last(size(observations))
     history = EMHistory(false, 0, [])
 
     # Allocate memory for in-place updates
