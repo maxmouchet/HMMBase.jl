@@ -126,9 +126,11 @@ function posteriors!(
             c = 0.0
             for i in OneTo(K)
                 γ[t, i, n] = α[t, i, n] * β[t, i, n]
+                # c += γ[t, i, n]
+            end
+            for i in OneTo(K)
                 c += γ[t, i, n]
             end
-
             for i in OneTo(K)
                 γ[t, i, n] /= c
             end
