@@ -4,6 +4,9 @@ function update_a!(a::AbstractVector, α, β)
     @argcheck size(α, 2) == size(β, 2) == size(a, 1)
     @argcheck size(α, 3) == size(β, 3)
 
+    #TODO: sometimes a becomes nan
+    println("alpha = $(extrema(α[1, :, :]))")
+    println("beta = $(extrema(β[1, :, :]))")
     K = length(a)
     c = 0.0
     _, K, N = size(α)
@@ -14,9 +17,11 @@ function update_a!(a::AbstractVector, α, β)
 #             c += a[i] # this didn't return the correcte value...why?
         end
     end
+    println("a = $a")
     for i in OneTo(K)
         c += a[i]
     end
+    println("c = $c")
     for i in OneTo(K)
         a[i] /= c
     end
@@ -87,7 +92,8 @@ function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArra
 
     _, K, N = size(γ)
     # TODO: change "total_γ" to more suitable name
-    total_γ = Vector{Float64}(undef, K)
+    # TODO: prevent γ falling to nan
+    total_γ = zeros(K)
     for n in OneTo(N)
         T = length(filter(!isnothing, γ[:, 1, n]))
         for t in OneTo(T)
@@ -97,9 +103,14 @@ function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArra
         end
     end
     for i in OneTo(K)
-        if sum(filter(!isnothing, γ[:, i, :])) > 0
+        γ_ = getnotnothing(γ[:, i, :])
+        if sum(filter(!isnothing, γ_)) > 0
             responsibility = vcat(filter(!isnothing, γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
-            B[i] = estimator(typeof(B[i]), vcat(filter(!isnothing, observations)...), responsibility)
+            B[i] = estimator(
+                typeof(B[i]),
+                hcat(filter(!isnothing, observations)...),
+                responsibility
+                )
         end
     end
 end
@@ -110,7 +121,6 @@ function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractAr
         @argcheck size(γ, 3) == last(size(observations))
 
         _, K, N = size(γ)
-        # TODO: change "total_γ" to more suitable name
         total_γ = Vector{Float64}(undef, K)
         for n in OneTo(N)
             T = length(filter(!isnothing, γ[:, 1, n]))
@@ -122,7 +132,7 @@ function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractAr
         end
 
         for i in OneTo(K)
-            if sum(getnotnothing(γ[:, :, i])) > 0
+            if sum(getnotnothing(γ[:, i, :])) > 0
                 responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
                 B[i] = estimator(
                     typeof(B[i]),
@@ -174,7 +184,6 @@ function fit_mle!(
         # this prevents case where there is no transitions
         # between two extremely likely observations.
         robust && (hmm.A .+= eps())
-
         @check isprobvec(hmm.a)
         @check istransmat(hmm.A)
 
@@ -240,3 +249,4 @@ function fit_mle(hmm::AbstractHMM, observations; init = :none, kwargs...)
     history = fit_mle!(hmm, observations; kwargs...)
     hmm, history
 end
+
