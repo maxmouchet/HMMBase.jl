@@ -186,13 +186,7 @@ function fit_mle!(
         robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
 
         forwardlog!(α, c, hmm.a, hmm.A, LL)
-        if any(isnan, α)
-            return α
-        end
         backwardlog!(β, c, hmm.a, hmm.A, LL)
-        if any(isnan, β)
-            return β
-        end
         posteriors!(γ, α, β)
 
         logtotp = sum(c)
