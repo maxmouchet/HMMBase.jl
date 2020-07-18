@@ -172,7 +172,6 @@ function fit_mle!(
     (display == :iter) && println("Iteration 0: logtot = $logtot")
 
     for it = 1:maxiter
-        println("hmm.a = $(hmm.a)")
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations, estimator)

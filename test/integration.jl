@@ -43,7 +43,7 @@ hmms = [
     @test size(zv1) == size(z)
 
     # MLE
-    if T > 2
+    if ((T > 2)&&(N > 2))
         hmm2, _ = fit_mle(hmm, y, maxiter = 1, display = :iter)
         @test size(hmm2) == size(hmm)
         @test typeof(hmm2) == typeof(hmm)
