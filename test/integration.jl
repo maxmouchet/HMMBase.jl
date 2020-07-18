@@ -6,27 +6,28 @@ using Random
 Random.seed!(2019)
 
 hmms = [
-    HMM([0.9 0.1; 0.1 0.9], [Normal(10, 1), Gamma(1, 1)]),
-    HMM([0.9 0.1; 0.1 0.9], [Categorical([0.1, 0.2, 0.7]), Categorical([0.5, 0.5])]),
-    HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0, 0.0], [1.0, 1.0]), MvNormal([10.0, 10.0], [1.0, 1.0])]),
+    HMM([0.8 0.2; 0.2 0.8], [Normal(10, 1), Gamma(1, 1)]),
+    HMM([0.8 0.2; 0.2 0.8], [Categorical([0.1, 0.2, 0.7]), Categorical([0.5, 0.5])]),
+    HMM([0.8 0.2; 0.2 0.8], [MvNormal([0.0, 0.0], [1.0, 1.0]), MvNormal([10.0, 10.0], [1.0, 1.0])]),
 ]
 
-@testset "Integration $(typeof(hmm))" for hmm in hmms, T in [0, 1, 1000]
+@testset "Integration $(typeof(hmm))" for hmm in hmms, T in [0, 1, 100], N in [0, 1, 100]
     K = size(hmm, 1)
 
     # HMM API
     @test hmm !== copy(hmm)
 
-    z, y = rand(hmm, T, seq = true)
+    z, y = rand(hmm, T, N, seq = true)
     @test size(z, 1) == size(y, 1)
-    @test size(y, 2) == size(hmm, 2)
+    @test size(z, 2) == last(size(y))
+    ((ndims(y) > 2) && (N >= 1)) && (@test size(y, 2) == size(hmm, 2))
 
-    yp = rand(hmm, z)
+    y = rand(hmm, z)
     @test size(z, 1) == size(y, 1)
-    @test size(y, 2) == size(hmm, 2)
+    ((ndims(y) > 2) && (N >= 1)) && (@test size(y, 2) == size(hmm, 2))
 
     LL = loglikelihoods(hmm, y)
-    @test size(LL) == (T, K)
+    @test size(LL) == (T, K, N)
 
     # Forward/Backward
     α1, logtot1 = forward(hmm, y)
@@ -38,7 +39,7 @@ hmms = [
     @test logtot1 ≈ logtot2 ≈ logtot3
 
     # Viterbi
-    zv1 = viterbi(hmm, y)
+    zv1, _ = viterbi(hmm, y)
     @test size(zv1) == size(z)
 
     # MLE
