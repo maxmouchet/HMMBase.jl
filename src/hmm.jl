@@ -174,7 +174,7 @@ function rand(
 )
     z = Matrix{Int}(undef, T, N)
     (N == 1) && (z = Matrix(z))
-    (T >= 1) && (z[1, :] = init)
+    (T >= 1) && (z[1, :] .= init)
     for n = 1:N
         for t = 2:T
             z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))

@@ -5,8 +5,6 @@ function update_a!(a::AbstractVector, α, β)
     @argcheck size(α, 3) == size(β, 3)
 
     #TODO: sometimes a becomes nan
-    println("alpha = $(extrema(α[1, :, :]))")
-    println("beta = $(extrema(β[1, :, :]))")
     K = length(a)
     c = 0.0
     _, K, N = size(α)
@@ -17,11 +15,9 @@ function update_a!(a::AbstractVector, α, β)
 #             c += a[i] # this didn't return the correcte value...why?
         end
     end
-    println("a = $a")
     for i in OneTo(K)
         c += a[i]
     end
-    println("c = $c")
     for i in OneTo(K)
         a[i] /= c
     end
@@ -92,7 +88,6 @@ function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArra
 
     _, K, N = size(γ)
     # TODO: change "total_γ" to more suitable name
-    # TODO: prevent γ falling to nan
     total_γ = zeros(K)
     for n in OneTo(N)
         T = length(filter(!isnothing, γ[:, 1, n]))
@@ -177,6 +172,7 @@ function fit_mle!(
     (display == :iter) && println("Iteration 0: logtot = $logtot")
 
     for it = 1:maxiter
+        println("hmm.a = $(hmm.a)")
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations, estimator)
@@ -191,7 +187,13 @@ function fit_mle!(
         robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
 
         forwardlog!(α, c, hmm.a, hmm.A, LL)
+        if any(isnan, α)
+            return α
+        end
         backwardlog!(β, c, hmm.a, hmm.A, LL)
+        if any(isnan, β)
+            return β
+        end
         posteriors!(γ, α, β)
 
         logtotp = sum(c)
