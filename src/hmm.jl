@@ -46,14 +46,17 @@ struct HMM{F,T} <: AbstractHMM{F}
     HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B)
 end
 
-HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
-    HMM{F,T}(a, A, B)
+HMM(
+    a::AbstractVector{T},
+    A::AbstractMatrix{T},
+    B::AbstractVector{<:Distribution{F}},
+) where {F,T} = HMM{F,T}(a, A, B)
 
 HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
     HMM{F,T}(ones(size(A)[1]) / size(A)[1], A, B)
 
 function HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractMatrix) where {T}
-    B = map(i -> Categorical(B[i,:]), 1:size(B,1))
+    B = map(i -> Categorical(B[i, :]), 1:size(B, 1))
     HMM{Univariate,T}(a, A, B)
 end
 
@@ -87,7 +90,8 @@ issquare(A::AbstractMatrix) = size(A, 1) == size(A, 2)
 
 Return true if `A` is square and its rows sums to 1.
 """
-istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i, :]) for i = 1:size(A, 1)])
+istransmat(A::AbstractMatrix) =
+    issquare(A) && all([isprobvec(A[i, :]) for i = 1:size(A, 1)])
 
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
@@ -155,7 +159,6 @@ y = rand(hmm, 1000) # or
 z, y = rand(hmm, 1000, 2, seq = true)
 size(y) # (1000, 2)
 ```
-
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
@@ -200,30 +203,22 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-function rand(
-    rng::AbstractRNG,
-    hmm::AbstractHMM{Univariate},
-    z::AbstractArray{<:Integer},
-    )
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractArray{<:Integer})
     T, N = size(z, 1), size(z, 2)
     y = Array{Float64}(undef, T, N)
-    for n in 1:N
-        for t in 1:T
+    for n = 1:N
+        for t = 1:T
             y[t, n] = rand(rng, hmm.B[z[t, n]])
         end
     end
     y
 end
 
-function rand(
-    rng::AbstractRNG,
-    hmm::AbstractHMM{Multivariate},
-    z::AbstractArray{<:Integer},
-    )
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractArray{<:Integer})
     T, N = size(z, 1), size(z, 2)
     y = Array{Float64}(undef, size(z, 1), size(hmm, 2), size(z, 2))
-    for n in 1:N
-        for t in 1:T
+    for n = 1:N
+        for t = 1:T
             y[t, :, n] = rand(rng, hmm.B[z[t, n]])
         end
     end
@@ -233,10 +228,11 @@ end
 """
     rand([rng, ]hmm, d, N; seq) -> Array
 
-Sample observations from `hmm` according to random trajectory sampled from `d`.
+Sample observations from `hmm` according to random observation length sampled from univariate discrete distribution `d`.
 
 **Output**
-- `Array{Float64}` (for `Univariate` HMMs): observations (`maximun(rand(d, N)) x N`).
+- `Array{Float64}` (for `Univariate` HMMs): observations (`maximum(rand(d, N)) x N`).
+- `Array{Float64}` (for `Multivariate` HMMs): observations (`maximum(rand(d, N)) x dim(obs) x N`).
 
 **Examples**
 ```julia
@@ -244,15 +240,16 @@ using Distributions, HMMBase, Random
 Random.seed!(1234)
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, Poisson(10), 2) # or
+# size(y) == (12, 2)
 z, y = rand(hmm, Poisson(10), 2, seq = true)
-size(y) #(12, 2)
+size(y) #(9, 2)
 ```
-
 ```julia
 using Distributions, HMMBase, Random
 Random.seed!(1234)
 hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
 y = rand(hmm, Poisson(10), 3) # or
+# size(y) == (12, 2, 3)
 z, y = rand(hmm, Poisson(10), 3, seq = true)
 size(y) #(10, 2, 3)
 ```
@@ -263,11 +260,11 @@ function rand(
     d::DiscreteUnivariateDistribution,
     N::Integer;
     seq = false,
-    )
+)
     length_observations = generate_random_lengths(d, N)
     T = maximum(length_observations)
-    z = Matrix{Union{Nothing, Int}}(nothing, T, N)
-    y = Matrix{Union{Nothing, Float64}}(nothing, T, N)
+    z = Matrix{Union{Nothing,Int}}(nothing, T, N)
+    y = Matrix{Union{Nothing,Float64}}(nothing, T, N)
     for n = 1:N
         z[1, n] = rand(rng, Categorical(hmm.a))
         y[1, n] = rand(rng, hmm.B[z[1, n]])
@@ -287,12 +284,12 @@ function rand(
     d::DiscreteUnivariateDistribution,
     N::Integer;
     seq = false,
-    )
+)
     length_observations = generate_random_lengths(d, N)
     T = maximum(length_observations)
-    z = Matrix{Union{Nothing, Int}}(nothing, T, N)
+    z = Matrix{Union{Nothing,Int}}(nothing, T, N)
     dimension = size(hmm, 2)
-    y = Array{Union{Nothing, Float64}}(nothing, T, dimension, N)
+    y = Array{Union{Nothing,Float64}}(nothing, T, dimension, N)
     for n = 1:N
         z[1, n] = rand(rng, Categorical(hmm.a))
         y[1, :, n] = rand(rng, hmm.B[z[1, n]])
@@ -407,9 +404,13 @@ function statdists(hmm::AbstractHMM)
     dists
 end
 
-function generate_random_lengths(
-    d::DiscreteUnivariateDistribution,
-    N::Integer
-    )
+"""
+    generate_random_lengths(d, N) -> Vector{Int}
+
+Return the vector{Int} of random number sampled from univariate discrete distribution `d`.
+N must be larger than 1.
+"""
+function generate_random_lengths(d::DiscreteUnivariateDistribution, N::Integer)
+    @argcheck N >= 1
     observations_length = rand(d, N)
 end
