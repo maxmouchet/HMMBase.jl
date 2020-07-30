@@ -156,6 +156,15 @@ function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl =
     m, sum(c)
 end
 
+function forward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl = nothing)
+    (logl !== nothing) && deprecate_kwargs("logl")
+    m = Matrix{Float64}(undef, size(LL))
+    c = Vector{Float64}(undef, size(LL, 1))
+    forwardlog!(m, c, a, A, LL)
+    m, sum(c)
+end
+
+
 """
     backward(a, A, LL) -> (Array, Float)
 
@@ -175,12 +184,12 @@ function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl 
 end
 
 """
-    forward(hmm, observations; robust) -> (Vector, Float)
+    forward(hmm, observations; robust) -> (Array, Float)
 
 Compute forward probabilities of the `observations` given the `hmm` model.
 
 **Output**
-- `Array{Float64}`: forward probabilities.
+- `Array{Union{Nothing, Float64}, 3}`: forward probabilities.
 - `Float64`: log-likelihood of the observed sequence.
 
 **Example**
@@ -198,12 +207,12 @@ function forward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
 end
 
 """
-    backward(hmm, observations; robust) -> (Vector, Float)
+    backward(hmm, observations; robust) -> (Array, Float)
 
 Compute forward probabilities of the `observations` given the `hmm` model.
 
 **Output**
-- `Vector{Float64}`: backward probabilities.
+- `Array{Union{Nothing, Float64}, 3}`: backward probabilities.
 - `Float64`: log-likelihood of the observed sequence.
 
 **Example**
@@ -211,7 +220,7 @@ Compute forward probabilities of the `observations` given the `hmm` model.
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, 1000)
-probs, tot = forward(hmm, y)
+probs, tot = backward(hmm, y)
 ```
 """
 function backward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
@@ -221,13 +230,13 @@ function backward(hmm::AbstractHMM, observations; logl = nothing, robust = false
 end
 
 """
-    posteriors(α, β) -> Vector
+    posteriors(α, β) -> Array
 
 Compute posterior probabilities from `α` and `β`.
 
 **Arguments**
-- `α::AbstractVector`: forward probabilities.
-- `β::AbstractVector`: backward probabilities.
+- `α::AbstractArray`: forward probabilities.
+- `β::AbstractArray`: backward probabilities.
 """
 function posteriors(α::AbstractArray, β::AbstractArray)
     γ = Array{Union{Nothing,Float64}}(nothing, size(α))
@@ -236,7 +245,7 @@ function posteriors(α::AbstractArray, β::AbstractArray)
 end
 
 """
-    posteriors(a, A, LL; kwargs...) -> Vector
+    posteriors(a, A, LL; kwargs...) -> Array
 
 Compute posterior probabilities using samples likelihoods.
 """
@@ -247,7 +256,7 @@ function posteriors(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; kwa
 end
 
 """
-    posteriors(hmm, observations; robust) -> Vector
+    posteriors(hmm, observations; robust) -> Array
 
 Compute posterior probabilities using samples likelihoods.
 
@@ -255,7 +264,7 @@ Compute posterior probabilities using samples likelihoods.
 ```julia
 using Distributions, HMMBase
 hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
-y = rand(hmm, 1000)
+y = rand(hmm, 1000, 2)
 γ = posteriors(hmm, y)
 ```
 """
@@ -286,4 +295,53 @@ loglikelihood(hmm, [0.15, 0.10, 1.35])
 function loglikelihood(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     forward(hmm, observations, robust = robust)[2]
+end
+
+# Temporarily added to ensure that loglikelihood(hmm, [0.15, 0.10, 1.35]) moves
+function forwardlog!(
+    α::AbstractMatrix,
+    c::AbstractVector,
+    a::AbstractVector,
+    A::AbstractMatrix,
+    LL::AbstractMatrix,
+)
+    @argcheck size(α, 1) == size(LL, 1) == size(c, 1)
+    @argcheck size(α, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
+
+    T, K = size(LL)
+    (T == 0) && return
+
+    fill!(α, 0.0)
+    fill!(c, 0.0)
+
+    m = vec_maximum(view(LL, 1, :))
+
+    for j in OneTo(K)
+        α[1, j] = a[j] * exp(LL[1, j] - m)
+        c[1] += α[1, j]
+    end
+
+    for j in OneTo(K)
+        α[1, j] /= c[1]
+    end
+
+    c[1] = log(c[1]) + m
+
+    @inbounds for t = 2:T
+        m = vec_maximum(view(LL, t, :))
+
+        for j in OneTo(K)
+            for i in OneTo(K)
+                α[t, j] += α[t-1, i] * A[i, j]
+            end
+            α[t, j] *= exp(LL[t, j] - m)
+            c[t] += α[t, j]
+        end
+
+        for j in OneTo(K)
+            α[t, j] /= c[t]
+        end
+
+        c[t] = log(c[t]) + m
+    end
 end
