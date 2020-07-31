@@ -154,16 +154,15 @@ function fit_mle!(
     history = EMHistory(false, 0, [])
 
     # Allocate memory for in-place updates
-    c = zeros(T, N)
-    α = zeros(T, K, N)
-    β = zeros(T, K, N)
-    γ = zeros(T, K, N)
-    ξ = zeros(T, K, K, N)
-    LL = zeros(T, K, N)
+    c = Matrix{Union{Nothing, Float64}}(undef, T, N)
+    α = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    β = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    γ = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    ξ = Array{Union{Nothing, Float64}}(undef, T, K, K, N)
+    LL = Array{Union{Nothing, Float64}}(undef, T, K, N)
 
     loglikelihoods!(LL, hmm, observations)
     robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
-
     forwardlog!(α, c, hmm.a, hmm.A, LL)
     backwardlog!(β, c, hmm.a, hmm.A, LL)
     posteriors!(γ, α, β)
