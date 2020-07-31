@@ -106,7 +106,7 @@ function backwardlog!(
         c[1, n] = log(c[1, n]) + m
         for t = T+1:size(LL, 1)
             for j in OneTo(K)
-            β[t, j, n] = nothing
+                β[t, j, n] = nothing
             end
         end
     end
