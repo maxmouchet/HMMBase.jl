@@ -29,7 +29,7 @@ function kmeans_init!(hmm::AbstractHMM{Multivariate}, observations; kwargs...)
     seq = Array{Union{Nothing, Int}}(nothing, size(observations, 1), last(size(observations)))
 
     for n in OneTo(N)
-        y_ = getnotnothing(observations[:, :, n])
+        y_ = remove_nothing(observations[:, :, n])
         res = kmeans(y_', size(hmm, 1))
         T = size(y_, 1)
         seq[1:T, n] .= res.assignments

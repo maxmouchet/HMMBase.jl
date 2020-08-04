@@ -136,6 +136,6 @@ function vec_maximum(v::AbstractArray)
     m
 end
 
-function getnotnothing(x::AbstractArray)
+function remove_nothing(x::AbstractMatrix)
     x[.!any.(isnothing, eachrow(x)), :]
 end

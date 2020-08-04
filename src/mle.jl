@@ -98,7 +98,7 @@ function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArra
         end
     end
     for i in OneTo(K)
-        γ_ = getnotnothing(γ[:, i, :])
+        γ_ = remove_nothing(γ[:, i, :])
         if sum(filter(!isnothing, γ_)) > 0
             responsibility = vcat(filter(!isnothing, γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
             B[i] = estimator(
@@ -127,8 +127,8 @@ function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractAr
         end
 
         for i in OneTo(K)
-            if sum(getnotnothing(γ[:, i, :])) > 0
-                responsibility = vcat(getnotnothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
+            if sum(remove_nothing(γ[:, i, :])) > 0
+                responsibility = vcat(remove_nothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
                 B[i] = estimator(
                     typeof(B[i]),
                     reshape(hcat(permutedims(observations, [2,1,3])...), (2, size(observations, 1) * size(observations, 3))),
