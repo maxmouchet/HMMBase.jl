@@ -138,7 +138,7 @@ function rand(
 end
 
 """
-    rand([rng, ]hmm, T, N; init, seq) -> Array | (Vector, Array)
+    rand([rng, ]hmm, T, N; init, seq) -> Array | (Matrix, Array)
 
 Sample a trajectory of `T` timesteps from `hmm`.
 
@@ -147,7 +147,7 @@ Sample a trajectory of `T` timesteps from `hmm`.
 - `seq::Bool = false`: whether to return the hidden state sequence or not.
 
 **Output**
-- `Array{Int}` (if `seq == true`): hidden state sequence.
+- `Matrix{Int}` (if `seq == true`): hidden state sequence.
 - `Array{Float64}` (for `Univariate` HMMs): observations (`T x N`).
 - `Array{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs) x N`).
 
@@ -226,13 +226,18 @@ function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractArray
 end
 
 """
-    rand([rng, ]hmm, d, N; seq) -> Array
+    rand([rng, ]hmm, d, N; init, seq) -> Array | (Matrix, Array)
 
-Sample observations from `hmm` according to random observation length sampled from univariate discrete distribution `d`.
+Sample trajectories from `hmm` according to random observation length sampled from univariate discrete distribution `d`.
+
+**Keyword Arguments**
+- `init::Integer = rand(Categorical(hmm.a), N)`: initial state.
+- `seq::Bool = false`: whether to return the hidden state sequence or not.
 
 **Output**
-- `Array{Float64}` (for `Univariate` HMMs): observations (`maximum(rand(d, N)) x N`).
-- `Array{Float64}` (for `Multivariate` HMMs): observations (`maximum(rand(d, N)) x dim(obs) x N`).
+- `Matrix{Int}` (if `seq == true`): hidden state sequence.
+- `Array{Float64}` (for `Univariate` HMMs): observations (`T x N`).
+- `Array{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs) x N`).
 
 **Examples**
 ```julia
@@ -303,7 +308,91 @@ function rand(
     seq ? (z, y) : y
 end
 
-rand(hmm::AbstractHMM, T::Integer; kwargs...) = rand(GLOBAL_RNG, hmm, T; kwargs...)
+"""
+    rand([rng, ]hmm, r, N; init, seq) -> Array | (Matrix, Array)
+
+Sample trajectories from `hmm` according to random observation length in range of `r`.
+
+**Keyword Arguments**
+- `init::Integer = rand(Categorical(hmm.a), N)`: initial state.
+- `seq::Bool = false`: whether to return the hidden state sequence or not.
+
+**Output**
+- `Matrix{Int}` (if `seq == true`): hidden state sequence.
+- `Array{Float64}` (for `Univariate` HMMs): observations (`T x N`).
+- `Array{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs) x N`).
+
+**Examples**
+```julia
+using Distributions, HMMBase, Random
+Random.seed!(1234)
+hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
+y = rand(hmm, 1:100, 2) # or
+# size(y) == (76, 2, 2)
+z, y = rand(hmm, 1:100, 2, seq = true)
+size(y) # (76, 2, 2)
+```
+```julia
+using Distributions, HMMBase, Random
+Random.seed!(1234)
+hmm = HMM([0.9 0.1; 0.1 0.9], [MvNormal(ones(2)), MvNormal(ones(2))])
+y = rand(hmm, Poisson(10), 3) # or
+# size(y) == (12, 2, 3)
+z, y = rand(hmm, Poisson(10), 3, seq = true)
+size(y) #(10, 2, 3)
+```
+"""
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Univariate},
+    r::UnitRange{Int},
+    N::Integer;
+    seq = false,
+)
+    length_observations = rand(r, N)
+    T = maximum(length_observations)
+    z = Matrix{Union{Nothing,Int}}(nothing, T, N)
+    y = Matrix{Union{Nothing,Float64}}(nothing, T, N)
+    for n = 1:N
+        z[1, n] = rand(rng, Categorical(hmm.a))
+        y[1, n] = rand(rng, hmm.B[z[1, n]])
+        for t = 2:T
+            if t <= length_observations[n]
+                z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+                y[t, n] = rand(rng, hmm.B[z[t, n]])
+            end
+        end
+    end
+    seq ? (z, y) : y
+end
+
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Multivariate},
+    r::UnitRange{Int},
+    N::Integer;
+    seq = false,
+)
+    length_observations = rand(r, N)
+    T = maximum(length_observations)
+    z = Matrix{Union{Nothing,Int}}(nothing, T, N)
+    dimension = size(hmm, 2)
+    y = Array{Union{Nothing,Float64}}(nothing, T, dimension, N)
+    for n = 1:N
+        z[1, n] = rand(rng, Categorical(hmm.a))
+        y[1, :, n] = rand(rng, hmm.B[z[1, n]])
+        for t = 2:T
+            if t <= length_observations[n]
+                z[t, n] = rand(rng, Categorical(hmm.A[z[t-1, n], :]))
+                y[t, :, n] = rand(rng, hmm.B[z[t, n]])
+            end
+        end
+    end
+    seq ? (z, y) : y
+end
+
+rand(hmm::AbstractHMM, T::Integer; kwargs...) =
+    rand(GLOBAL_RNG, hmm, T; kwargs...)
 
 rand(hmm::AbstractHMM, T::Integer, N::Integer; kwargs...) =
     rand(GLOBAL_RNG, hmm, T, N; kwargs...)
@@ -313,6 +402,12 @@ rand(hmm::AbstractHMM, z::AbstractArray{<:Integer}) =
 
 rand(hmm::AbstractHMM, d::DiscreteUnivariateDistribution, N::Integer; kwargs...) =
     rand(GLOBAL_RNG, hmm, d, N; kwargs...)
+
+rand(hmm::AbstractHMM, r::UnitRange{Int}; kwargs...) =
+    rand(GLOBAL_RNG, hmm, r, 1; kwargs...)
+
+rand(hmm::AbstractHMM, r::UnitRange{Int}, N::Integer; kwargs...) =
+    rand(GLOBAL_RNG, hmm, r, N; kwargs...)
 
 """
     size(hmm, [dim]) -> Int | Tuple
@@ -413,4 +508,8 @@ N must be larger than 1.
 function generate_random_lengths(d::DiscreteUnivariateDistribution, N::Integer)
     @argcheck N >= 1
     observations_length = rand(d, N)
+end
+
+function generate_random_lengths(N::Integer; lb::Integer = 1, ub::Integer = 100)
+    rand(lb:ub, N)
 end
