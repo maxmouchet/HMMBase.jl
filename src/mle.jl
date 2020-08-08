@@ -128,12 +128,13 @@ function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractAr
 
         for i in OneTo(K)
             if sum(remove_nothing(γ[:, i, :])) > 0
-                responsibility = vcat(remove_nothing(γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
-                B[i] = estimator(
-                    typeof(B[i]),
-                    reshape(hcat(permutedims(observations, [2,1,3])...), (2, size(observations, 1) * size(observations, 3))),
-                    responsibility
-                    )
+                responsibility = filter(!isnothing, vcat(γ[:, i, :]...)) .* total_γ[i] ./ total_γ[i]
+                observations_ = reshape(
+                                    filter(!isnothing, hcat(permutedims(observations, [2,1,3])...)),
+                                    (2, length(responsibility))
+                                )
+                observations_ = convert.(Float64, observations_)
+                B[i] = estimator(typeof(B[i]), observations_, responsibility)
             end
         end
     end

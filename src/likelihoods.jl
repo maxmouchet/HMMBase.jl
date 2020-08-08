@@ -13,7 +13,7 @@ function loglikelihoods!(LL::AbstractArray, hmm::AbstractHMM{Multivariate}, obse
     T, K, N = size(observations, 1), size(hmm, 1), size(observations, 3)
     @argcheck size(LL) == (T, K, N)
     @inbounds for n in OneTo(N)
-        T = length(filter(!isnothing, observations[:, n]))
+        T = size(remove_nothing(observations[:, :, n]), 1)
         for i in OneTo(K), t in OneTo(T)
             LL[t, i, n] = logpdf(hmm.B[i], view(observations, t, :, n))
         end
