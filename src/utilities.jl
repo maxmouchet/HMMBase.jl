@@ -136,6 +136,32 @@ function vec_maximum(v::AbstractArray)
     m
 end
 
-function remove_nothing(x::AbstractMatrix)
+"""
+    remove_nothing(observations) -> Array
+
+Remove nothing from the array.
+*Example*
+```julia
+x = [
+    -0.240487   1.72634
+    -0.946312   0.915657
+    0.497511   3.77469
+    -1.63141    1.31983
+    nothing    nothing
+    nothing    nothing
+    nothing    nothing
+    nothing    nothing
+]
+remove_nothing(x)
+# x = [
+#     -0.240487   1.72634
+#     -0.946312   0.915657
+#     0.497511   3.77469
+#     -1.63141    1.31983
+# ]
+```
+"""
+# https://discourse.julialang.org/t/a-good-way-to-filter-an-array-with-keeping-its-dimension/42603
+function remove_nothing(x::AbstractArray)
     x[.!any.(isnothing, eachrow(x)), :]
 end
