@@ -1,16 +1,23 @@
 # In-place update of the initial state distribution.
-function update_a!(a::AbstractVector, α::AbstractMatrix, β::AbstractMatrix)
+function update_a!(a::AbstractVector, α, β)
     @argcheck size(α, 1) == size(β, 1)
     @argcheck size(α, 2) == size(β, 2) == size(a, 1)
+    @argcheck size(α, 3) == size(β, 3)
 
+    #TODO: sometimes a becomes nan
     K = length(a)
     c = 0.0
-
+    _, K, N = size(α)
+    fill!(a, 0.0)
+    for n in OneTo(N)
+        for i in OneTo(K)
+            a[i] += α[1, i, n] * β[1, i, n]
+#             c += a[i] # this didn't return the correcte value...why?
+        end
+    end
     for i in OneTo(K)
-        a[i] = α[1, i] * β[1, i]
         c += a[i]
     end
-
     for i in OneTo(K)
         a[i] /= c
     end
@@ -20,9 +27,9 @@ end
 function update_A!(
     A::AbstractMatrix,
     ξ::AbstractArray,
-    α::AbstractMatrix,
-    β::AbstractMatrix,
-    LL::AbstractMatrix,
+    α::AbstractArray,
+    β::AbstractArray,
+    LL::AbstractArray,
 )
     @argcheck size(α, 1) == size(β, 1) == size(LL, 1) == size(ξ, 1)
     @argcheck size(α, 2) ==
@@ -32,52 +39,105 @@ function update_A!(
               size(A, 2) ==
               size(ξ, 2) ==
               size(ξ, 3)
+    @argcheck size(α, 3) == size(β, 3) == size(ξ, 4) == size(LL, 3)
 
-    T, K = size(LL)
+    _, K, N = size(LL)
+    @inbounds for n in OneTo(N)
+        T = length(filter(!isnothing, α[:, 1, n]))
+        for t in OneTo(T - 1)
+            m = maximum(view(LL, t+1, :, n))
+            c = 0.0
 
-    @inbounds for t in OneTo(T - 1)
-        m = vec_maximum(view(LL, t + 1, :))
-        c = 0.0
-
-        for i in OneTo(K), j in OneTo(K)
-            ξ[t, i, j] = α[t, i] * A[i, j] * exp(LL[t+1, j] - m) * β[t+1, j]
-            c += ξ[t, i, j]
-        end
-
-        for i in OneTo(K), j in OneTo(K)
-            ξ[t, i, j] /= c
+            for i in OneTo(K), j in OneTo(K)
+                ξ[t, i, j, n] = α[t, i, n] * A[i, j] * exp(LL[t+1, j, n] - m) * β[t+1, j, n]
+                c += ξ[t, i, j, n]
+            end
+            for i in OneTo(K), j in OneTo(K)
+                c += ξ[t, i, j, n]
+            end
+            for i in OneTo(K), j in OneTo(K)
+                ξ[t, i, j, n] /= c
+            end
         end
     end
 
     fill!(A, 0.0)
+    @inbounds for n in OneTo(N)
+        T = length(filter(!isnothing, α[:, 1, n]))
+        for i in OneTo(K)
+            c = 0.0
 
-    @inbounds for i in OneTo(K)
-        c = 0.0
-
-        for j in OneTo(K)
-            for t in OneTo(T - 1)
-                A[i, j] += ξ[t, i, j]
+            for j in OneTo(K)
+                for t in OneTo(T - 1)
+                    A[i, j] += ξ[t, i, j, n]
+                end
+                c += A[i, j]
             end
-            c += A[i, j]
-        end
-
-        for j in OneTo(K)
-            A[i, j] /= c
+            for j in OneTo(K)
+                A[i, j] /= c
+            end
         end
     end
 end
 
 # In-place update of the observations distributions.
-function update_B!(B::AbstractVector, γ::AbstractMatrix, observations, estimator)
+function update_B!(B::AbstractVector{Distribution{Univariate}}, γ::AbstractArray, observations, estimator)
     @argcheck size(γ, 1) == size(observations, 1)
     @argcheck size(γ, 2) == size(B, 1)
-    K = length(B)
+    @argcheck size(γ, 3) == size(observations, 2)
+
+    _, K, N = size(γ)
+    # TODO: change "total_γ" to more suitable name
+    total_γ = zeros(K)
+    for n in OneTo(N)
+        T = length(filter(!isnothing, γ[:, 1, n]))
+        for t in OneTo(T)
+            for i in OneTo(K)
+                total_γ[i] +=  γ[t, i, n]
+            end
+        end
+    end
     for i in OneTo(K)
-        if sum(γ[:, i]) > 0
-            B[i] = estimator(typeof(B[i]), permutedims(observations), γ[:, i])
+        γ_ = remove_nothing(γ[:, i, :])
+        if sum(filter(!isnothing, γ_)) > 0
+            responsibility = vcat(filter(!isnothing, γ[:, i, :]) .* total_γ[i] ./ total_γ[i]...)
+            B[i] = estimator(
+                typeof(B[i]),
+                hcat(filter(!isnothing, observations)...),
+                responsibility
+                )
         end
     end
 end
+
+function update_B!(B::AbstractVector{Distribution{Multivariate}}, γ::AbstractArray, observations, estimator)
+        @argcheck size(γ, 1) == size(observations, 1)
+        @argcheck size(γ, 2) == size(B, 1)
+        @argcheck size(γ, 3) == last(size(observations))
+
+        _, K, N = size(γ)
+        total_γ = Vector{Float64}(undef, K)
+        for n in OneTo(N)
+            T = length(filter(!isnothing, γ[:, 1, n]))
+            for t in OneTo(T)
+                for i in OneTo(K)
+                    total_γ[i] +=  γ[t, i, n]
+                end
+            end
+        end
+
+        for i in OneTo(K)
+            if sum(remove_nothing(γ[:, i, :])) > 0
+                responsibility = filter(!isnothing, vcat(γ[:, i, :]...)) .* total_γ[i] ./ total_γ[i]
+                observations_ = reshape(
+                                    filter(!isnothing, hcat(permutedims(observations, [2,1,3])...)),
+                                    (2, length(responsibility))
+                                )
+                observations_ = convert.(Float64, observations_)
+                B[i] = estimator(typeof(B[i]), observations_, responsibility)
+            end
+        end
+    end
 
 function fit_mle!(
     hmm::AbstractHMM,
@@ -91,20 +151,19 @@ function fit_mle!(
     @argcheck display in [:none, :iter, :final]
     @argcheck maxiter >= 0
 
-    T, K = size(observations, 1), size(hmm, 1)
+    T, K, N = size(observations, 1), size(hmm, 1), last(size(observations))
     history = EMHistory(false, 0, [])
 
     # Allocate memory for in-place updates
-    c = zeros(T)
-    α = zeros(T, K)
-    β = zeros(T, K)
-    γ = zeros(T, K)
-    ξ = zeros(T, K, K)
-    LL = zeros(T, K)
+    c = Matrix{Union{Nothing, Float64}}(undef, T, N)
+    α = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    β = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    γ = Array{Union{Nothing, Float64}}(undef, T, K, N)
+    ξ = Array{Union{Nothing, Float64}}(undef, T, K, K, N)
+    LL = Array{Union{Nothing, Float64}}(undef, T, K, N)
 
     loglikelihoods!(LL, hmm, observations)
     robust && replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
-
     forwardlog!(α, c, hmm.a, hmm.A, LL)
     backwardlog!(β, c, hmm.a, hmm.A, LL)
     posteriors!(γ, α, β)
@@ -116,12 +175,10 @@ function fit_mle!(
         update_a!(hmm.a, α, β)
         update_A!(hmm.A, ξ, α, β, LL)
         update_B!(hmm.B, γ, observations, estimator)
-
         # Ensure the "connected-ness" of the states,
         # this prevents case where there is no transitions
         # between two extremely likely observations.
         robust && (hmm.A .+= eps())
-
         @check isprobvec(hmm.a)
         @check istransmat(hmm.A)
 
@@ -187,3 +244,4 @@ function fit_mle(hmm::AbstractHMM, observations; init = :none, kwargs...)
     history = fit_mle!(hmm, observations; kwargs...)
     hmm, history
 end
+

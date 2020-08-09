@@ -15,21 +15,22 @@ The labels must be positive integer.
 - `Dict{Integer,Integer}`: the mapping between the original and the new labels.
 - `Matrix{Float64}`: the transition matrix.
 """
-function gettransmat(seq::Vector{<:Integer}; relabel = false)
-    @argcheck all(seq .>= 0)
+function gettransmat(seq::Array; relabel = false)
+    @argcheck all(filter(!isnothing, seq) .>= 0)
 
     if relabel
         # /!\ Sort is important here, so that we don't relabel already contiguous states.
         mapping = Dict(old => new for (new, old) in enumerate(sort(unique(seq))))
     else
         mapping = Dict(old => old for old in unique(seq))
+        delete!(mapping, nothing)
     end
 
     (length(mapping) == 0) && return mapping, Float64[]
     K = maximum(values(mapping))
 
     transmat = zeros(K, K)
-    for i = 1:length(seq)-1
+    for i = 1:length(filter(!isnothing, seq))-1
         transmat[mapping[seq[i]], mapping[seq[i+1]]] += 1
     end
     transmat = transmat ./ sum(transmat, dims = 2)
@@ -125,7 +126,7 @@ end
 # @btime vec_maximum(v)
 #   63.909 ns (1 allocation: 16 bytes)
 #   30.307 ns (1 allocation: 16 bytes)
-function vec_maximum(v::AbstractVector)
+function vec_maximum(v::AbstractArray)
     m = v[1]
     @inbounds for i in OneTo(length(v))
         if v[i] > m
@@ -134,3 +135,35 @@ function vec_maximum(v::AbstractVector)
     end
     m
 end
+
+"""
+    remove_nothing(observations) -> Array
+
+Remove nothing from the array.
+*Example*
+```julia
+x = [
+    -0.240487   1.72634
+    -0.946312   0.915657
+    0.497511   3.77469
+    -1.63141    1.31983
+    nothing    nothing
+    nothing    nothing
+    nothing    nothing
+    nothing    nothing
+]
+remove_nothing(x)
+# x = [
+#     -0.240487   1.72634
+#     -0.946312   0.915657
+#     0.497511   3.77469
+#     -1.63141    1.31983
+# ]
+```
+"""
+# https://discourse.julialang.org/t/a-good-way-to-filter-an-array-with-keeping-its-dimension/42603
+function remove_nothing(x::AbstractArray)
+    x[.!any.(isnothing, eachrow(x)), :]
+end
+
+add_dim(x::AbstractVecOrMat) = reshape(x, (size(x)...,1))
