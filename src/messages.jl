@@ -203,6 +203,7 @@ probs, tot = forward(hmm, y)
 function forward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     LL = loglikelihoods(hmm, observations; robust = robust)
+    ndims(LL) == 2 ? LL = add_dim(LL) : LL
     forward(hmm.a, hmm.A, LL)
 end
 
@@ -226,6 +227,7 @@ probs, tot = backward(hmm, y)
 function backward(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     LL = loglikelihoods(hmm, observations; robust = robust)
+    ndims(LL) == 2 ? LL = add_dim(LL) : LL
     backward(hmm.a, hmm.A, LL)
 end
 
@@ -271,6 +273,7 @@ y = rand(hmm, 1000, 2)
 function posteriors(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     LL = loglikelihoods(hmm, observations; robust = robust)
+    ndims(LL) == 2 ? LL = add_dim(LL) : LL
     posteriors(hmm.a, hmm.A, LL)
 end
 
@@ -295,53 +298,4 @@ loglikelihood(hmm, [0.15, 0.10, 1.35])
 function loglikelihood(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     forward(hmm, observations, robust = robust)[2]
-end
-
-# Temporarily added to ensure that loglikelihood(hmm, [0.15, 0.10, 1.35]) moves
-function forwardlog!(
-    α::AbstractMatrix,
-    c::AbstractVector,
-    a::AbstractVector,
-    A::AbstractMatrix,
-    LL::AbstractMatrix,
-)
-    @argcheck size(α, 1) == size(LL, 1) == size(c, 1)
-    @argcheck size(α, 2) == size(LL, 2) == size(a, 1) == size(A, 1) == size(A, 2)
-
-    T, K = size(LL)
-    (T == 0) && return
-
-    fill!(α, 0.0)
-    fill!(c, 0.0)
-
-    m = vec_maximum(view(LL, 1, :))
-
-    for j in OneTo(K)
-        α[1, j] = a[j] * exp(LL[1, j] - m)
-        c[1] += α[1, j]
-    end
-
-    for j in OneTo(K)
-        α[1, j] /= c[1]
-    end
-
-    c[1] = log(c[1]) + m
-
-    @inbounds for t = 2:T
-        m = vec_maximum(view(LL, t, :))
-
-        for j in OneTo(K)
-            for i in OneTo(K)
-                α[t, j] += α[t-1, i] * A[i, j]
-            end
-            α[t, j] *= exp(LL[t, j] - m)
-            c[t] += α[t, j]
-        end
-
-        for j in OneTo(K)
-            α[t, j] /= c[t]
-        end
-
-        c[t] = log(c[t]) + m
-    end
 end

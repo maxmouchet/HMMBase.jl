@@ -62,10 +62,10 @@ function loglikelihoods(hmm::AbstractHMM, observations::AbstractArray; logl = no
     if robust
         replace!(LL, -Inf => nextfloat(-Inf), Inf => log(prevfloat(Inf)))
     end
-    LL
+    size(LL, 3) == 1 ? dropdims(LL, dims = 3) : LL
 end
 
-function loglikelihoods(hmm::AbstractHMM, observations::AbstractVector; logl = nothing, robust = false)
+function loglikelihoods(hmm::AbstractHMM, observations::AbstractVecOrMat; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     T, K = size(observations, 1), size(hmm, 1)
     LL = Matrix{Float64}(undef, T, K)

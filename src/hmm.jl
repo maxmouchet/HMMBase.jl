@@ -128,10 +128,10 @@ function rand(
     init = rand(rng, Categorical(hmm.a)),
     seq = false,
 )
-    z = Vector{Int}(undef, T)
+    z = Matrix{Int}(undef, T, 1)
     (T >= 1) && (z[1] = init)
     for t = 2:T
-        z[t] = rand(rng, Categorical(hmm.A[z[t-1], :]))
+        z[t, 1] = rand(rng, Categorical(hmm.A[z[t-1, 1], :]))
     end
     y = rand(rng, hmm, z)
     seq ? (z, y) : y
@@ -513,5 +513,3 @@ end
 function generate_random_lengths(N::Integer; lb::Integer = 1, ub::Integer = 100)
     rand(lb:ub, N)
 end
-
-# test

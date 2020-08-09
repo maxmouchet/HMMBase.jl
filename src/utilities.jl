@@ -165,3 +165,5 @@ remove_nothing(x)
 function remove_nothing(x::AbstractArray)
     x[.!any.(isnothing, eachrow(x)), :]
 end
+
+add_dim(x::AbstractVecOrMat) = reshape(x, (size(x)...,1))

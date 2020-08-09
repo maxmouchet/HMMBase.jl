@@ -60,7 +60,7 @@ function viterbi(a::AbstractVector, A::AbstractMatrix, LL::AbstractArray; logl =
     T2 = Array{Int}(undef, size(LL))
     z = Matrix{Union{Int,Nothing}}(nothing, size(LL, 1), size(LL, 3))
     viterbilog!(T1, T2, z, a, A, LL)
-    z, LL
+    z
 end
 
 """
@@ -77,5 +77,6 @@ zv = viterbi(hmm, y)
 function viterbi(hmm::AbstractHMM, observations; logl = nothing, robust = false)
     (logl !== nothing) && deprecate_kwargs("logl")
     LL = loglikelihoods(hmm, observations; robust = robust)
+    ndims(LL) == 2 ? LL = add_dim(LL) : LL
     viterbi(hmm.a, hmm.A, LL)
 end
