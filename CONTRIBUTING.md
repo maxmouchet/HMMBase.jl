@@ -23,7 +23,7 @@ pkg> test HMMBase
 5. Format the code using [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl):
 ```julia
 julia> using JuliaFormatter
-julia> format(".", margin=100)
+julia> format(".")
 ```
 
 6. Commit your changes and submit the PR!

@@ -154,7 +154,7 @@ function backward(a::AbstractVector, A::AbstractMatrix, LL::AbstractMatrix; logl
     backwardlog!(m, c, a, A, LL)
     m, sum(c)
 end
- 
+
 """
     forward(hmm, observations; robust) -> (Vector, Float)
 

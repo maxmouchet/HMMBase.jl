@@ -21,15 +21,21 @@ end
     y = rand(hmm, 2500)
     LL = likelihoods(hmm, y, logl = true)
 
-    ref =
-        pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(hmm.A, hmm.a, LL)
+    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_forwards_normalized(
+        hmm.A,
+        hmm.a,
+        LL,
+    )
     res = forward(hmm.a, hmm.A, LL, logl = true)
 
     @test all(res[1] .≈ ref[1])
     @test res[2] ≈ ref[2]
 
-    ref =
-        pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized(hmm.A, hmm.a, LL)
+    ref = pyhsmm.internals.hmm_states.HMMStatesPython._messages_backwards_normalized(
+        hmm.A,
+        hmm.a,
+        LL,
+    )
     res = backward(hmm.a, hmm.A, LL, logl = true)
 
     @test all(res[1] .≈ ref[1])

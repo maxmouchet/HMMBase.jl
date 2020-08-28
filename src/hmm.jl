@@ -46,14 +46,17 @@ struct HMM{F,T} <: AbstractHMM{F}
     HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B)
 end
 
-HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
-    HMM{F,T}(a, A, B)
+HMM(
+    a::AbstractVector{T},
+    A::AbstractMatrix{T},
+    B::AbstractVector{<:Distribution{F}},
+) where {F,T} = HMM{F,T}(a, A, B)
 
 HMM(A::AbstractMatrix{T}, B::AbstractVector{<:Distribution{F}}) where {F,T} =
     HMM{F,T}(ones(size(A)[1]) / size(A)[1], A, B)
 
 function HMM(a::AbstractVector{T}, A::AbstractMatrix{T}, B::AbstractMatrix) where {T}
-    B = map(i -> Categorical(B[i,:]), 1:size(B,1))
+    B = map(i -> Categorical(B[i, :]), 1:size(B, 1))
     HMM{Univariate,T}(a, A, B)
 end
 
@@ -87,7 +90,8 @@ issquare(A::AbstractMatrix) = size(A, 1) == size(A, 2)
 
 Return true if `A` is square and its rows sums to 1.
 """
-istransmat(A::AbstractMatrix) = issquare(A) && all([isprobvec(A[i, :]) for i = 1:size(A, 1)])
+istransmat(A::AbstractMatrix) =
+    issquare(A) && all([isprobvec(A[i, :]) for i = 1:size(A, 1)])
 
 ==(h1::AbstractHMM, h2::AbstractHMM) = (h1.a == h2.a) && (h1.A == h2.A) && (h1.B == h2.B)
 
@@ -162,7 +166,11 @@ function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{
     y
 end
 
-function rand(rng::AbstractRNG, hmm::AbstractHMM{Multivariate}, z::AbstractVector{<:Integer})
+function rand(
+    rng::AbstractRNG,
+    hmm::AbstractHMM{Multivariate},
+    z::AbstractVector{<:Integer},
+)
     y = Matrix{Float64}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
         y[t, :] = rand(rng, hmm.B[z[t]])

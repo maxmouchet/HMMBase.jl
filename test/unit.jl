@@ -93,8 +93,11 @@ end
 
 @testset "Base (5)" begin
     # Emission matrix constructor
-    hmm1 = HMM([0.9 0.1; 0.1 0.9], [0. 0.5 0.5; 0.25 0.25 0.5])
-    hmm2 = HMM([0.9 0.1; 0.1 0.9], [Categorical([0., 0.5, 0.5]), Categorical([0.25, 0.25, 0.5])])
+    hmm1 = HMM([0.9 0.1; 0.1 0.9], [0.0 0.5 0.5; 0.25 0.25 0.5])
+    hmm2 = HMM(
+        [0.9 0.1; 0.1 0.9],
+        [Categorical([0.0, 0.5, 0.5]), Categorical([0.25, 0.25, 0.5])],
+    )
     @test hmm1 == hmm2
 end
 
@@ -103,13 +106,26 @@ end
     # Wrong trans. matrix
     @test_throws ArgumentError HMM(ones(2, 2), [Normal(); Normal()])
     # Wrong trans. matrix dimensions
-    @test_throws ArgumentError HMM([0.8 0.1 0.1; 0.1 0.1 0.8], [Normal(0, 1), Normal(10, 1)])
+    @test_throws ArgumentError HMM(
+        [0.8 0.1 0.1; 0.1 0.1 0.8],
+        [Normal(0, 1), Normal(10, 1)],
+    )
     # Wrong number of distributions
-    @test_throws ArgumentError HMM([0.8 0.2; 0.1 0.9], [Normal(0, 1), Normal(10, 1), Normal()])
+    @test_throws ArgumentError HMM(
+        [0.8 0.2; 0.1 0.9],
+        [Normal(0, 1), Normal(10, 1), Normal()],
+    )
     # Wrong distributions size
-    @test_throws ArgumentError HMM([0.8 0.2; 0.1 0.9], [MvNormal(randn(3)), MvNormal(randn(10))])
+    @test_throws ArgumentError HMM(
+        [0.8 0.2; 0.1 0.9],
+        [MvNormal(randn(3)), MvNormal(randn(10))],
+    )
     # Wrong initial state 
-    @test_throws ArgumentError HMM([0.1; 0.1], [0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
+    @test_throws ArgumentError HMM(
+        [0.1; 0.1],
+        [0.9 0.1; 0.1 0.9],
+        [Normal(0, 1), Normal(10, 1)],
+    )
     # Wrong initial state length
     @test_throws ArgumentError HMM(
         [0.1; 0.1; 0.8],
@@ -134,7 +150,7 @@ end
     @test permutedims(dists2[1]) ≈ [1.0 0.0] * (hmm2.A^1000)
     @test permutedims(dists2[2]) ≈ [0.0 1.0] * (hmm2.A^1000)
 
-    @test dists3[1] ≈ [15/53, 25/53, 13/53]
+    @test dists3[1] ≈ [15 / 53, 25 / 53, 13 / 53]
 end
 
 @testset "Messages (1)" begin
@@ -288,9 +304,19 @@ end
     d = JSON.parse(json(hmm2))
     @test_broken from_dict(HMM{Multivariate,Float64}, MvNormal, d) == hmm2
 
-    hmm3 = HMM([0.9 0.1; 0.1 0.9], [MixtureModel([Normal(0, 1)]), MixtureModel([Normal(5, 2), Normal(10, 1)], [0.25, 0.75])])
+    hmm3 = HMM(
+        [0.9 0.1; 0.1 0.9],
+        [
+            MixtureModel([Normal(0, 1)]),
+            MixtureModel([Normal(5, 2), Normal(10, 1)], [0.25, 0.75]),
+        ],
+    )
     d = JSON.parse(json(hmm3))
-    @test_broken from_dict(HMM{Univariate,Float64}, MixtureModel{Univariate,Continuous,Normal,Float64}, d) == hmm3
+    @test_broken from_dict(
+        HMM{Univariate,Float64},
+        MixtureModel{Univariate,Continuous,Normal,Float64},
+        d,
+    ) == hmm3
 
     # MixtureModel <-> HMM (stationnary distribution)
     a = [0.4, 0.6]

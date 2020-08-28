@@ -15,5 +15,3 @@ function mkbench!(f, base, path)
     grp = mkgrp!(base, path[1:end-1])
     grp[path[end]] = f()
 end
-
-

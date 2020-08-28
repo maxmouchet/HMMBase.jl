@@ -18,9 +18,7 @@ end
 makedocs(
     sitename = "HMMBase",
     modules = [HMMBase],
-    format = Documenter.HTML(
-        assets = ["assets/goatcounter.js"]
-    ),
+    format = Documenter.HTML(assets = ["assets/goatcounter.js"]),
     pages = [
         "index.md",
         "Manual" => ["basics.md", "models.md", "algorithms.md", "utilities.md"],

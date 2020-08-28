@@ -3,8 +3,9 @@ using Literate
 using Random
 
 config = Dict(
-    :binder_root_url => "https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=",
-    :repo_root_url => "https://github.com/maxmouchet/HMMBase.jl/blob/master"
+    :binder_root_url =>
+        "https://mybinder.org/v2/gh/maxmouchet/HMMBase.jl/master?filepath=",
+    :repo_root_url => "https://github.com/maxmouchet/HMMBase.jl/blob/master",
 )
 
 function literate_documenter(inputdir, outputdir)

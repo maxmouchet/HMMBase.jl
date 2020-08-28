@@ -8,7 +8,10 @@ Random.seed!(2019)
 hmms = [
     HMM([0.9 0.1; 0.1 0.9], [Normal(10, 1), Gamma(1, 1)]),
     HMM([0.9 0.1; 0.1 0.9], [Categorical([0.1, 0.2, 0.7]), Categorical([0.5, 0.5])]),
-    HMM([0.9 0.1; 0.1 0.9], [MvNormal([0.0, 0.0], [1.0, 1.0]), MvNormal([10.0, 10.0], [1.0, 1.0])]),
+    HMM(
+        [0.9 0.1; 0.1 0.9],
+        [MvNormal([0.0, 0.0], [1.0, 1.0]), MvNormal([10.0, 10.0], [1.0, 1.0])],
+    ),
 ]
 
 @testset "Integration $(typeof(hmm))" for hmm in hmms, T in [0, 1, 1000]
