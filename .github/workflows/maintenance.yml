@@ -1,4 +1,4 @@
-name: CompatHelper
+name: Maintenance
 
 on:
   schedule:
@@ -6,19 +6,22 @@ on:
 
 jobs:
   CompatHelper:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        julia-version: [1.2.0]
-        julia-arch: [x86]
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: julia-actions/setup-julia@latest
         with:
-          version: ${{ matrix.julia-version }}
+          version: '1.5'
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
       - name: CompatHelper.main()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: julia -e 'using CompatHelper; CompatHelper.main()'
+
+  TagBot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JuliaRegistries/TagBot@v1
+        with:
+          token: ${{ secrets.DOCUMENTER_TOKEN }}
