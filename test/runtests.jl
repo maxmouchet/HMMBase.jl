@@ -1,9 +1,21 @@
-# Low-level, isolated, functions tests.
-include("unit.jl")
+using Test
+using Distributions
+using HMMBase
+using Random
+using JSON
+using LinearAlgebra
 
-# High-level API tests.
-# Ensure that everything works well together, for different kinds of HMMs.
-include("integration.jl")
+using HMMBase: from_dict, issquare
 
-# Test that deprecated methods are still working.
-include("deprecated.jl")
+Random.seed!(2019)
+@testset "All" begin
+    # Low-level, isolated, functions tests.
+    include("unit.jl")
+
+    # High-level API tests.
+    # Ensure that everything works well together, for different kinds of HMMs.
+    include("integration.jl")
+
+    # Test that deprecated methods are still working.
+    include("deprecated.jl")
+end
