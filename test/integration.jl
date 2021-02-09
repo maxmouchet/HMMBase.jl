@@ -1,10 +1,3 @@
-using Test
-using HMMBase
-using Distributions
-using Random
-
-Random.seed!(2019)
-
 hmms = [
     HMM([0.9 0.1; 0.1 0.9], [Normal(10, 1), Gamma(1, 1)]),
     HMM([0.9 0.1; 0.1 0.9], [Categorical([0.1, 0.2, 0.7]), Categorical([0.5, 0.5])]),
@@ -46,7 +39,7 @@ hmms = [
 
     # MLE
     if T > 2
-        hmm2, _ = fit_mle(hmm, y, maxiter = 1, display = :iter)
+            hmm2, _ = fit_mle(hmm, y, maxiter = 1)
         @test size(hmm2) == size(hmm)
         @test typeof(hmm2) == typeof(hmm)
 

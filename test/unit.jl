@@ -1,14 +1,3 @@
-using Distributions
-using JSON
-using HMMBase
-using LinearAlgebra
-using Test
-using Random
-
-using HMMBase: from_dict, issquare
-
-Random.seed!(2019)
-
 @testset "Base" begin
     hmm1 = HMM([0.9 0.1; 0.1 0.9], [Normal(0, 1), Normal(10, 1)])
     hmm2 = HMM(
