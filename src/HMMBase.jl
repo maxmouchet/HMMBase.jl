@@ -23,6 +23,8 @@ export
     # hmm.jl
     AbstractHMM,
     HMM,
+    TimeVaryingHMM,
+    fit_mle!,
     copy,
     rand,
     size,
@@ -55,6 +57,8 @@ include("viterbi.jl")
 include("likelihoods.jl")
 include("utilities.jl")
 include("experimental.jl")
+
+include("timevaryinghmm.jl")
 
 # To be removed in a future version
 # ---------------------------------
