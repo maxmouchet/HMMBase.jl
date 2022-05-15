@@ -25,8 +25,5 @@ jobs:
           pip install matplotlib seaborn
       - name: Build and deploy
         env:
-          DOCUMENTER_DEBUG: true
-          # https://github.com/JuliaDocs/Documenter.jl/issues/1177
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.DOCUMENTER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: julia --project=docs/ docs/make.jl
