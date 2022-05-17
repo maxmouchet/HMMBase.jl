@@ -106,8 +106,8 @@ Sample a trajectory of `T` timesteps from `hmm`.
 
 **Output**
 - `Vector{Int}` (if `seq == true`): hidden state sequence.
-- `Vector{F}` (for `Univariate{F}` HMMs): observations (`T`).
-- `Matrix{F}` (for `Multivariate{F}` HMMs): observations (`T x dim(obs)`).
+- `Vector` (for `Univariate` HMMs): observations (`T`).
+- `Matrix` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
 
 **Examples**
 ```julia
@@ -148,8 +148,8 @@ end
 Sample observations from `hmm` according to trajectory `z`.
 
 **Output**
-- `Vector{F}` (for `Univariate{F}` HMMs): observations (`T`).
-- `Matrix{F}` (for `Multivariate{F}` HMMs): observations (`T x dim(obs)`).
+- `Vector` (for `Univariate` HMMs): observations (`T`).
+- `Matrix` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
 
 **Example**
 ```julia
