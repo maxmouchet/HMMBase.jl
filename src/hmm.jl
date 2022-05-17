@@ -158,8 +158,8 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate,T}, z::AbstractVector{<:Integer}) where {T}
-    y = Vector{T}(undef, length(z))
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{<:Integer})
+    y = Vector{eltype(eltype(hmm.B))}(undef, length(z))
     for t in eachindex(z)
         y[t] = rand(rng, hmm.B[z[t]])
     end
@@ -168,10 +168,10 @@ end
 
 function rand(
     rng::AbstractRNG,
-    hmm::AbstractHMM{Multivariate,T},
+    hmm::AbstractHMM{Multivariate},
     z::AbstractVector{<:Integer},
-) where {T}
-    y = Matrix{T}(undef, length(z), size(hmm, 2))
+) 
+    y = Matrix{eltype(eltype(hmm.B))}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
         y[t, :] = rand(rng, hmm.B[z[t]])
     end
