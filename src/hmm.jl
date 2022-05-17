@@ -42,7 +42,7 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [0. 0.5 0.5; 0.25 0.25 0.5])
 struct HMM{F,T} <: AbstractHMM{F}
     a::Vector{T}
     A::Matrix{T}
-    B::Vector{Distribution{F}}
+    B::Vector{<:Distribution{F}}
     HMM{F,T}(a, A, B) where {F,T} = assert_hmm(a, A, B) && new(a, A, B)
 end
 
@@ -106,8 +106,8 @@ Sample a trajectory of `T` timesteps from `hmm`.
 
 **Output**
 - `Vector{Int}` (if `seq == true`): hidden state sequence.
-- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
-- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
+- `Vector{F}` (for `Univariate{F}` HMMs): observations (`T`).
+- `Matrix{F}` (for `Multivariate{F}` HMMs): observations (`T x dim(obs)`).
 
 **Examples**
 ```julia
@@ -130,8 +130,8 @@ function rand(
     rng::AbstractRNG,
     hmm::AbstractHMM,
     T::Integer;
-    init = rand(rng, Categorical(hmm.a)),
-    seq = false,
+    init=rand(rng, Categorical(hmm.a)),
+    seq=false
 )
     z = Vector{Int}(undef, T)
     (T >= 1) && (z[1] = init)
@@ -148,8 +148,8 @@ end
 Sample observations from `hmm` according to trajectory `z`.
 
 **Output**
-- `Vector{Float64}` (for `Univariate` HMMs): observations (`T`).
-- `Matrix{Float64}` (for `Multivariate` HMMs): observations (`T x dim(obs)`).
+- `Vector{F}` (for `Univariate{F}` HMMs): observations (`T`).
+- `Matrix{F}` (for `Multivariate{F}` HMMs): observations (`T x dim(obs)`).
 
 **Example**
 ```julia
@@ -158,8 +158,8 @@ hmm = HMM([0.9 0.1; 0.1 0.9], [Normal(0,1), Normal(10,1)])
 y = rand(hmm, [1, 1, 2, 2, 1])
 ```
 """
-function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate}, z::AbstractVector{<:Integer})
-    y = Vector{Float64}(undef, length(z))
+function rand(rng::AbstractRNG, hmm::AbstractHMM{Univariate,T}, z::AbstractVector{<:Integer}) where {T}
+    y = Vector{T}(undef, length(z))
     for t in eachindex(z)
         y[t] = rand(rng, hmm.B[z[t]])
     end
@@ -168,10 +168,10 @@ end
 
 function rand(
     rng::AbstractRNG,
-    hmm::AbstractHMM{Multivariate},
+    hmm::AbstractHMM{Multivariate,T},
     z::AbstractVector{<:Integer},
-)
-    y = Matrix{Float64}(undef, length(z), size(hmm, 2))
+) where {T}
+    y = Matrix{T}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
         y[t, :] = rand(rng, hmm.B[z[t]])
     end
@@ -196,7 +196,7 @@ size(hmm)
 (2, 1)
 ```
 """
-size(hmm::AbstractHMM, dim = :) = (length(hmm.B), length(hmm.B[1]))[dim]
+size(hmm::AbstractHMM, dim=:) = (length(hmm.B), length(hmm.B[1]))[dim]
 
 """
 
