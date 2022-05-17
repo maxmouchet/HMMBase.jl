@@ -170,7 +170,7 @@ function rand(
     rng::AbstractRNG,
     hmm::AbstractHMM{Multivariate},
     z::AbstractVector{<:Integer},
-) 
+)
     y = Matrix{eltype(eltype(hmm.B))}(undef, length(z), size(hmm, 2))
     for t in eachindex(z)
         y[t, :] = rand(rng, hmm.B[z[t]])
