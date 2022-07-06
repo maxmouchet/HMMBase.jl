@@ -2,13 +2,13 @@
   <img src="/docs/src/assets/logo.png" height="150"><br/>
   <i>Hidden Markov Models for Julia.</i><br/><br/>
   <a href="https://github.com/maxmouchet/HMMBase.jl/actions">
-    <img src="https://github.com/maxmouchet/HMMBase.jl/workflows/CI/badge.svg">
+    <img src="https://img.shields.io/github/workflow/status/maxmouchet/HMMBase.jl/CI?logo=github">
   </a>
   <a href="https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master">
-    <img src="https://codecov.io/github/maxmouchet/HMMBase.jl/coverage.svg?branch=master">
+    <img src="https://img.shields.io/codecov/c/github/maxmouchet/HMMBase.jl?logo=codecov&logoColor=white">
   </a>
   <a href="https://maxmouchet.github.io/HMMBase.jl/stable">
-    <img src="https://img.shields.io/badge/docs-stable-blue.svg?style=flat">
+    <img src="https://img.shields.io/badge/documentation-online-blue.svg?logo=Julia&logoColor=white">
   </a>
 </p>
 
