@@ -1,8 +1,8 @@
 <p align="center">
   <img src="/docs/src/assets/logo.png" height="150"><br/>
   <i>Hidden Markov Models for Julia.</i><br/><br/>
-  <a href="https://github.com/maxmouchet/HMMBase.jl/actions">
-    <img src="https://img.shields.io/github/workflow/status/maxmouchet/HMMBase.jl/CI?logo=github">
+  <a href="[https://github.com/maxmouchet/HMMBase.jl/actions](https://github.com/maxmouchet/HMMBase.jl/actions/workflows/ci.yml)">
+    <img src="https://img.shields.io/github/actions/workflow/status/maxmouchet/HMMBase.jl/ci.yml?logo=github">
   </a>
   <a href="https://codecov.io/github/maxmouchet/HMMBase.jl?branch=master">
     <img src="https://img.shields.io/codecov/c/github/maxmouchet/HMMBase.jl?logo=codecov&logoColor=white">
