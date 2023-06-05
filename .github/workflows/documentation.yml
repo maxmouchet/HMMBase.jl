@@ -18,7 +18,7 @@ jobs:
           version: '1'
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: '3.x'
       - name: Install dependencies
         run: |
           julia --project=docs/ -e 'using Pkg; Pkg.add(PackageSpec(path=pwd())); Pkg.instantiate()'
