@@ -12,14 +12,9 @@
   </a>
 </p>
 
-## News
+## Status
 
-- **:wave: HMMBase is looking for a new maintainer, please open an issue or send me an email if you are interested!**
-- _v1.0 (stable):_ HMMBase v1.0 comes with many new features and performance improvements (see the [release notes](https://github.com/maxmouchet/HMMBase.jl/releases/tag/v1.0.0)), thanks to [@nantonel PR#6](https://github.com/maxmouchet/HMMBase.jl/pull/6).
-It also introduces breaking API changes (method and fields renaming), see [Migration to v1.0](https://maxmouchet.github.io/HMMBase.jl/dev/migration/) for details on migrating your code to the new version.
-- _v0.0.14_: latest pre-release version.
-
-Are you using HMMBase in a particular domain (Biology, NLP, ...) ? Feel free to open an issue to discuss your workflow/needs and see how we can improve HMMBase.
+HMMBase is not maintained anymore. It will keep being available as a Julia package but we encourage existing and new users to migrate to [HiddenMarkovModels.jl](https://github.com/gdalle/HiddenMarkovModels.jl) which offers a similar interface. For more information see [HiddenMarkovModels.jl: when did HMMs get so fast?](https://discourse.julialang.org/t/ann-hiddenmarkovmodels-jl-when-did-hmms-get-so-fast/100191).
 
 ## Introduction
 
